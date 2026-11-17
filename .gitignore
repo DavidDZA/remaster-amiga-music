@@ -1,0 +1,7 @@
+# environnement Python et outils téléchargés (scripts/setup_tools.py)
+.venv/
+tools/
+__pycache__/
+.pytest_cache/
+# MP3, stems et samples générés
+out/

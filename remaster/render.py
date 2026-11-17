@@ -1,0 +1,229 @@
+"""Rendu : pistes MIDI -> FluidSynth (un fichier par piste) -> mixage -> MP3."""
+from __future__ import annotations
+import json
+import pathlib
+import subprocess
+import numpy as np
+import soundfile as sf
+import pedalboard as pb
+import imageio_ffmpeg
+from . import modfile, player, midi, analyze, extras, reference
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+TOOLS = ROOT / "tools"
+SR = 44100
+AMIGA_PAN = {0: -1, 1: 1, 2: 1, 3: -1}  # voies 1 et 4 à gauche, 2 et 3 à droite
+
+
+def fluidsynth_exe() -> pathlib.Path:
+    exe = next(TOOLS.glob("fluidsynth/*/bin/fluidsynth.exe"), None)
+    if not exe:
+        raise SystemExit("FluidSynth absent : lancer  .venv\\Scripts\\python scripts\\setup_tools.py")
+    return exe
+
+
+def openmpt_exe() -> pathlib.Path:
+    return TOOLS / "openmpt" / "openmpt123" / "amd64" / "openmpt123.exe"
+
+
+def soundfont(name: str) -> pathlib.Path:
+    p = TOOLS / "soundfonts" / name
+    if not p.exists():
+        raise SystemExit(f"SoundFont absente : {p}")
+    return p
+
+
+def load_config(path: pathlib.Path) -> dict:
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def instrument(cfg: dict, mod: modfile.Module, sample: int) -> midi.Instrument:
+    raw = dict(cfg.get("samples", {}).get(str(sample), {}))
+    raw.pop("comment", None)
+    inst = midi.Instrument(**raw)
+    if inst.root is None and inst.drum is None:
+        inst.root = analyze.root_midi(mod.samples[sample - 1])
+    return inst
+
+
+def routes(song: player.Song, mod: modfile.Module, cfg: dict):
+    """Les couples (sample, voie) qui jouent vraiment, avec leurs événements MIDI."""
+    used = sorted({(tk.sample, c) for c in range(song.channels) for tk in song.ticks[c] if tk.trigger})
+    out = []
+    for sample, ch in used:
+        inst = instrument(cfg, mod, sample)
+        if inst.mute:
+            continue
+        ev = midi.route_events(song, sample, ch, inst)
+        if any(m.type == "note_on" for _, m in ev):
+            out.append((sample, ch, inst, ev))
+    return out
+
+
+def render_stem(mid_path: pathlib.Path, wav_path: pathlib.Path, sf_path: pathlib.Path):
+    subprocess.run([str(fluidsynth_exe()), "-ni", "-q", "-g", "0.5", "-r", str(SR), "-O", "float", "-T", "wav",
+                    "-o", "synth.reverb.active=0", "-o", "synth.chorus.active=0",
+                    "-o", "synth.polyphony=512", "-F", str(wav_path), str(sf_path), str(mid_path)],
+                   check=True, capture_output=True)
+
+
+def pan_of(inst: midi.Instrument, ch: int, default_width: float) -> float:
+    if isinstance(inst.pan, dict):
+        return float(inst.pan.get(str(ch + 1), 0.0))
+    if inst.pan is not None:
+        return float(inst.pan)
+    return AMIGA_PAN.get(ch % 4, 0) * default_width
+
+
+def mix(stems: list[tuple[np.ndarray, midi.Instrument, int, float]], master: dict) -> np.ndarray:
+    """stems : (audio stéréo, instrument, voie, gain d'équilibrage)."""
+    n = max(a[0].shape[1] for a in stems)
+    bus = np.zeros((2, n), np.float32)
+    send = np.zeros((2, n), np.float32)
+    width = master.get("pan_width", 0.35)
+    for audio, inst, ch, balance in stems:
+        x = np.zeros((2, n), np.float32)
+        x[:, : audio.shape[1]] = audio
+        if inst.highpass:
+            x = pb.Pedalboard([pb.HighpassFilter(inst.highpass)])(x, SR)
+        p = max(-1.0, min(1.0, pan_of(inst, ch, width)))
+        ang = (p + 1) * np.pi / 4  # panoramique à puissance constante
+        g = balance * 10 ** (inst.gain_db / 20)
+        x[0] *= g * np.cos(ang) * np.sqrt(2)
+        x[1] *= g * np.sin(ang) * np.sqrt(2)
+        bus += x
+        send += x * inst.reverb
+    room = pb.Reverb(room_size=master.get("reverb_room", 0.55), damping=0.5, wet_level=1.0, dry_level=0.0, width=1.0)
+    bus += pb.Pedalboard([pb.HighpassFilter(200), room])(send, SR)
+    chain = pb.Pedalboard([
+        pb.HighpassFilter(28),
+        pb.Compressor(threshold_db=master.get("comp_threshold", -16), ratio=2.0, attack_ms=20, release_ms=200),
+        pb.Limiter(threshold_db=-2.0, release_ms=100),
+    ])
+    peak = np.max(np.abs(bus)) or 1.0
+    out = chain(bus / peak * 0.7, SR)
+    # coupe le silence final (au-delà de la queue de réverbération)
+    loud = np.where(np.max(np.abs(out), axis=0) > 1e-4)[0]
+    if len(loud):
+        out = out[:, : min(n, loud[-1] + SR // 2)]
+    return out
+
+
+def to_mp3(wav: pathlib.Path, mp3: pathlib.Path, tags: dict, loudness: float = -14.0):
+    ff = imageio_ffmpeg.get_ffmpeg_exe()
+    meta = []
+    for k, v in tags.items():
+        meta += ["-metadata", f"{k}={v}"]
+    subprocess.run([ff, "-hide_banner", "-loglevel", "error", "-y", "-i", str(wav),
+                    "-af", f"loudnorm=I={loudness}:TP=-1.0:LRA=11,aresample={SR}",
+                    "-c:a", "libmp3lame", "-b:a", "320k", "-id3v2_version", "3", *meta, str(mp3)], check=True)
+
+
+def render_original(mod_path: pathlib.Path, out_dir: pathlib.Path, tags: dict):
+    wav = out_dir / "original.wav"
+    subprocess.run([str(openmpt_exe()), "--batch", "--quiet", "--stereo", "60", "--samplerate", str(SR),
+                    "--no-float", "--force", "-o", str(wav), str(mod_path)], check=True, capture_output=True)
+    to_mp3(wav, out_dir / f"{mod_path.stem} (original).mp3", {**tags, "title": f"{tags.get('title', mod_path.stem)} (original Amiga)"})
+    wav.unlink()
+
+
+def export_samples(mod: modfile.Module, out_dir: pathlib.Path):
+    """Les samples d'origine en WAV, pour les écouter et choisir leurs remplaçants."""
+    d = out_dir / "samples"
+    d.mkdir(parents=True, exist_ok=True)
+    rate = int(modfile.playback_rate(modfile.C2_PERIOD))
+    for s in mod.samples:
+        if len(s.data) >= 4:
+            safe = "".join(ch if ch.isalnum() or ch in " -_" else "_" for ch in s.name).strip() or "sans nom"
+            sf.write(d / f"{s.index:02d} - {safe}.wav", s.as_float(), rate, subtype="PCM_16")
+
+
+def remaster(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, original: bool = True, log=print):
+    out_dir.mkdir(parents=True, exist_ok=True)
+    mod = modfile.load(mod_path)
+    song = player.play(mod)
+    log(f"« {mod.title} » : {mod.channels} voies, {song.duration:.1f} s")
+    rts = routes(song, mod, cfg)
+    stem_dir = out_dir / "stems"
+    stem_dir.mkdir(exist_ok=True)
+    for old in stem_dir.glob("*"):
+        old.unlink()
+    default_sf = cfg.get("soundfont", "GeneralUser-GS.sf2")
+    stems = []
+    for sample, ch, inst, ev in rts:
+        name = f"s{sample:02d}-v{ch + 1}"
+        mf = midi.midi_file([midi.track(ev, inst, name, song.duration)])
+        mid = stem_dir / f"{name}.mid"
+        mf.save(mid)
+        wav = stem_dir / f"{name}.wav"
+        render_stem(mid, wav, soundfont(inst.soundfont or default_sf))
+        audio, rate = sf.read(wav, dtype="float32", always_2d=True)
+        stems.append((audio.T.copy(), inst, ch, 1.0))
+        log(f"  piste {name} : {inst.name or '?'}")
+    if cfg.get("master", {}).get("balance", "original") == "original":
+        stems = balance_on_original(stems, rts, song, mod)
+    comb = midi.combined(song, rts)
+    if comb:
+        comb.save(out_dir / f"{mod_path.stem} (remaster).mid")
+    master = cfg.get("master", {})
+    title = cfg.get("title", mod.title or mod_path.stem)
+    tags = {"title": title, "artist": cfg.get("artist", ""),
+            "album": cfg.get("album", "Remaster AMIGA Music"), "comment": f"Remaster de {mod_path.name}"}
+    made = [_write_mix(stems, master, out_dir, f"{mod_path.stem} (remaster fidèle).mp3",
+                       {**tags, "title": f"{title} (fidèle)"})]
+    if cfg.get("extras"):
+        drum_samples = {s for s, _, inst, _ in rts if inst.drum is not None}
+        hit = per_hit_energy([(st[0], st[3], ev) for st, (_, _, inst, ev) in zip(stems, rts) if inst.drum is not None])
+        extra_stems = list(stems)
+        for name, inst, ev in extras.extra_parts(song, mod, drum_samples, cfg["extras"]):
+            if not ev:
+                continue
+            mid = stem_dir / f"{name}.mid"
+            midi.midi_file([midi.track(ev, inst, name, song.duration)]).save(mid)
+            wav = stem_dir / f"{name}.wav"
+            render_stem(mid, wav, soundfont(inst.soundfont or default_sf))
+            audio, _ = sf.read(wav, dtype="float32", always_2d=True)
+            a = audio.T.copy()
+            own = per_hit_energy([(a, 1.0, ev)])
+            g = float(np.sqrt(hit / own)) if hit and own else 1.0  # un coup ajouté = un coup de la batterie d'origine
+            extra_stems.append((a, inst, 0, g))
+            log(f"  piste {name} : {inst.name}")
+        made.append(_write_mix(extra_stems, master, out_dir, f"{mod_path.stem} (remaster enrichi).mp3",
+                               {**tags, "title": f"{title} (enrichi)"}))
+    if original:
+        render_original(mod_path, out_dir, tags)
+    export_samples(mod, out_dir)
+    for m in made:
+        log(f"→ {m}")
+    return made
+
+
+def per_hit_energy(parts) -> float:
+    """Énergie moyenne d'un coup : parts = [(audio, gain, événements MIDI)]."""
+    energy = sum(reference.weighted_energy(a.mean(axis=0), SR) * g * g for a, g, _ in parts)
+    hits = sum(1 for _, _, ev in parts for _, m in ev if m.type == "note_on" and m.velocity > 0)
+    return energy / hits if hits else 0.0
+
+
+def balance_on_original(stems, rts, song, mod):
+    """Chaque piste prend dans le mix la même part qu'avait son sample dans le module d'origine."""
+    ref_sr = 22050
+    e_old = [reference.weighted_energy(reference.original_stem(song, mod, s, ch, ref_sr), ref_sr)
+             for s, ch, _, _ in rts]
+    e_new = [reference.weighted_energy(a.mean(axis=0), SR) * ref_sr / SR for a, _, _, _ in stems]
+    to, tn = sum(e_old) or 1.0, sum(e_new) or 1.0
+    out = []
+    for (a, inst, ch, _), eo, en in zip(stems, e_old, e_new):
+        g = float(np.sqrt((eo / to) / (en / tn))) if en > 0 and eo > 0 else 1.0
+        out.append((a, inst, ch, g))
+    return out
+
+
+def _write_mix(stems, master: dict, out_dir: pathlib.Path, name: str, tags: dict) -> pathlib.Path:
+    wav = out_dir / "mix.wav"
+    sf.write(wav, mix(stems, master).T, SR, subtype="FLOAT")
+    mp3 = out_dir / name
+    to_mp3(wav, mp3, tags, master.get("loudness", -14.0))
+    wav.unlink()
+    return mp3
