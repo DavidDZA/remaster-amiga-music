@@ -4,6 +4,7 @@ Chaque effet est un objet {"type": ..., paramètres..., "mix": 0..1 (facultatif,
 - "nam"  : ampli capturé (Neural Amp Modeler), {"model": nom, "input_db": 0} ; le son entre normalisé (crête à −6 dB) ;
 - "cab"  : baffle (réponse impulsionnelle), {"ir": nom} ;
 - "gain" : {"db": x} ;
+- "vst"  : un effet VST3 du dossier tools/, {"plugin": "DragonflyRoomReverb", "params": {nom: valeur}} ;
 - tout effet de Pedalboard par son nom : "HighpassFilter", "LowpassFilter", "PeakFilter", "LowShelfFilter",
   "HighShelfFilter", "Compressor", "Distortion", "Delay", "Chorus", "Reverb", "NoiseGate", "Limiter"… avec ses
   paramètres (ex. {"type": "PeakFilter", "cutoff_frequency_hz": 800, "gain_db": -3, "q": 1}).
@@ -14,12 +15,23 @@ import pedalboard as pb
 from . import nam, library
 
 _NAM_CACHE: dict[str, nam.Model] = {}
+_VST_CACHE: dict = {}
+
+
+def load_vst(name: str):
+    """Un VST3 rangé dans tools/ (n'importe où) : <nom>.vst3/Contents/x86_64-win/<nom>.vst3."""
+    if name not in _VST_CACHE:
+        found = list(library.ROOT.joinpath("tools").rglob(f"{name}.vst3/Contents/x86_64-win/{name}.vst3"))
+        if not found:
+            raise SystemExit(f"VST3 absent : {name} (lancer scripts/setup_tools.py)")
+        _VST_CACHE[name] = pb.load_plugin(str(found[0].resolve()))
+    return _VST_CACHE[name]
 
 
 def _apply_one(x: np.ndarray, spec: dict, sr: int) -> np.ndarray:
     spec = dict(spec)
     kind = spec.pop("type")
-    spec.pop("mix", None)
+    blended = spec.pop("mix", None) is not None
     spec.pop("comment", None)
     if kind == "nam":
         name = spec["model"]
@@ -33,12 +45,24 @@ def _apply_one(x: np.ndarray, spec: dict, sr: int) -> np.ndarray:
     if kind == "cab":
         conv = pb.Convolution(str(library.cab_ir(spec["ir"])), mix=1.0)
         return pb.Pedalboard([conv])(x, sr)
+    if kind == "vst":
+        plug = load_vst(spec["plugin"])
+        for k, v in (spec.get("params") or {}).items():
+            setattr(plug, k, v)
+        plug.reset()
+        tail = int(spec.get("tail_s", 0) * sr)
+        if tail:
+            x = np.concatenate([x, np.zeros((x.shape[0], tail), np.float32)], axis=1)
+        return plug(x, sr)
     if kind == "gain":
         return x * 10 ** (spec.get("db", 0) / 20)
     cls = getattr(pb, kind, None)
     if cls is None:
         raise ValueError(f"effet inconnu : {kind}")
-    return pb.Pedalboard([cls(**spec)])(x, sr)
+    plug = cls(**spec)
+    if blended and hasattr(plug, "mix"):
+        plug.mix = 1.0  # le dosage est fait par « mix » de la fiche, pas une deuxième fois par l'effet (Delay…)
+    return pb.Pedalboard([plug])(x, sr)
 
 
 def apply(x: np.ndarray, chain: list[dict] | None, sr: int) -> np.ndarray:

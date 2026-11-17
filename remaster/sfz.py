@@ -242,15 +242,19 @@ def _env(r: Region, n_on: int, n_total: int, sr: int, release_from: int | None, 
     elif s < 1:
         env[tt >= a + h] = s
     if release_from is not None and release_from < n_total:
-        rel = 0.006 if fast else max(r.num("ampeg_release", 0.001), 0.001)
+        rel = 0.015 if fast else max(r.num("ampeg_release", 0.001), 0.001)
         k = np.arange(n_total - release_from, dtype=np.float32) / (rel * sr)
         env[release_from:] *= np.where(k < 1, np.exp(-6 * k), 0)
     return env
 
 
 def render(inst: Instrument, events, duration: float, sr: int, bend_range: float = 24.0,
-           seed: int = 0, smooth_ms: float = 8.0) -> np.ndarray:
-    """events : [(temps en s, message mido)] d'un seul canal. Renvoie (2, n) en float32."""
+           seed: int = 0, smooth_ms: float = 8.0, choke: bool = False) -> np.ndarray:
+    """events : [(temps en s, message mido)] d'un seul canal. Renvoie (2, n) en float32.
+
+    choke : chaque nouvelle attaque coupe les notes précédentes (en 15 ms), comme un nouveau coup de médiator
+    étouffe les cordes qui sonnaient ; les notes d'un même accord (même instant) sonnent ensemble.
+    """
     n = int((duration + 4) * sr)
     out = np.zeros((2, n), np.float32)
     # courbes de pitch bend (demi-tons) et d'expression, échantillon par échantillon
@@ -286,6 +290,11 @@ def render(inst: Instrument, events, duration: float, sr: int, bend_range: float
     # coupures : off_by (groupes) et note_polyphony
     voices = []  # (note, région, shift, clé jouée)
     for nt in notes:
+        if choke:
+            for v in voices:
+                if v["start"] < nt["start"] and (v["cut"] is None or v["cut"] > nt["start"]):
+                    v["cut"] = nt["start"]
+                    v["fast"] = True
         for r, shift, k in nt["regions"]:
             g = r.get("group")
             if g is not None:
@@ -323,7 +332,7 @@ def render(inst: Instrument, events, duration: float, sr: int, bend_range: float
         release_at = None if one_shot else v["end"]
         if v["cut"] is not None and (release_at is None or v["cut"] < release_at):
             release_at = v["cut"]
-        rel_len = int((0.006 if v["fast"] else max(r.num("ampeg_release", 0.001), 0.001)) * sr)
+        rel_len = int((0.015 if v["fast"] else max(r.num("ampeg_release", 0.001), 0.001)) * sr)
         max_len = int((end_s - off) / (ratio * 2 ** (-bend_range / 12))) + 1
         stop = start + max_len
         if release_at is not None:

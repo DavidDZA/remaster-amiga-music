@@ -86,7 +86,9 @@ def test_fichier_midi_combine(song, mod):
     left = next(r for r in doubled if r[2].part == "G" and r[1] == 1)
     right = next(r for r in doubled if r[2].part == "D" and r[1] == 1)
     assert left[2].sfz != right[2].sfz and left[2].pan == -right[2].pan
-    assert abs(right[3][0][0] - left[3][0][0] - 0.011) < 1e-9  # la droite joue 11 ms plus tard
+    assert left[2].fx != right[2].fx  # un autre ampli à droite
+    delay = cfg["samples"]["12"]["double"].get("delay_ms", 12) / 1000
+    assert abs(right[3][0][0] - left[3][0][0] - delay) < 1e-9
     mf = midi.combined(song, [r for r in rts if r[2].part != "D"])
     assert mf is not None
     assert abs(mf.length - (song.duration + midi.TAIL)) < 1.0

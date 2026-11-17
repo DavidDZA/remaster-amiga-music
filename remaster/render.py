@@ -51,6 +51,19 @@ def instrument(cfg: dict, mod: modfile.Module, sample: int, ch: int | None = Non
     return inst
 
 
+def duplicates(song: player.Song, sample: int, ch: int) -> set:
+    """Instants où ce sample attaque la même note sur une voie précédente : le module double pour faire
+    plus fort ou plus large ; avec de vrais instruments, ça ferait deux guitares identiques (son flou, phasé)."""
+    mine = {round(tk.time, 6): tk.note_period for tk in song.ticks[ch] if tk.trigger and tk.sample == sample}
+    out = set()
+    for c in range(ch):
+        for tk in song.ticks[c]:
+            t = round(tk.time, 6)
+            if tk.trigger and tk.sample == sample and mine.get(t) == tk.note_period:
+                out.add(t)
+    return out
+
+
 def routes(song: player.Song, mod: modfile.Module, cfg: dict):
     """Les couples (sample, voie) qui jouent vraiment, avec leurs événements MIDI."""
     used = sorted({(tk.sample, c) for c in range(song.channels) for tk in song.ticks[c] if tk.trigger})
@@ -59,7 +72,7 @@ def routes(song: player.Song, mod: modfile.Module, cfg: dict):
         inst = instrument(cfg, mod, sample, ch)
         if inst.mute:
             continue
-        ev = midi.route_events(song, sample, ch, inst)
+        ev = midi.route_events(song, sample, ch, inst, skip=duplicates(song, sample, ch) if inst.dedupe else None)
         if not any(m.type == "note_on" for _, m in ev):
             continue
         if inst.double:
@@ -86,7 +99,7 @@ def render_stem(mid_path: pathlib.Path, wav_path: pathlib.Path, sf_path: pathlib
 _SFZ_CACHE: dict = {}
 
 
-ENGINE_VERSION = 3  # à augmenter quand le rendu d'une piste change (invalide le cache des pistes)
+ENGINE_VERSION = 4  # à augmenter quand le rendu d'une piste change (invalide le cache des pistes)
 
 
 def split_fx(chain):
@@ -132,7 +145,8 @@ def render_part(name: str, ev, inst: midi.Instrument, duration: float, stem_dir:
         if offset:
             ev = [(t, m.copy(note=min(127, max(0, m.note + offset))) if m.type in ("note_on", "note_off") else m)
                   for t, m in ev]
-        audio = sfz.render(_SFZ_CACHE[ck], ev, duration + midi.TAIL, SR, bend_range=midi.BEND_RANGE, seed=seed)
+        audio = sfz.render(_SFZ_CACHE[ck], ev, duration + midi.TAIL, SR, bend_range=midi.BEND_RANGE, seed=seed,
+                           choke=inst.choke)
     else:
         mid = stem_dir / f"{name}.mid"
         midi.midi_file([midi.track(ev, inst, name, duration)]).save(mid)
@@ -175,8 +189,16 @@ def mix(stems: list[tuple[np.ndarray, midi.Instrument, int, float]], master: dic
         x[1] *= g * np.sin(ang) * np.sqrt(2)
         bus += x
         send += x * inst.reverb
-    room = pb.Reverb(room_size=master.get("reverb_room", 0.55), damping=0.5, wet_level=1.0, dry_level=0.0, width=1.0)
-    bus += pb.Pedalboard([pb.HighpassFilter(200), room])(send, SR)
+    # réverbération commune (départ « reverb » de chaque piste) : Dragonfly (VST3) si la fiche le demande
+    rev = master.get("reverb")
+    if np.any(send):
+        if rev:
+            wet = fx.apply(send, [{"type": "vst", **rev}], SR)[:, :n]
+        else:
+            room = pb.Reverb(room_size=master.get("reverb_room", 0.55), damping=0.5, wet_level=1.0,
+                             dry_level=0.0, width=1.0)
+            wet = pb.Pedalboard([pb.HighpassFilter(200), room])(send, SR)
+        bus[:, :wet.shape[1]] += wet
     chain = pb.Pedalboard([
         pb.HighpassFilter(28),
         pb.Compressor(threshold_db=master.get("comp_threshold", -16), ratio=2.0, attack_ms=20, release_ms=200),

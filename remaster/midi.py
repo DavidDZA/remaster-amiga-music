@@ -40,14 +40,17 @@ class Instrument:
     by_channel: dict = field(default_factory=dict)  # réglages propres à une voie du module : {"2": {...}}
     double: dict | None = None   # double prise gauche / droite : {"sfz": autre banque, "width": 0.85, "delay_ms": 12}
     part: str = ""               # suffixe de piste (« G », « D » pour une partie doublée)
-    share: float = 1.0           # part du sample d'origine que joue cette piste (0,5 pour une partie doublée)
+    share: float = 1.0
+    choke: bool = False          # un nouveau coup coupe le précédent (guitares, basse)
+    dedupe: bool = True          # ignore une note déjà jouée au même instant, même hauteur, sur une autre voie           # part du sample d'origine que joue cette piste (0,5 pour une partie doublée)
 
 
 def _seconds_to_ticks(t: float) -> int:
     return int(round(t * TICKS_PER_BEAT * 1e6 / TEMPO))
 
 
-def route_events(song: Song, sample: int, channel: int, inst: Instrument) -> list[tuple[float, mido.Message]]:
+def route_events(song: Song, sample: int, channel: int, inst: Instrument,
+                 skip: set | None = None) -> list[tuple[float, mido.Message]]:
     """Événements (temps, message) d'un sample joué sur une voie, sur le canal MIDI 0 (ou 9 pour la batterie)."""
     midi_ch = 9 if inst.drum is not None else 0
     ev: list[tuple[float, mido.Message]] = []
@@ -64,8 +67,15 @@ def route_events(song: Song, sample: int, channel: int, inst: Instrument) -> lis
             ev.append((t, mido.Message("note_off", channel=midi_ch, note=n, velocity=0)))
         on = []
 
+    skipping = False
     for tk in song.ticks[channel]:
         mine = tk.sample == sample
+        if tk.trigger:
+            skipping = bool(skip) and mine and round(tk.time, 6) in skip
+        if skipping:  # doublon d'une autre voie : on se tait jusqu'à la prochaine attaque
+            if on:
+                note_off(tk.time)
+            continue
         if on and (tk.trigger or not mine):
             note_off(tk.time)
         if on and inst.max_length and tk.time - on_since >= inst.max_length:

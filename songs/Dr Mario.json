@@ -4,16 +4,32 @@
   "soundfont": "GeneralUser-GS.sf2",
   "master": {
     "loudness": -14,
-    "reverb_room": 0.5,
     "pan_width": 0.35,
     "balance": "original",
     "fx": [
       {
         "type": "LowShelfFilter",
         "cutoff_frequency_hz": 70,
-        "gain_db": 3
+        "gain_db": 2
       }
-    ]
+    ],
+    "reverb": {
+      "plugin": "DragonflyRoomReverb",
+      "tail_s": 2,
+      "params": {
+        "dry_level": 0,
+        "early_level": 25,
+        "early_send": 20,
+        "late_level": 55,
+        "size_m": 14,
+        "decay_s": 0.9,
+        "predelay_ms": 12,
+        "high_cut_hz": 8000,
+        "late_damp_hz": 6000,
+        "low_cut_hz": 200,
+        "low_boost": 0
+      }
+    }
   },
   "extras": {
     "hihat": {
@@ -27,25 +43,26 @@
       "gain_db": -9,
       "pan": 0,
       "sfz": {
-        "bank": "virtuosity-drums",
-        "program": "Programs/01-basic-kit.sfz"
+        "bank": "big-rusty-drums",
+        "program": "Programs/02-basic.sfz"
       },
       "fx": [
         {
           "type": "HighpassFilter",
           "cutoff_frequency_hz": 250
         }
-      ]
+      ],
+      "reverb": 0.03
     },
     "crash": {
       "note": 49,
       "velocity": 105,
       "gain_db": -2,
       "pan": 0,
-      "reverb": 0.2,
+      "reverb": 0.1,
       "sfz": {
-        "bank": "virtuosity-drums",
-        "program": "Programs/01-basic-kit.sfz"
+        "bank": "big-rusty-drums",
+        "program": "Programs/02-basic.sfz"
       },
       "fx": [
         {
@@ -60,49 +77,51 @@
       "name": "Grosse caisse",
       "drum": 36,
       "velocity": 118,
-      "reverb": 0.03,
+      "reverb": 0.0,
       "pan": 0,
       "sfz": {
-        "bank": "virtuosity-drums",
-        "program": "Programs/01-basic-kit.sfz"
+        "bank": "big-rusty-drums",
+        "program": "Programs/02-basic.sfz"
       },
       "fx": [
         {
           "type": "PeakFilter",
-          "cutoff_frequency_hz": 55,
-          "gain_db": 5,
+          "cutoff_frequency_hz": 60,
+          "gain_db": 2,
           "q": 1.0
         },
         {
           "type": "PeakFilter",
-          "cutoff_frequency_hz": 350,
+          "cutoff_frequency_hz": 400,
           "gain_db": -4,
           "q": 1.0
         },
         {
           "type": "PeakFilter",
-          "cutoff_frequency_hz": 4000,
-          "gain_db": 4,
-          "q": 1.0
+          "cutoff_frequency_hz": 5000,
+          "gain_db": 9,
+          "q": 1.2
         },
         {
           "type": "Compressor",
           "threshold_db": -18,
           "ratio": 4,
-          "attack_ms": 8,
+          "attack_ms": 15,
           "release_ms": 120
         }
-      ]
+      ],
+      "comment": "Big Rusty Drums : grosse caisse plus courte, avec l'attaque de la batte (celle de Virtuosity n'en avait presque pas)",
+      "gain_db": 6
     },
     "2": {
       "name": "Caisse claire",
       "drum": 38,
       "velocity": 112,
-      "reverb": 0.2,
+      "reverb": 0.12,
       "pan": 0,
       "sfz": {
-        "bank": "virtuosity-drums",
-        "program": "Programs/01-basic-kit.sfz"
+        "bank": "big-rusty-drums",
+        "program": "Programs/02-basic.sfz"
       },
       "fx": [
         {
@@ -160,12 +179,13 @@
           "cutoff_frequency_hz": 5000
         }
       ],
-      "comment": "vraie basse électrique (doigts) ; le sample du module est accordé en sol# (au C-2 il sonne G#1)"
+      "comment": "vraie basse électrique (doigts) ; le sample du module est accordé en sol# (au C-2 il sonne G#1)",
+      "choke": true
     },
     "5": {
       "name": "Lead",
       "velocity": 100,
-      "reverb": 0.3,
+      "reverb": 0.15,
       "pan": 0,
       "gain_db": 1,
       "sfz": {
@@ -179,7 +199,7 @@
         },
         {
           "type": "nam",
-          "model": "Helga B 6505+ Red ch - MXR Drive V2"
+          "model": "Tim R 5152 Lead + TS9"
         },
         {
           "type": "cab",
@@ -191,28 +211,29 @@
         },
         {
           "type": "PeakFilter",
-          "cutoff_frequency_hz": 3200,
-          "gain_db": -2,
-          "q": 0.9
+          "cutoff_frequency_hz": 3150,
+          "gain_db": 1.5,
+          "q": 1.2
         },
         {
           "type": "LowpassFilter",
-          "cutoff_frequency_hz": 8500
+          "cutoff_frequency_hz": 9000
         },
         {
           "type": "Delay",
           "delay_seconds": 0.3,
-          "feedback": 0.25,
-          "mix": 0.18
+          "feedback": 0.2,
+          "mix": 0.12
         }
       ],
-      "comment": "guitare « green » en son tenu, avec les bends du module, ampli 6505+ canal rouge"
+      "comment": "guitare green en son tenu, avec les bends du module ; ampli 5152 Lead + TS9, baffle Greenback, écho léger",
+      "choke": true
     },
     "10": {
       "name": "Chœur",
       "program": 52,
       "velocity": 90,
-      "reverb": 0.45
+      "reverb": 0.3
     },
     "11": {
       "name": "Guitare étouffée",
@@ -222,7 +243,7 @@
       ],
       "velocity": 100,
       "max_length": 0.12,
-      "reverb": 0.05,
+      "reverb": 0.0,
       "sfz": {
         "bank": "black-and-green-guitars",
         "program": "Programs/08-black_staccato.sfz"
@@ -234,42 +255,78 @@
         },
         {
           "type": "nam",
-          "model": "Helga B 5150 BlockLetter - Boosted"
+          "model": "Tom C Axe FX 2 Engl Savage"
         },
         {
           "type": "cab",
-          "ir": "07-manslaughter-joe"
+          "ir": "16-nacho-guacamole"
         },
         {
           "type": "HighpassFilter",
-          "cutoff_frequency_hz": 85
+          "cutoff_frequency_hz": 80
         },
         {
           "type": "PeakFilter",
-          "cutoff_frequency_hz": 400,
-          "gain_db": -2,
+          "cutoff_frequency_hz": 250,
+          "gain_db": 2,
+          "q": 0.8
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 5000,
+          "gain_db": -2.5,
           "q": 1.0
         },
         {
-          "type": "PeakFilter",
-          "cutoff_frequency_hz": 3000,
-          "gain_db": -3,
-          "q": 0.9
-        },
-        {
           "type": "LowpassFilter",
-          "cutoff_frequency_hz": 7500
+          "cutoff_frequency_hz": 9500
         }
       ],
-      "comment": "palm mute : notes staccato coupées court, en quinte ; doublée : guitare black à gauche, green à droite",
+      "comment": "palm mute : staccato coupé à 0,12 s, en quinte ; mêmes guitares et amplis que la rythmique",
       "double": {
         "sfz": {
           "bank": "black-and-green-guitars",
           "program": "Programs/05-green_staccato.sfz"
         },
-        "width": 0.7,
-        "delay_ms": 11
-      }
+        "fx": [
+          {
+            "type": "HighpassFilter",
+            "cutoff_frequency_hz": 100
+          },
+          {
+            "type": "nam",
+            "model": "Helga B 6505+ Red ch - MXR Drive V2"
+          },
+          {
+            "type": "cab",
+            "ir": "16-nacho-guacamole"
+          },
+          {
+            "type": "HighpassFilter",
+            "cutoff_frequency_hz": 80
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 250,
+            "gain_db": 2,
+            "q": 0.8
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 5000,
+            "gain_db": -2.5,
+            "q": 1.0
+          },
+          {
+            "type": "LowpassFilter",
+            "cutoff_frequency_hz": 9500
+          }
+        ],
+        "width": 0.75,
+        "delay_ms": 0
+      },
+      "choke": true,
+      "gain_db": -3
     },
     "12": {
       "name": "Guitare rythmique",
@@ -279,7 +336,7 @@
         12
       ],
       "velocity": 100,
-      "reverb": 0.08,
+      "reverb": 0.0,
       "sfz": {
         "bank": "black-and-green-guitars",
         "program": "Programs/07-black_twang.sfz"
@@ -291,42 +348,89 @@
         },
         {
           "type": "nam",
-          "model": "Helga B 5150 BlockLetter - Boosted"
+          "model": "Tom C Axe FX 2 Engl Savage"
         },
         {
           "type": "cab",
-          "ir": "07-manslaughter-joe"
+          "ir": "16-nacho-guacamole"
         },
         {
           "type": "HighpassFilter",
-          "cutoff_frequency_hz": 85
+          "cutoff_frequency_hz": 80
         },
         {
           "type": "PeakFilter",
-          "cutoff_frequency_hz": 400,
-          "gain_db": -2,
+          "cutoff_frequency_hz": 250,
+          "gain_db": 2,
+          "q": 0.8
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 5000,
+          "gain_db": -2.5,
           "q": 1.0
         },
         {
           "type": "PeakFilter",
-          "cutoff_frequency_hz": 3000,
-          "gain_db": -3,
-          "q": 0.9
+          "cutoff_frequency_hz": 3150,
+          "gain_db": 2,
+          "q": 1.2
         },
         {
           "type": "LowpassFilter",
-          "cutoff_frequency_hz": 7500
+          "cutoff_frequency_hz": 9500
         }
       ],
-      "comment": "power chords joués par une vraie guitare (3 cordes), ampli 5150 ; doublée : black à gauche, green à droite",
+      "comment": "power chords (3 cordes) ; gauche : guitare black → Engl Savage ; droite : guitare green → 6505+ MXR ; baffle 4×12 Greenback (choisis par comparaison à une courbe type)",
       "double": {
         "sfz": {
           "bank": "black-and-green-guitars",
           "program": "Programs/04-green_twang.sfz"
         },
+        "fx": [
+          {
+            "type": "HighpassFilter",
+            "cutoff_frequency_hz": 100
+          },
+          {
+            "type": "nam",
+            "model": "Helga B 6505+ Red ch - MXR Drive V2"
+          },
+          {
+            "type": "cab",
+            "ir": "16-nacho-guacamole"
+          },
+          {
+            "type": "HighpassFilter",
+            "cutoff_frequency_hz": 80
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 250,
+            "gain_db": 2,
+            "q": 0.8
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 5000,
+            "gain_db": -2.5,
+            "q": 1.0
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 3150,
+            "gain_db": 2,
+            "q": 1.2
+          },
+          {
+            "type": "LowpassFilter",
+            "cutoff_frequency_hz": 9500
+          }
+        ],
         "width": 0.85,
-        "delay_ms": 11
-      }
+        "delay_ms": 0
+      },
+      "choke": true
     }
   }
 }

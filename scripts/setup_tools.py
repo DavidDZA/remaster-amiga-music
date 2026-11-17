@@ -10,6 +10,8 @@ DOWNLOADS = [
      "https://github.com/FluidSynth/fluidsynth/releases/download/v2.6.2/fluidsynth-v2.6.2-win10-x64-cpp11.zip"),
     ("openmpt", "openmpt.zip",
      "https://lib.openmpt.org/files/libopenmpt/bin/libopenmpt-0.8.10+release.bin.windows.zip"),
+    ("dragonfly", "dragonfly.zip",  # réverbérations open source (GPL), en VST3
+     "https://github.com/michaelwillis/dragonfly-reverb/releases/download/3.2.10/dragonfly-reverb-3.2.10-win64.zip"),
     ("soundfonts", "GeneralUser-GS.sf2",
      "https://raw.githubusercontent.com/mrbumpy409/GeneralUser-GS/main/GeneralUser-GS.sf2"),
     ("soundfonts", "MuseScore_General.sf3",
@@ -22,7 +24,7 @@ def main():
         dest_dir.mkdir(parents=True, exist_ok=True)
         dest = dest_dir / name
         if dest.suffix == ".zip":
-            if any(p.suffix == ".exe" for p in dest_dir.rglob("*.exe")):
+            if any(dest_dir.rglob("*.exe")) or any(dest_dir.rglob("*.vst3")):
                 print("déjà là :", folder); continue
         elif dest.exists():
             print("déjà là :", name); continue

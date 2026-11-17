@@ -1,4 +1,5 @@
 """Lecteur SFZ et ampli NAM, sur de petites données fabriquées (sans réseau)."""
+import pathlib
 import random
 import mido
 import numpy as np
@@ -123,3 +124,36 @@ def test_chaine_effets_melange():
     assert np.allclose(y, x * 0.75, atol=1e-4)
     z = fx.apply(x, [{"type": "LowpassFilter", "cutoff_frequency_hz": 1000}], SR)
     assert z.shape == x.shape and np.std(z) < np.std(x)
+
+
+def test_sfz_etouffement(tmp_path):
+    read_text, fetch = make_bank(tmp_path, BANK)
+    inst = sfz.Instrument("Programs/main.sfz", read_text, fetch)
+    ev = [(0.0, mido.Message("note_on", note=55, velocity=30)),
+          (0.5, mido.Message("note_on", note=60, velocity=30)),   # nouvelle attaque : la première note se tait
+          (0.5, mido.Message("note_on", note=64, velocity=30)),   # même instant : accord, les deux sonnent
+          (1.5, mido.Message("note_off", note=60)), (1.5, mido.Message("note_off", note=64)),
+          (1.5, mido.Message("note_off", note=55))]
+    alone = sfz.render(inst, [ev[0], ev[5]], 2.0, SR)
+    both = sfz.render(inst, ev, 2.0, SR, choke=True)
+    chord = sfz.render(inst, ev[1:5], 2.0, SR)
+    w = slice(int(0.6 * SR), int(1.4 * SR))
+    assert np.allclose(both[:, w], chord[:, w], atol=1e-4)  # après 0,5 s il ne reste que l'accord
+    assert np.sqrt(np.mean(alone[:, w] ** 2)) > 0.003        # sans étouffement, la première note sonnerait encore
+
+
+def test_doublons_du_module():
+    from remaster import modfile, player, render
+    mod = modfile.load(pathlib.Path(__file__).resolve().parent.parent / "Dr Mario.mod")
+    song = player.play(mod)
+    d = render.duplicates(song, 12, 2)   # voie 3 : souvent les mêmes accords que la voie 2
+    assert 150 < len(d) < 300
+    assert render.duplicates(song, 12, 0) == set()  # la première voie n'est jamais un doublon
+
+
+def test_echo_dose_une_seule_fois():
+    x = np.zeros((2, SR), np.float32)
+    x[:, 0] = 1.0
+    y = fx.apply(x, [{"type": "Delay", "delay_seconds": 0.25, "feedback": 0.0, "mix": 0.2}], SR)
+    assert abs(y[0, 0] - 0.8) < 1e-3                        # son direct : 80 %
+    assert abs(y[0, int(0.25 * SR)] - 0.2) < 2e-2            # écho : 20 % (pas 10 %)

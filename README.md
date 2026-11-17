@@ -28,7 +28,11 @@ On peut donc garder la partition et **changer les instruments** :
    passe dans un **ampli capturé par réseau de neurones** (Neural Amp Modeler, exécuté en numpy par
    `remaster/nam.py`) puis dans un **baffle** (réponse impulsionnelle), comme en studio ; égaliseurs, compresseurs,
    écho… Une partie peut être **doublée** (une guitare à gauche, une autre à droite, comme sur les disques de rock).
-7. **Mixage** : panoramique, réverbération, compression, limiteur, niveau −14 LUFS, MP3 320 kbit/s CBR.
+7. **Mixage** : panoramique, réverbération **Dragonfly Room** (VST3 open source, chargé par Pedalboard), compression,
+   limiteur, niveau −14 LUFS, MP3 320 kbit/s CBR.
+   Pour un son net : un nouveau coup de médiator **étouffe** les notes d'avant (`choke`), et les accords que le module
+   doublait sur deux voies (pour faire plus fort) ne sont joués qu'une fois (`dedupe`) : la largeur vient de la double
+   prise gauche / droite, avec deux guitares et deux amplis différents.
 8. **Équilibrage sur l'original** (`remaster/reference.py`) : chaque nouvel instrument prend dans le mix la même place
    que son sample dans le module (sinon une guitare saturée écrase tout et la mélodie disparaît). `gain_db` dans la
    fiche ne sert plus qu'aux retouches.
@@ -73,6 +77,8 @@ Pour chaque sample (`"1"` à `"31"`) :
 | `fx` | chaîne d'effets : `nam` (ampli), `cab` (baffle), et tout effet de Pedalboard (`PeakFilter`, `Compressor`, `Delay`…), avec `mix` facultatif (voir `remaster/fx.py`) |
 | `double` | double prise gauche / droite : `{"sfz": autre banque, "width": 0.85, "delay_ms": 11}` |
 | `by_channel` | réglages propres à une voie du module : `{"2": {...}}` |
+| `choke` | un nouveau coup coupe le précédent (guitares, basse) |
+| `dedupe` | `false` pour garder les notes que le module double sur plusieurs voies (par défaut : jouées une fois) |
 | `program` | sinon, instrument General MIDI joué par FluidSynth (0 piano, 30 guitare saturée, 33/34 basse, 52 chœur…) |
 | `drum` | ou bien un son de batterie (note GM : 36 grosse caisse, 38 caisse claire, 42 charleston, 49 crash) |
 | `drum_kit` | kit de batterie (0 Standard, 16 Power, 25 TR-808…) |
@@ -84,6 +90,10 @@ Pour chaque sample (`"1"` à `"31"`) :
 | `soundfont` | une autre SoundFont pour cet instrument |
 | `mute` | ne pas jouer ce sample |
 
+`master` : `loudness`, `fx` (égaliseur du mix), `reverb` (VST3 Dragonfly et ses réglages), `balance`.
+Attention : l'équilibrage sur l'original (`"balance": "original"`) compense le volume des égaliseurs ; pour rendre
+un instrument plus présent, utiliser `gain_db`.
+
 `extras` règle les ajouts de la version enrichie (`gain_db` : tant de dB sous un coup de la batterie d'origine).
 
 ### Instruments retenus pour *Dr Mario*
@@ -93,14 +103,14 @@ Les noms des samples sont des messages (« composed by betrayer », « greets to
 
 | Sample | Ce que c'est | Remplacé par |
 |---|---|---|
-| 1, 2 | grosse caisse, caisse claire | *Virtuosity Drums* (micros de grosse caisse, de caisse claire et overheads), EQ, compresseur |
+| 1, 2 | grosse caisse, caisse claire | *Big Rusty Drums* (kick court avec l'attaque de la batte, renforcé vers 5 kHz) |
 | 3 | basse (accordée en sol#) | *Black and Blue Basses* (basse « darkblack » aux doigts), compresseur, un peu de saturation |
-| 5 | lead avec bends | guitare *green* (son tenu) → ampli 6505+ canal rouge (NAM) → baffle Greenback → écho |
+| 5 | lead avec bends | guitare *green* (son tenu) → ampli 5152 Lead + TS9 (NAM) → baffle Greenback → écho léger |
 | 10 | chœur | Choir Aahs (GeneralUser GS, FluidSynth) |
-| 11 | guitare étouffée (très courte) | guitares *black* (gauche) et *green* (droite) en staccato, en quinte, coupées à 0,12 s → ampli 5150 → baffle 4×12 V30 |
-| 12 | guitare en power chord (la quinte est dans le spectre) | power chords (3 cordes) des guitares *black* (gauche) et *green* (droite) → ampli 5150 → baffle 4×12 V30 |
+| 11 | guitare étouffée (très courte) | staccato coupé à 0,12 s, en quinte ; mêmes guitares et amplis que la rythmique |
+| 12 | guitare en power chord (la quinte est dans le spectre) | power chords (3 cordes) : à gauche guitare *black* → Engl Savage, à droite guitare *green* → 6505+ MXR ; baffle 4×12 Greenback |
 | 4 | vide | (sert à couper une voie) |
-| ajouts | charleston, crashs (version enrichie) | *Virtuosity Drums* |
+| ajouts | charleston, crashs (version enrichie) | *Big Rusty Drums* |
 
 ## Contrôles
 
@@ -126,12 +136,17 @@ Les noms des samples sont des messages (« composed by betrayer », « greets to
 | [MuseScore General](https://musescore.org/) | autre SoundFont (≈ 40 Mo) | MIT |
 | [OpenMPT](https://lib.openmpt.org/) (openmpt123) 0.8.10 | rendu de l'original | BSD |
 | ffmpeg (paquet `imageio-ffmpeg`) | niveau sonore, MP3 | LGPL / GPL |
+| [Dragonfly Reverb](https://github.com/michaelwillis/dragonfly-reverb) 3.2.10 | réverbération (VST3) | GPL-3.0 |
+| [Big Rusty Drums](https://github.com/sfzinstruments/karoryfer.big-rusty-drums) (Karoryfer) | batterie | CC0 |
 | [Pedalboard](https://github.com/spotify/pedalboard) | réverbération, compresseur, limiteur | GPL |
 | mido, numpy, scipy, soundfile | MIDI, calcul, WAV | libres |
 
 `tools\`, `.venv\` et `out\` ne sont pas dans git (lourds ou recréés).
 
 ## Limites et pistes
+
+Suite prévue (dont le passage à de vrais VST choisis à l'oreille) : [docs/ROADMAP.md](docs/ROADMAP.md).
+
 
 - Le lecteur SFZ maison couvre ce qu'utilisent ces banques, pas toute la norme SFZ (pas de filtres, de LFO, ni de
   notes de relâchement). Les SoundFonts General MIDI restent pour les instruments sans banque SFZ (chœur).
