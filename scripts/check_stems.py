@@ -4,10 +4,12 @@
 - calage : décalage (ms) entre les attaques de l'original et du remaster ; 0 attendu.
 Usage : python scripts/check_stems.py "Dr Mario.mod"
 """
+import math
 import sys
 import pathlib
 import numpy as np
 import soundfile as sf
+from scipy.signal import resample_poly
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 from remaster import modfile, player, render  # noqa: E402
@@ -58,10 +60,11 @@ def main():
     mod = modfile.load(mod_path)
     song = player.play(mod)
     stems = render.ROOT / "out" / mod_path.stem / "stems"
-    for wav in sorted(stems.glob("s*.wav")):
-        sample, ch = int(wav.stem[1:3]), int(wav.stem.split("-v")[1]) - 1
+    for wav in sorted(stems.glob("s*.flac")):
+        sample, ch = int(wav.stem[1:3]), int(wav.stem.split("-v")[1][0]) - 1
         new, rate = sf.read(wav, dtype="float32", always_2d=True)
-        new = new.mean(axis=1)[:: rate // SR]
+        g = math.gcd(rate, SR)
+        new = resample_poly(new.mean(axis=1), SR // g, rate // g).astype(np.float32)
         old = original_stem(song, mod, sample, ch)
         n = min(len(old), len(new))
         sh, _ = best_shift(semitone_profile(new[:n]), semitone_profile(old[:n]))

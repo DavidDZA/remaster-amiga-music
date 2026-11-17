@@ -19,13 +19,20 @@ On peut donc garder la partition et **changer les instruments** :
 4. **Vers le MIDI** (`remaster/midi.py`) : une piste par couple (sample, voie), monophonique comme l'Amiga ; les
    glissandos et le vibrato deviennent du *pitch bend* (amplitude ±24 demi-tons), le volume du CC 11. Une note peut
    devenir un accord (power chord `[0, 7, 12]` pour une guitare saturée).
-5. **Rendu** (`remaster/render.py`) : chaque piste est jouée par **FluidSynth** avec une **SoundFont** (banque
-   d'instruments) gratuite, puis mixée : panoramique, réverbération, compression, limiteur, niveau −14 LUFS,
-   MP3 320 kbit/s CBR.
-6. **Équilibrage sur l'original** (`remaster/reference.py`) : chaque nouvel instrument prend dans le mix la même place
+5. **Rendu** (`remaster/render.py`) : chaque piste est jouée soit par une **banque SFZ** (de vrais instruments
+   enregistrés note par note, plusieurs nuances et plusieurs prises par note) avec le lecteur maison
+   `remaster/sfz.py`, soit par **FluidSynth** avec une **SoundFont** General MIDI (pour ce qui n'a pas encore de
+   meilleure banque, comme le chœur). Les banques SFZ sont téléchargées **à la demande** (`remaster/library.py`) :
+   seuls les échantillons réellement joués (quelques dizaines de Mo sur des banques de 1 Go).
+6. **Chaîne d'effets par piste** (`remaster/fx.py`) : pour les guitares, une vraie guitare enregistrée sans effet (DI)
+   passe dans un **ampli capturé par réseau de neurones** (Neural Amp Modeler, exécuté en numpy par
+   `remaster/nam.py`) puis dans un **baffle** (réponse impulsionnelle), comme en studio ; égaliseurs, compresseurs,
+   écho… Une partie peut être **doublée** (une guitare à gauche, une autre à droite, comme sur les disques de rock).
+7. **Mixage** : panoramique, réverbération, compression, limiteur, niveau −14 LUFS, MP3 320 kbit/s CBR.
+8. **Équilibrage sur l'original** (`remaster/reference.py`) : chaque nouvel instrument prend dans le mix la même place
    que son sample dans le module (sinon une guitare saturée écrase tout et la mélodie disparaît). `gain_db` dans la
    fiche ne sert plus qu'aux retouches.
-7. **Version enrichie** (`remaster/extras.py`) : avec 4 voies, les musiciens gardaient souvent grosse caisse et caisse
+9. **Version enrichie** (`remaster/extras.py`) : avec 4 voies, les musiciens gardaient souvent grosse caisse et caisse
    claire. On ajoute un **charleston** (toutes les 2 lignes, accentué sur les temps) et des **crashs** (début de chaque
    nouvelle partie, retour de la batterie après une pause), là où la batterie joue.
 
@@ -47,7 +54,11 @@ Dans `out\Dr Mario\` :
 | `Dr Mario (remaster enrichi).mp3` | pareil + charleston et crashs ajoutés |
 | `Dr Mario (remaster).mid` | la partition en MIDI, pour la reprendre dans un logiciel de musique |
 | `samples\` | les samples d'origine en WAV, pour les écouter |
-| `stems\` | chaque piste séparée (MIDI et WAV) |
+| `stems\` | chaque piste séparée (FLAC), avant les derniers réglages d'égaliseur ; sert aussi de **cache** |
+
+Le premier rendu prend une dizaine de minutes (les amplis NAM). Ensuite, seules les pistes dont les notes,
+l'instrument ou l'ampli changent sont refaites : changer un volume, un panoramique, une réverbération ou un égaliseur
+placé après l'ampli ne prend qu'une minute et demie.
 
 Pour un autre module, la première fois, une **fiche d'instruments** `songs\<nom>.json` est créée (un piano pour
 tout) : à compléter, puis relancer.
@@ -58,7 +69,11 @@ Pour chaque sample (`"1"` à `"31"`) :
 
 | Clé | Rôle |
 |---|---|
-| `program` | instrument General MIDI (0 piano, 30 guitare saturée, 33/34 basse, 52 chœur…) |
+| `sfz` | une banque SFZ : `{"bank": "black-and-green-guitars", "program": "Programs/07-black_twang.sfz", "cc": {}}` (banques connues : `remaster/library.py`) |
+| `fx` | chaîne d'effets : `nam` (ampli), `cab` (baffle), et tout effet de Pedalboard (`PeakFilter`, `Compressor`, `Delay`…), avec `mix` facultatif (voir `remaster/fx.py`) |
+| `double` | double prise gauche / droite : `{"sfz": autre banque, "width": 0.85, "delay_ms": 11}` |
+| `by_channel` | réglages propres à une voie du module : `{"2": {...}}` |
+| `program` | sinon, instrument General MIDI joué par FluidSynth (0 piano, 30 guitare saturée, 33/34 basse, 52 chœur…) |
 | `drum` | ou bien un son de batterie (note GM : 36 grosse caisse, 38 caisse claire, 42 charleston, 49 crash) |
 | `drum_kit` | kit de batterie (0 Standard, 16 Power, 25 TR-808…) |
 | `chord` | notes ajoutées (demi-tons) : `[0, 7, 12]` power chord |
@@ -78,13 +93,14 @@ Les noms des samples sont des messages (« composed by betrayer », « greets to
 
 | Sample | Ce que c'est | Remplacé par |
 |---|---|---|
-| 1, 2 | grosse caisse, caisse claire | kit Power |
-| 3 | basse (accordée en sol#) | Picked Bass |
-| 5 | lead avec bends | Distortion Guitar |
-| 10 | chœur | Choir Aahs |
-| 11 | guitare étouffée (très courte) | Distortion Guitar en quinte, notes coupées à 0,12 s |
-| 12 | guitare en power chord (la quinte est dans le spectre) | Distortion Guitar, power chord, doublée gauche / droite |
+| 1, 2 | grosse caisse, caisse claire | *Virtuosity Drums* (micros de grosse caisse, de caisse claire et overheads), EQ, compresseur |
+| 3 | basse (accordée en sol#) | *Black and Blue Basses* (basse « darkblack » aux doigts), compresseur, un peu de saturation |
+| 5 | lead avec bends | guitare *green* (son tenu) → ampli 6505+ canal rouge (NAM) → baffle Greenback → écho |
+| 10 | chœur | Choir Aahs (GeneralUser GS, FluidSynth) |
+| 11 | guitare étouffée (très courte) | guitares *black* (gauche) et *green* (droite) en staccato, en quinte, coupées à 0,12 s → ampli 5150 → baffle 4×12 V30 |
+| 12 | guitare en power chord (la quinte est dans le spectre) | power chords (3 cordes) des guitares *black* (gauche) et *green* (droite) → ampli 5150 → baffle 4×12 V30 |
 | 4 | vide | (sert à couper une voie) |
+| ajouts | charleston, crashs (version enrichie) | *Virtuosity Drums* |
 
 ## Contrôles
 
@@ -100,6 +116,11 @@ Les noms des samples sont des messages (« composed by betrayer », « greets to
 
 | Outil | Rôle | Licence |
 |---|---|---|
+| [Black and Green Guitars](https://github.com/sfzinstruments/karoryfer.black-and-green-guitars) (Karoryfer) | deux guitares électriques DI | CC0 |
+| [Black and Blue Basses](https://github.com/sfzinstruments/karoryfer.black-and-blue-basses) (Karoryfer) | basses électriques | CC0 |
+| [Virtuosity Drums](https://github.com/sfzinstruments/virtuosity_drums) (Versilian, Karoryfer) | batterie multi-micros | CC0 |
+| [NAM_models](https://github.com/pelennor2170/NAM_models) | captures d'amplis (5150, 6505+, JCM2000…) pour Neural Amp Modeler | GPL-3.0 |
+| Jesters Brutal / Emerald Pack, via [OrbitCab](https://github.com/darwinscat/orbitcab) | réponses impulsionnelles de baffles 4×12 | CC0 |
 | [FluidSynth](https://www.fluidsynth.org/) 2.6.2 | joue le MIDI avec une SoundFont | LGPL |
 | [GeneralUser GS](https://github.com/mrbumpy409/GeneralUser-GS) | SoundFont par défaut (≈ 30 Mo) | libre d'usage |
 | [MuseScore General](https://musescore.org/) | autre SoundFont (≈ 40 Mo) | MIT |
@@ -112,10 +133,12 @@ Les noms des samples sont des messages (« composed by betrayer », « greets to
 
 ## Limites et pistes
 
-- Les SoundFonts General MIDI sont correctes, pas spectaculaires (surtout les guitares saturées). Pour un vrai saut
-  de qualité, gratuit aussi : des **banques SFZ** (batteries multi-échantillonnées, guitares) avec
-  [sfizz](https://sfz.tools/sfizz/), ou des **instruments VST3** gratuits (Surge XT, Vital…) et un simulateur d'ampli,
-  que Pedalboard sait piloter.
+- Le lecteur SFZ maison couvre ce qu'utilisent ces banques, pas toute la norme SFZ (pas de filtres, de LFO, ni de
+  notes de relâchement). Les SoundFonts General MIDI restent pour les instruments sans banque SFZ (chœur).
+- Les amplis NAM tournent en numpy, sans PyTorch : environ 1 min par piste de guitare de 6 min (les silences sont
+  sautés).
+- Certaines banques sont placées une octave au-dessus du son réel : *Black and Blue Basses* (mesuré : la touche 35
+  sonne si 0). `remaster/library.py` (`KEY_OFFSET`) corrige ; `"key_offset"` dans `sfz` pour une autre banque.
 - La détection des instruments est à faire (ou corriger) à l'oreille, sample par sample : c'est le cœur d'une future
   appli (écouter le sample, choisir un remplaçant dans une liste, réécouter).
 - Formats gérés : `.mod` à 31 samples (M.K., FLT4, 6CHN, 8CHN…). Pas encore les `.xm`, `.s3m`, `.it`.

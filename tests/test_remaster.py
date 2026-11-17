@@ -1,5 +1,6 @@
 import pathlib
 import math
+import mido
 import numpy as np
 import pytest
 from remaster import modfile, player, midi, analyze, extras
@@ -78,6 +79,29 @@ def test_fichier_midi_combine(song, mod):
     from remaster import render
     cfg = render.load_config(ROOT / "songs" / "Dr Mario.json")
     rts = render.routes(song, mod, cfg)
-    mf = midi.combined(song, rts)
+    # parties doublées : une piste à gauche (G), une à droite (D), chacune la moitié du sample d'origine
+    doubled = [r for r in rts if r[0] == 12]
+    assert {r[2].part for r in doubled} == {"G", "D"}
+    assert all(r[2].share == 0.5 for r in doubled)
+    left = next(r for r in doubled if r[2].part == "G" and r[1] == 1)
+    right = next(r for r in doubled if r[2].part == "D" and r[1] == 1)
+    assert left[2].sfz != right[2].sfz and left[2].pan == -right[2].pan
+    assert abs(right[3][0][0] - left[3][0][0] - 0.011) < 1e-9  # la droite joue 11 ms plus tard
+    mf = midi.combined(song, [r for r in rts if r[2].part != "D"])
     assert mf is not None
     assert abs(mf.length - (song.duration + midi.TAIL)) < 1.0
+
+
+def test_cache_des_pistes_ignore_le_mixage():
+    from remaster import render
+    chain = [{"type": "HighpassFilter", "cutoff_frequency_hz": 100}, {"type": "nam", "model": "x"},
+             {"type": "cab", "ir": "y"}, {"type": "PeakFilter", "cutoff_frequency_hz": 3000, "gain_db": -3}]
+    heavy, light = render.split_fx(chain)
+    assert [f["type"] for f in heavy] == ["HighpassFilter", "nam", "cab"] and light == chain[3:]
+    ev = [(0.0, mido.Message("note_on", note=40, velocity=100))]
+    a = midi.Instrument(name="a", fx=chain, pan=-1, gain_db=0)
+    b = midi.Instrument(name="b", fx=chain[:3] + [{"type": "LowpassFilter", "cutoff_frequency_hz": 8000}], pan=1, gain_db=-6)
+    c = midi.Instrument(name="a", fx=chain, velocity=90)
+    key = lambda i: render._part_key("s", ev, i, 10.0, 0, "sf")
+    assert key(a) == key(b)  # EQ après l'ampli, panoramique, volume : pas de nouveau rendu
+    assert key(a) != key(c)  # vélocité : le son change

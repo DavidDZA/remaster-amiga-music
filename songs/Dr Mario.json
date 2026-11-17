@@ -2,24 +2,331 @@
   "title": "Dr Mario (remaster)",
   "artist": "betrayer",
   "soundfont": "GeneralUser-GS.sf2",
-  "master": { "loudness": -14, "reverb_room": 0.5, "pan_width": 0.35, "balance": "original" },
+  "master": {
+    "loudness": -14,
+    "reverb_room": 0.5,
+    "pan_width": 0.35,
+    "balance": "original",
+    "fx": [
+      {
+        "type": "LowShelfFilter",
+        "cutoff_frequency_hz": 70,
+        "gain_db": 3
+      }
+    ]
+  },
   "extras": {
-    "hihat": { "note": 42, "drum_kit": 16, "every_rows": 2, "beat_rows": 4, "velocity": [90, 65], "gain_db": -9, "pan": 0.3 },
-    "crash": { "note": 49, "drum_kit": 16, "velocity": 105, "gain_db": -2, "pan": -0.35, "reverb": 0.25 }
+    "hihat": {
+      "note": 42,
+      "every_rows": 2,
+      "beat_rows": 4,
+      "velocity": [
+        90,
+        65
+      ],
+      "gain_db": -9,
+      "pan": 0,
+      "sfz": {
+        "bank": "virtuosity-drums",
+        "program": "Programs/01-basic-kit.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 250
+        }
+      ]
+    },
+    "crash": {
+      "note": 49,
+      "velocity": 105,
+      "gain_db": -2,
+      "pan": 0,
+      "reverb": 0.2,
+      "sfz": {
+        "bank": "virtuosity-drums",
+        "program": "Programs/01-basic-kit.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 200
+        }
+      ]
+    }
   },
   "samples": {
-    "1":  { "name": "Grosse caisse", "drum": 36, "drum_kit": 16, "velocity": 120, "reverb": 0.05, "pan": 0 },
-    "2":  { "name": "Caisse claire", "drum": 38, "drum_kit": 16, "velocity": 115, "reverb": 0.2, "pan": 0 },
-    "3":  { "name": "Basse", "program": 34, "velocity": 105, "reverb": 0.0, "pan": 0,
-            "comment": "Picked Bass ; le sample est accordé en sol# (au C-2 il sonne G#1)" },
-    "5":  { "name": "Lead", "program": 30, "velocity": 100, "reverb": 0.3, "pan": 0, "gain_db": 1,
-            "comment": "Distortion Guitar, avec les bends du module" },
-    "10": { "name": "Chœur", "program": 52, "velocity": 90, "reverb": 0.45 },
-    "11": { "name": "Guitare étouffée", "program": 30, "chord": [0, 7], "velocity": 85, "max_length": 0.12,
-            "reverb": 0.08, "pan": { "1": -0.7, "2": 0.7, "3": 0.7, "4": -0.7 },
-            "comment": "palm mute : notes très courtes, en quinte" },
-    "12": { "name": "Guitare rythmique", "program": 30, "chord": [0, 7, 12], "velocity": 100, "reverb": 0.12,
-            "pan": { "1": -0.8, "2": 0.8, "3": -0.8, "4": 0.8 },
-            "comment": "power chord (le spectre du sample contient la quinte) ; voies 2 et 3 doublées : une à gauche, une à droite" }
+    "1": {
+      "name": "Grosse caisse",
+      "drum": 36,
+      "velocity": 118,
+      "reverb": 0.03,
+      "pan": 0,
+      "sfz": {
+        "bank": "virtuosity-drums",
+        "program": "Programs/01-basic-kit.sfz"
+      },
+      "fx": [
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 55,
+          "gain_db": 5,
+          "q": 1.0
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 350,
+          "gain_db": -4,
+          "q": 1.0
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 4000,
+          "gain_db": 4,
+          "q": 1.0
+        },
+        {
+          "type": "Compressor",
+          "threshold_db": -18,
+          "ratio": 4,
+          "attack_ms": 8,
+          "release_ms": 120
+        }
+      ]
+    },
+    "2": {
+      "name": "Caisse claire",
+      "drum": 38,
+      "velocity": 112,
+      "reverb": 0.2,
+      "pan": 0,
+      "sfz": {
+        "bank": "virtuosity-drums",
+        "program": "Programs/01-basic-kit.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 90
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 200,
+          "gain_db": 2,
+          "q": 1.0
+        },
+        {
+          "type": "Compressor",
+          "threshold_db": -16,
+          "ratio": 3,
+          "attack_ms": 5,
+          "release_ms": 100
+        }
+      ]
+    },
+    "3": {
+      "name": "Basse",
+      "velocity": 100,
+      "reverb": 0.0,
+      "pan": 0,
+      "sfz": {
+        "bank": "black-and-blue-basses",
+        "program": "Programs/05-darkblack_pluck.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 30
+        },
+        {
+          "type": "LowShelfFilter",
+          "cutoff_frequency_hz": 90,
+          "gain_db": 3
+        },
+        {
+          "type": "Compressor",
+          "threshold_db": -20,
+          "ratio": 4,
+          "attack_ms": 10,
+          "release_ms": 150
+        },
+        {
+          "type": "Distortion",
+          "drive_db": 18,
+          "mix": 0.15
+        },
+        {
+          "type": "LowpassFilter",
+          "cutoff_frequency_hz": 5000
+        }
+      ],
+      "comment": "vraie basse électrique (doigts) ; le sample du module est accordé en sol# (au C-2 il sonne G#1)"
+    },
+    "5": {
+      "name": "Lead",
+      "velocity": 100,
+      "reverb": 0.3,
+      "pan": 0,
+      "gain_db": 1,
+      "sfz": {
+        "bank": "black-and-green-guitars",
+        "program": "Programs/04-green_twang.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 100
+        },
+        {
+          "type": "nam",
+          "model": "Helga B 6505+ Red ch - MXR Drive V2"
+        },
+        {
+          "type": "cab",
+          "ir": "18-wasabi-warrior"
+        },
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 90
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 3200,
+          "gain_db": -2,
+          "q": 0.9
+        },
+        {
+          "type": "LowpassFilter",
+          "cutoff_frequency_hz": 8500
+        },
+        {
+          "type": "Delay",
+          "delay_seconds": 0.3,
+          "feedback": 0.25,
+          "mix": 0.18
+        }
+      ],
+      "comment": "guitare « green » en son tenu, avec les bends du module, ampli 6505+ canal rouge"
+    },
+    "10": {
+      "name": "Chœur",
+      "program": 52,
+      "velocity": 90,
+      "reverb": 0.45
+    },
+    "11": {
+      "name": "Guitare étouffée",
+      "chord": [
+        0,
+        7
+      ],
+      "velocity": 100,
+      "max_length": 0.12,
+      "reverb": 0.05,
+      "sfz": {
+        "bank": "black-and-green-guitars",
+        "program": "Programs/08-black_staccato.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 100
+        },
+        {
+          "type": "nam",
+          "model": "Helga B 5150 BlockLetter - Boosted"
+        },
+        {
+          "type": "cab",
+          "ir": "07-manslaughter-joe"
+        },
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 85
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 400,
+          "gain_db": -2,
+          "q": 1.0
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 3000,
+          "gain_db": -3,
+          "q": 0.9
+        },
+        {
+          "type": "LowpassFilter",
+          "cutoff_frequency_hz": 7500
+        }
+      ],
+      "comment": "palm mute : notes staccato coupées court, en quinte ; doublée : guitare black à gauche, green à droite",
+      "double": {
+        "sfz": {
+          "bank": "black-and-green-guitars",
+          "program": "Programs/05-green_staccato.sfz"
+        },
+        "width": 0.7,
+        "delay_ms": 11
+      }
+    },
+    "12": {
+      "name": "Guitare rythmique",
+      "chord": [
+        0,
+        7,
+        12
+      ],
+      "velocity": 100,
+      "reverb": 0.08,
+      "sfz": {
+        "bank": "black-and-green-guitars",
+        "program": "Programs/07-black_twang.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 100
+        },
+        {
+          "type": "nam",
+          "model": "Helga B 5150 BlockLetter - Boosted"
+        },
+        {
+          "type": "cab",
+          "ir": "07-manslaughter-joe"
+        },
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 85
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 400,
+          "gain_db": -2,
+          "q": 1.0
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 3000,
+          "gain_db": -3,
+          "q": 0.9
+        },
+        {
+          "type": "LowpassFilter",
+          "cutoff_frequency_hz": 7500
+        }
+      ],
+      "comment": "power chords joués par une vraie guitare (3 cordes), ampli 5150 ; doublée : black à gauche, green à droite",
+      "double": {
+        "sfz": {
+          "bank": "black-and-green-guitars",
+          "program": "Programs/04-green_twang.sfz"
+        },
+        "width": 0.85,
+        "delay_ms": 11
+      }
+    }
   }
 }

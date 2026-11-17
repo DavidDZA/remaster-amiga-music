@@ -35,6 +35,12 @@ class Instrument:
     reverb: float = 0.15
     highpass: float | None = None
     mute: bool = False
+    sfz: dict | None = None      # {"bank": ..., "program": ..., "cc": {n: valeur}} : banque SFZ au lieu de FluidSynth
+    fx: list = field(default_factory=list)  # chaîne d'effets (voir fx.py)
+    by_channel: dict = field(default_factory=dict)  # réglages propres à une voie du module : {"2": {...}}
+    double: dict | None = None   # double prise gauche / droite : {"sfz": autre banque, "width": 0.85, "delay_ms": 12}
+    part: str = ""               # suffixe de piste (« G », « D » pour une partie doublée)
+    share: float = 1.0           # part du sample d'origine que joue cette piste (0,5 pour une partie doublée)
 
 
 def _seconds_to_ticks(t: float) -> int:

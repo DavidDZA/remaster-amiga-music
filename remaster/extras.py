@@ -76,11 +76,13 @@ def extra_parts(song: Song, mod: Module, drum_samples: set[int], extras: dict) -
     if "hihat" in extras:
         c = extras["hihat"]
         inst = Instrument(name="Charleston (ajouté)", drum=c.get("note", 42), drum_kit=c.get("drum_kit", 0),
-                          gain_db=c.get("gain_db", -6), pan=c.get("pan", 0.3), reverb=c.get("reverb", 0.1))
+                          gain_db=c.get("gain_db", -6), pan=c.get("pan", 0.3), reverb=c.get("reverb", 0.1),
+                          sfz=c.get("sfz"), fx=c.get("fx", []))
         parts.append(("x-charleston", inst, hihat_events(song, mod, drows, c)))
     if "crash" in extras:
         c = extras["crash"]
         inst = Instrument(name="Crash (ajoutée)", drum=c.get("note", 49), drum_kit=c.get("drum_kit", 0),
-                          gain_db=c.get("gain_db", -6), pan=c.get("pan", -0.35), reverb=c.get("reverb", 0.25))
+                          gain_db=c.get("gain_db", -6), pan=c.get("pan", -0.35), reverb=c.get("reverb", 0.25),
+                          sfz=c.get("sfz"), fx=c.get("fx", []))
         parts.append(("x-crash", inst, crash_events(song, mod, drows, c)))
     return parts
