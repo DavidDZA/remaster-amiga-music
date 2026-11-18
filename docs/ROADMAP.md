@@ -33,27 +33,18 @@ Pistes : exporter aussi en **Guitar Pro** / **MusicXML** (pour TuxGuitar, MuseSc
 (E5, D5…) au-dessus de la guitare rythmique ; une partition piano simplifiée (niveau débutant) ; batterie fidèle
 (sans les ajouts) sur demande.
 
-## Formats Amiga pas encore lus
+## Musiques à lecteur intégré (TFMX, David Whittaker…)
 
-Après l'import du 18/11/2026 (262 musiques en .mod), il reste 161 fichiers à **lecteur intégré** : la musique est
-un petit programme Amiga, pas une partition standard. Détail dans `in\music\INVENTAIRE.md`.
+Fait le 18/11/2026 : UADE construit dans tools\uade (modifié pour écrire le journal de la puce son et copier les
+samples), 501 morceaux de 44 jeux enregistrés en MP3, et remaster possible (`python -m remaster <fichier>
+--sous-morceau N`), vérifié note pour note sur Dr Mario.
 
-| Format | Fichiers | Jeux |
-|---|---|---|
-| `cust` (lecteur propre au jeu) | 36 | Speedball 2, Rick Dangerous, RoboCop 1-2, Batman, Hybris… |
-| `sjs` (Lemmings) | 25 | Lemmings, Holiday Lemmings |
-| `pap` | 22 | Pang, Ivanhoe |
-| `dw` David Whittaker | 18 | Shadow of the Beast, Xenon 2, Golden Axe, Bubble Bobble… |
-| `mdat` TFMX (Chris Hülsbeck) | 14 | Turrican 3, Jim Power |
-| `rjp` Richard Joseph | 14 | Cannon Fodder 1-2 |
-| `jd`, `chan`, `bd`, `tw`, `dl`, `bss`, `md`, `jcb` | 32 | RoboCop 2, Batman, Rick Dangerous 2, Smash TV… |
-
-Étapes :
-1. **Les écouter** : UADE (émulateur des lecteurs Amiga, libre) les joue tous. Il ne se compile pas avec le gcc
-   MinGW : il faut la partie POSIX de MSYS2 (`pacman -S gcc`), donc installer des paquets dans MSYS2 — à décider
-   avec l'utilisateur. Alternative : un lecteur Windows qui embarque UADE.
-2. **En tirer les notes** (remaster, partitions) : un décodeur par format. Par ordre d'intérêt : TFMX (Turrican 3,
-   Jim Power ; format documenté, lecteurs libres existants), David Whittaker, Richard Joseph.
+À faire :
+- **Partitions** de ces musiques : déduire la grille (tempo, lignes, mesures) des instants des notes — le lecteur
+  avance par trames de 20 ms ; chercher le pas régulier (souvent 3 à 8 trames par ligne) et la mesure (caisse claire).
+- **Fiches d'instruments** : pour chaque jeu, reconnaître les samples (batterie, basse, lead…) comme pour Dr Mario.
+- Les morceaux qui bouclent : couper au premier tour de boucle (détecter la répétition des notes) plutôt qu'à 5 min.
+- Rick Dangerous (`cust.`) : UADE ne le reconnaît pas ; la version alternative est abîmée dans l'archive.
 
 ## Ensuite
 

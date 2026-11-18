@@ -239,9 +239,10 @@ def write_inventory(path: pathlib.Path, inventory):
     lines += ["", "## Formats pas encore lus", ""]
     lines += [f"- {NAMES[k] + ' (`' + k + '.`)' if k in NAMES else '`' + k + '.`'} : {n} fichier{'s' if n > 1 else ''}"
               for k, n in later.most_common()]
-    lines += ["", "Ils sont gardés dans `originaux\\`. Ce sont des musiques à lecteur intégré : il faudra UADE "
-              "(émulateur des lecteurs Amiga) pour les écouter, et un décodeur par format pour en tirer les notes "
-              "(voir docs/ROADMAP.md).", ""]
+    lines += ["", "Ils sont gardés dans `originaux\\`. Ce sont des musiques à lecteur intégré : "
+              "`scripts/render_uade.py` les enregistre en MP3 avec UADE (voir AUDIO-UADE.md), et "
+              "`python -m remaster <fichier> --sous-morceau N` les remasterise (notes lues par UADE, "
+              "remaster/paula.py).", ""]
     path.write_text("\n".join(lines), encoding="utf-8")
 
 

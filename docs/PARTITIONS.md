@@ -38,6 +38,9 @@ rejoue le module tick par tick comme ProTracker ; `remaster/score.py` place chaq
 
 ## Étape 1 : comprendre le module
 
+Les partitions demandent un module à lignes et mesures (ProTracker, Soundtracker, ou converti en .mod). Les musiques
+à lecteur intégré lues par UADE n'en ont pas encore (voir la ROADMAP).
+
 Le module vient souvent d'une archive de jeu : `scripts\import_lha.py` range dans `in\music\<Jeu>\` toutes les
 musiques des archives de `in\lha\` (converties en .mod si besoin) (voir le README). Les résultats d'une musique vont dans `out\<nom>\`.
 

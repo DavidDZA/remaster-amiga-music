@@ -243,10 +243,17 @@ def export_samples(mod: modfile.Module, out_dir: pathlib.Path):
             sf.write(d / f"{s.index:02d} - {safe}.wav", s.as_float(), rate, subtype="PCM_16")
 
 
-def remaster(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, original: bool = True, log=print):
+def remaster(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, original: bool = True, log=print,
+             source=None, name: str | None = None):
+    """source : (Module, Song, WAV d'origine) déjà prêts, pour une musique qui n'est pas un .mod (remaster/paula.py).
+    name : nom des fichiers produits (par défaut celui du fichier de musique)."""
     out_dir.mkdir(parents=True, exist_ok=True)
-    mod = modfile.load(mod_path)
-    song = player.play(mod)
+    stem = name or mod_path.stem
+    if source is None:
+        mod = modfile.load(mod_path)
+        song = player.play(mod)
+    else:
+        mod, song, original_wav = source
     log(f"« {mod.title} » : {mod.channels} voies, {song.duration:.1f} s")
     rts = routes(song, mod, cfg)
     stem_dir = out_dir / "stems"
@@ -263,12 +270,12 @@ def remaster(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, original:
         stems = balance_on_original(stems, rts, song, mod)
     comb = midi.combined(song, [r for r in rts if r[2].part != "D"])
     if comb:
-        comb.save(out_dir / f"{mod_path.stem} (remaster).mid")
+        comb.save(out_dir / f"{stem} (remaster).mid")
     master = cfg.get("master", {})
-    title = cfg.get("title", mod.title or mod_path.stem)
+    title = cfg.get("title", mod.title if source is None and mod.title else stem)
     tags = {"title": title, "artist": cfg.get("artist", ""),
-            "album": cfg.get("album", "Remaster AMIGA Music"), "comment": f"Remaster de {mod_path.name}"}
-    made = [_write_mix(stems, master, out_dir, f"{mod_path.stem} (remaster fidèle).mp3",
+            "album": cfg.get("album", "Remaster AMIGA Music"), "comment": f"Remaster de {stem}"}
+    made = [_write_mix(stems, master, out_dir, f"{stem} (remaster fidèle).mp3",
                        {**tags, "title": f"{title} (fidèle)"})]
     if cfg.get("extras"):
         drum_samples = {s for s, _, inst, _ in rts if inst.drum is not None}
@@ -282,10 +289,12 @@ def remaster(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, original:
             g = float(np.sqrt(hit / own)) if hit and own else 1.0  # un coup ajouté = un coup de la batterie d'origine
             extra_stems.append((a, inst, 0, g))
             log(f"  piste {name} : {inst.name}")
-        made.append(_write_mix(extra_stems, master, out_dir, f"{mod_path.stem} (remaster enrichi).mp3",
+        made.append(_write_mix(extra_stems, master, out_dir, f"{stem} (remaster enrichi).mp3",
                                {**tags, "title": f"{title} (enrichi)"}))
-    if original:
+    if original and source is None:
         render_original(mod_path, out_dir, tags)
+    elif original:
+        to_mp3(original_wav, out_dir / f"{stem} (original).mp3", {**tags, "title": f"{title} (original Amiga)"})
     export_samples(mod, out_dir)
     for m in made:
         log(f"→ {m}")

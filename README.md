@@ -151,12 +151,38 @@ l'original, à 0,4 s près).
 
 Bilan du 18/11/2026, 78 archives : **262 musiques en .mod dans 39 jeux** (175 d'origine, dont 23 Soundtracker ;
 87 converties : OctaMED, The Player 4, SoundFX, Digital Illusions, Game Music Creator, Chiptracker, XM).
-**161 fichiers pas encore lus**, gardés dans `originaux\` : formats à lecteur intégré (TFMX, David Whittaker,
-Richard Joseph, `cust`…), voir la [ROADMAP](docs/ROADMAP.md). 1 fichier abîmé dans son archive (Rick Dangerous,
+**161 fichiers à lecteur intégré** (TFMX, David Whittaker, Richard Joseph, `cust`…), gardés dans `originaux\` :
+ils s'écoutent et se remasterisent avec UADE (section suivante). 1 fichier abîmé dans son archive (Rick Dangerous,
 version alternative).
 
 `in\lha\` et `in\music\` ne vont pas dans git (musiques sous droits, dépôt public) ; seul *Dr Mario* y est,
 pour les tests.
+
+## Les musiques à lecteur intégré (TFMX, David Whittaker…) : UADE
+
+Beaucoup de musiques de jeux ne sont pas des partitions mais des programmes Amiga (TFMX de Chris Hülsbeck, David
+Whittaker, Richard Joseph, lecteurs propres aux jeux…). **UADE** (logiciel libre) émule l'Amiga et fait tourner leur
+vrai lecteur. Il est construit dans `tools\uade\` (il faut la partie POSIX de MSYS2 : `pacman -S gcc make pkgconf`) :
+
+```sh
+.venv\Scripts\python scripts\build_uade.py                     # une fois
+.venv\Scripts\python scripts\render_uade.py                    # tous les originaux pas encore lus → MP3
+.venv\Scripts\python -m remaster "in\music\Turrican 3\originaux\mdat.world_1" --sous-morceau 2
+```
+
+- **Écouter** (`scripts/render_uade.py`) : chaque sous-morceau devient `out\<Jeu> - <titre> (n)\... (original).mp3`
+  (un dossier par musique). Fin : quand le lecteur l'annonce, après 5 s de silence, ou à 5 min (beaucoup bouclent).
+  Les bruitages muets ou de moins de 3 s sont écartés. 18/11/2026 : **501 morceaux, 44 jeux, ≈ 1 000 min** (en
+  20 min) ; liste dans `in\music\AUDIO-UADE.md`.
+- **Remasteriser** (`remaster/paula.py`) : notre UADE est légèrement modifié (`scripts/build_uade.py`, `patch_uade`) :
+  il écrit le **journal de la puce son Paula** (période, volume, adresse et longueur du sample de chaque voie ; le
+  démarrage du DMA d'une voie = une note) et **copie chaque sample joué** depuis la mémoire Amiga. On en refait les
+  ticks (20 ms) et les samples, sous la même forme qu'un .mod rejoué : la fiche d'instruments, le remaster, l'analyse
+  des samples marchent tels quels. Vérifié sur *Dr Mario* joué par UADE : **4 386 notes, toutes au même instant et à
+  la même hauteur** que notre lecteur ProTracker, et les 7 samples retrouvés à l'identique.
+  Une fiche `songs\<Jeu> - <titre> (n).json` est créée au premier passage (un piano pour tout) : à compléter.
+- Pas encore de **partitions** pour ces musiques : elles n'ont pas de grille de lignes et de mesures (à déduire des
+  notes, voir la ROADMAP).
 
 ## Partitions et piano
 
@@ -225,6 +251,7 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
 | mido, numpy, scipy, soundfile | MIDI, calcul, WAV | libres |
 | [7-Zip](https://www.7-zip.org/) (déjà installé sur le PC, ou dans `tools\7zip\`) | lecture des archives .lha | LGPL |
 | [libxmp](https://github.com/libxmp/libxmp) 4.6.3 (compilée par `scripts\build_libxmp.py`) | lecture et conversion en .mod d'autres formats Amiga | MIT |
+| [UADE](https://gitlab.com/uade-music-player/uade) 3.05 (modifié, compilé par `scripts\build_uade.py` avec le gcc POSIX de MSYS2) | joue les musiques Amiga à lecteur intégré ; journal de la puce son pour en tirer les notes | GPL-2.0 |
 | [LilyPond](https://lilypond.org/) 2.24.4 | gravure des partitions et tablatures (PDF) | GPL-3.0 |
 | [Salamander Grand Piano](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) V3 (Alexander Holm, SF2 FreePats) | piano de l'arrangement (≈ 310 Mo) | CC-BY 3.0 |
 
