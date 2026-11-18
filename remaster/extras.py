@@ -43,19 +43,24 @@ def crash_rows(song: Song, mod: Module, drows: set[int]) -> list[int]:
     return out
 
 
-def hihat_events(song: Song, mod: Module, drows: set[int], cfg: dict) -> list:
-    note = cfg.get("note", 42)
+def hihat_rows(song: Song, mod: Module, drows: set[int], cfg: dict) -> list[tuple[int, int]]:
+    """(indice de ligne, force de frappe) des coups de charleston ajoutés."""
     every = cfg.get("every_rows", 2)
     accent, soft = cfg.get("velocity", [95, 70])
     beat = cfg.get("beat_rows", 4)
     active = _active_patterns(song, drows)
     skip = set(crash_rows(song, mod, drows)) if cfg.get("skip_on_crash", True) else set()
+    return [(i, accent if row % beat == 0 else soft) for i, (order, row, _t) in enumerate(song.rows)
+            if order in active and row % every == 0 and i not in skip]
+
+
+def hihat_events(song: Song, mod: Module, drows: set[int], cfg: dict) -> list:
+    note = cfg.get("note", 42)
     ev = []
-    for i, (order, row, t) in enumerate(song.rows):
-        if order in active and row % every == 0 and i not in skip:
-            vel = accent if row % beat == 0 else soft
-            ev.append((t, mido.Message("note_on", channel=9, note=note, velocity=vel)))
-            ev.append((t + 0.05, mido.Message("note_off", channel=9, note=note, velocity=0)))
+    for i, vel in hihat_rows(song, mod, drows, cfg):
+        t = song.rows[i][2]
+        ev.append((t, mido.Message("note_on", channel=9, note=note, velocity=vel)))
+        ev.append((t + 0.05, mido.Message("note_off", channel=9, note=note, velocity=0)))
     return ev
 
 

@@ -24,6 +24,15 @@ Principe :
 4. Les VST3 restent dans `tools/` si l'installeur le permet (dossier personnalisé), sinon dans
    `C:\Program Files\Common Files\VST3` (le chargeur les cherche aux deux endroits).
 
+## Fait le 18/11/2026 : partitions et piano
+
+Tablatures (2 guitares, basse), batterie de la version enrichie, arrangement pour piano seul (MP3 + PDF). À écouter
+et relire par l'utilisateur : doigtés, choix des tierces au piano, son du piano (rien n'a été validé à l'oreille).
+
+Pistes : exporter aussi en **Guitar Pro** / **MusicXML** (pour TuxGuitar, MuseScore, Songsterr) ; noms d'accords
+(E5, D5…) au-dessus de la guitare rythmique ; une partition piano simplifiée (niveau débutant) ; batterie fidèle
+(sans les ajouts) sur demande.
+
 ## Ensuite
 
 - **Écoute rapide** : un extrait de 20 s rendu en quelques secondes, pour comparer deux réglages.

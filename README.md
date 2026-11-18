@@ -4,6 +4,8 @@ Un module Amiga (`.mod` ProTracker) rejoué avec des **instruments modernes**, p
 Tout est gratuit et tourne sur le PC, sans rien installer dans Windows : les outils sont dans le dossier du projet.
 
 Prototype en ligne de commande (17/11/2026), avant une éventuelle vraie appli PC.
+Depuis le 18/11/2026, il écrit aussi les **tablatures** (guitares, basse), la **partition de batterie** et un
+**arrangement pour piano seul** (MP3 + partition) : voir [Partitions et piano](#partitions-et-piano).
 
 ## Le principe
 
@@ -45,7 +47,7 @@ On peut donc garder la partition et **changer les instruments** :
 ```sh
 python -m venv .venv
 .venv\Scripts\python -m pip install -r requirements.txt
-.venv\Scripts\python scripts\setup_tools.py        # FluidSynth, OpenMPT, 2 SoundFonts (≈ 80 Mo, une fois)
+.venv\Scripts\python scripts\setup_tools.py        # FluidSynth, OpenMPT, SoundFonts, LilyPond, piano (≈ 430 Mo, une fois)
 .venv\Scripts\python -m remaster "Dr Mario.mod"
 ```
 
@@ -59,6 +61,8 @@ Dans `out\Dr Mario\` :
 | `Dr Mario (remaster).mid` | la partition en MIDI, pour la reprendre dans un logiciel de musique |
 | `samples\` | les samples d'origine en WAV, pour les écouter |
 | `stems\` | chaque piste séparée (FLAC), avant les derniers réglages d'égaliseur ; sert aussi de **cache** |
+| `Dr Mario (piano).mp3`, `.mid` | l'arrangement pour piano seul (`python -m remaster.piano`) |
+| `partitions\` | tablatures, batterie et piano en PDF, avec leur source LilyPond (`.ly`) |
 
 Le premier rendu prend une dizaine de minutes (les amplis NAM). Ensuite, seules les pistes dont les notes,
 l'instrument ou l'ampli changent sont refaites : changer un volume, un panoramique, une réverbération ou un égaliseur
@@ -112,6 +116,41 @@ Les noms des samples sont des messages (« composed by betrayer », « greets to
 | 4 | vide | (sert à couper une voie) |
 | ajouts | charleston, crashs (version enrichie) | *Big Rusty Drums* |
 
+## Partitions et piano
+
+```sh
+.venv\Scripts\python -m remaster.partitions "Dr Mario.mod"   # tablatures + batterie (PDF), quelques secondes
+.venv\Scripts\python -m remaster.piano "Dr Mario.mod"        # piano : PDF + MP3 + MIDI, moins d'une minute
+.venv\Scripts\python -m remaster.piano "Dr Mario.mod" --sans-mp3
+```
+
+Les partitions partent des notes du remaster (et non du son) : on sait exactement ce que joue chaque voie, à la
+double croche près. Une ligne de pattern = une double croche, 16 lignes = une mesure à 4/4 ; le tempo vient de la
+vitesse du module (*Dr Mario* : ♩ = 150, 125 et 107). Chaque partie commence par une lettre encadrée avec le temps
+dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond** (`remaster/lily.py`).
+
+| Fichier (`out\Dr Mario\partitions\`) | Contenu |
+|---|---|
+| `Guitare 1 (lead).pdf` | portée + tablature : la ligne de lead la plus haute à chaque mesure, bends (b. ½, b. 1, lâcher), glissandos, vibrato |
+| `Guitare 2 (rythmique).pdf` | power chords et quintes étouffées (P.M. - - -, accords ouverts accentués), plus les autres lignes de lead |
+| `Basse.pdf` | portée + tablature 4 cordes |
+| `Batterie (version enrichie).pdf` | grosse caisse, caisse claire, plus le charleston et les crashs ajoutés |
+| `Piano.pdf` | l'arrangement pour piano (deux portées) |
+
+- **Tablatures** (`remaster/partitions.py`, `remaster/fretboard.py`) : accordage standard (guitare mi-la-ré-sol-si-mi,
+  basse mi-la-ré-sol). Pour chaque note ou accord, toutes les positions jouables sont essayées (une note par corde,
+  4 cases d'écart au plus, cordes voisines) ; la suite retenue bouge le moins la main et reste basse sur le manche.
+  Une note trop grave pour l'instrument monte d'une octave (40 pour la guitare rythmique : le module descend au do
+  grave) ; un accord injouable (deux voies du module qui jouent des accords différents) perd des notes (24 sur 1 599).
+- **Qui joue quoi** : section `partitions` de la fiche (`songs/Dr Mario.json`) : samples de chaque musicien ; une
+  partie `"lead": true` prend, à chaque mesure, la voie du module qui joue le plus haut.
+- **Piano** (`remaster/piano.py`, section `piano` de la fiche) : main droite = mélodie du lead (hampes en haut) et
+  accords de trois sons dessous ; les guitares jouant des quintes sans tierce, la tierce vient de la tonalité du
+  passage (profils de Krumhansl) et des notes de la mélodie. Main gauche = le riff étouffé une octave plus bas, piqué,
+  ou la basse en octaves. Pédale changée à chaque accord, sauf dans les riffs. Son : **Salamander Grand Piano V3**
+  (Yamaha C5, 16 nuances, SoundFont jouée par FluidSynth) dans la réverbération **Dragonfly Hall**, −16 LUFS.
+  Le MP3 garde le tempo du module : il se cale sur l'original et les remasters.
+
 ## Contrôles
 
 ```sh
@@ -140,6 +179,8 @@ Les noms des samples sont des messages (« composed by betrayer », « greets to
 | [Big Rusty Drums](https://github.com/sfzinstruments/karoryfer.big-rusty-drums) (Karoryfer) | batterie | CC0 |
 | [Pedalboard](https://github.com/spotify/pedalboard) | réverbération, compresseur, limiteur | GPL |
 | mido, numpy, scipy, soundfile | MIDI, calcul, WAV | libres |
+| [LilyPond](https://lilypond.org/) 2.24.4 | gravure des partitions et tablatures (PDF) | GPL-3.0 |
+| [Salamander Grand Piano](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) V3 (Alexander Holm, SF2 FreePats) | piano de l'arrangement (≈ 310 Mo) | CC-BY 3.0 |
 
 `tools\`, `.venv\` et `out\` ne sont pas dans git (lourds ou recréés).
 

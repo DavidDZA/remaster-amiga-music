@@ -432,5 +432,52 @@
       },
       "choke": true
     }
+  },
+  "partitions": {
+    "Guitare 1 (lead)": {
+      "instrument": "guitare",
+      "samples": [
+        5
+      ],
+      "lead": true,
+      "comment": "la ligne de lead la plus haute à chaque mesure (sample 5)"
+    },
+    "Guitare 2 (rythmique)": {
+      "instrument": "guitare",
+      "samples": [
+        5,
+        11,
+        12
+      ],
+      "comment": "power chords et quintes étouffées, plus les autres lignes de lead"
+    },
+    "Basse": {
+      "instrument": "basse",
+      "samples": [
+        3
+      ]
+    },
+    "Batterie (version enrichie)": {
+      "instrument": "batterie",
+      "samples": [
+        1,
+        2
+      ],
+      "extras": true
+    }
+  },
+  "piano": {
+    "melody": "Guitare 1 (lead)",
+    "chords": [
+      12,
+      10
+    ],
+    "riff": [
+      11
+    ],
+    "bass": [
+      3
+    ],
+    "comment": "harmonie : power chords (12) puis chœur (10) ; riff : guitare étouffée (11) ; basse (3)"
   }
 }

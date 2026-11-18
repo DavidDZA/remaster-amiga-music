@@ -1,5 +1,5 @@
 """Télécharge les outils gratuits dans tools/ (ignoré par git). Relancer sans risque : ce qui est déjà là est gardé."""
-import pathlib, urllib.request, zipfile, shutil, sys
+import pathlib, urllib.request, zipfile, tarfile, shutil, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TOOLS = ROOT / "tools"
@@ -16,15 +16,21 @@ DOWNLOADS = [
      "https://raw.githubusercontent.com/mrbumpy409/GeneralUser-GS/main/GeneralUser-GS.sf2"),
     ("soundfonts", "MuseScore_General.sf3",
      "https://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/MuseScore_General.sf3"),
+    ("lilypond", "lilypond.zip",  # gravure des partitions et tablatures (GPL)
+     "https://gitlab.com/lilypond/lilypond/-/releases/v2.24.4/downloads/lilypond-2.24.4-mingw-x86_64.zip"),
+    ("piano", "salamander.tar.xz",  # Salamander Grand Piano V3, Yamaha C5, en SF2 (CC-BY 3.0, Alexander Holm) : 310 Mo
+     "https://freepats.zenvoid.org/Piano/SalamanderGrandPiano/SalamanderGrandPiano-SF2-V3+20200602.tar.xz"),
 ]
+
+ARCHIVES = (".zip", ".xz")
 
 def main():
     for folder, name, url in DOWNLOADS:
         dest_dir = TOOLS / folder
         dest_dir.mkdir(parents=True, exist_ok=True)
         dest = dest_dir / name
-        if dest.suffix == ".zip":
-            if any(dest_dir.rglob("*.exe")) or any(dest_dir.rglob("*.vst3")):
+        if dest.suffix in ARCHIVES:
+            if any(f.is_file() and not f.name.endswith(".part") for f in dest_dir.rglob("*")):
                 print("déjà là :", folder); continue
         elif dest.exists():
             print("déjà là :", name); continue
@@ -39,6 +45,10 @@ def main():
                     if m.startswith(("/", "\\")) or ".." in pathlib.PurePath(m).parts:
                         sys.exit(f"archive suspecte : {m}")
                 z.extractall(dest_dir)
+            dest.unlink()
+        elif dest.suffix == ".xz":
+            with tarfile.open(dest) as t:
+                t.extractall(dest_dir, filter="data")  # refuse les chemins qui sortent du dossier
             dest.unlink()
     print("ok")
 
