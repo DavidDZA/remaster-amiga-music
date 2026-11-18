@@ -5,7 +5,7 @@ import pytest
 from remaster import lily, fretboard, score, partitions, piano, render
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-MOD = ROOT / "in" / "mod" / "Dr Mario" / "Dr Mario.mod"
+MOD = ROOT / "in" / "music" / "Dr Mario" / "Dr Mario.mod"
 CFG = render.load_config(ROOT / "songs" / "Dr Mario.json")
 ROWS = {"16": 1, "8": 2, "8.": 3, "4": 4, "4.": 6, "2": 8, "2.": 12, "1": 16}
 

@@ -33,20 +33,33 @@ Pistes : exporter aussi en **Guitar Pro** / **MusicXML** (pour TuxGuitar, MuseSc
 (E5, D5…) au-dessus de la guitare rythmique ; une partition piano simplifiée (niveau débutant) ; batterie fidèle
 (sans les ajouts) sur demande.
 
-## Autres formats de musique Amiga
+## Formats Amiga pas encore lus
 
-L'import des archives .lha (18/11/2026) a laissé de côté 50 jeux sans module ProTracker. Fichiers trouvés, par
-format : `smp`/`rjp` Richard Joseph (55), `cust` lecteurs maison (36), `med` OctaMED (29), `sjs` (25), `pap` (22),
-`dw` David Whittaker (18), `p4x` The Player 4 (17), `mdat`/`smpl` TFMX (28), `jd` (12)…
-Pistes : convertir en .mod ce que sait lire OpenMPT (OctaMED, The Player 4, XM…) ; pour les formats à lecteur
-intégré (TFMX, Richard Joseph, David Whittaker, `cust`), passer par UADE pour en tirer les notes.
+Après l'import du 18/11/2026 (262 musiques en .mod), il reste 161 fichiers à **lecteur intégré** : la musique est
+un petit programme Amiga, pas une partition standard. Détail dans `in\music\INVENTAIRE.md`.
+
+| Format | Fichiers | Jeux |
+|---|---|---|
+| `cust` (lecteur propre au jeu) | 36 | Speedball 2, Rick Dangerous, RoboCop 1-2, Batman, Hybris… |
+| `sjs` (Lemmings) | 25 | Lemmings, Holiday Lemmings |
+| `pap` | 22 | Pang, Ivanhoe |
+| `dw` David Whittaker | 18 | Shadow of the Beast, Xenon 2, Golden Axe, Bubble Bobble… |
+| `mdat` TFMX (Chris Hülsbeck) | 14 | Turrican 3, Jim Power |
+| `rjp` Richard Joseph | 14 | Cannon Fodder 1-2 |
+| `jd`, `chan`, `bd`, `tw`, `dl`, `bss`, `md`, `jcb` | 32 | RoboCop 2, Batman, Rick Dangerous 2, Smash TV… |
+
+Étapes :
+1. **Les écouter** : UADE (émulateur des lecteurs Amiga, libre) les joue tous. Il ne se compile pas avec le gcc
+   MinGW : il faut la partie POSIX de MSYS2 (`pacman -S gcc`), donc installer des paquets dans MSYS2 — à décider
+   avec l'utilisateur. Alternative : un lecteur Windows qui embarque UADE.
+2. **En tirer les notes** (remaster, partitions) : un décodeur par format. Par ordre d'intérêt : TFMX (Turrican 3,
+   Jim Power ; format documenté, lecteurs libres existants), David Whittaker, Richard Joseph.
 
 ## Ensuite
 
 - **Écoute rapide** : un extrait de 20 s rendu en quelques secondes, pour comparer deux réglages.
 - **Appli PC** (voir `IDEES-APPLIS.md`, idée 3) : liste des samples, « Écouter l'original », choix de l'instrument
   (liste déroulante), « Écouter le remplaçant », puis « Créer le MP3 ».
-- **Autres formats** : `.xm`, `.s3m`, `.it`.
 - **Batterie enrichie plus variée** : ride, toms de transition, ouverture du charleston.
 - **Lecteur SFZ** : filtres, LFO, notes de relâchement ; banques qui ne passent pas encore (DRSKit de DrumGizmo :
   variables `$v61h` non résolues).

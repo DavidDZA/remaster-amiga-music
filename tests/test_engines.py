@@ -144,7 +144,7 @@ def test_sfz_etouffement(tmp_path):
 
 def test_doublons_du_module():
     from remaster import modfile, player, render
-    mod = modfile.load(pathlib.Path(__file__).resolve().parent.parent / "in" / "mod" / "Dr Mario" / "Dr Mario.mod")
+    mod = modfile.load(pathlib.Path(__file__).resolve().parent.parent / "in" / "music" / "Dr Mario" / "Dr Mario.mod")
     song = player.play(mod)
     d = render.duplicates(song, 12, 2)   # voie 3 : souvent les mêmes accords que la voie 2
     assert 150 < len(d) < 300

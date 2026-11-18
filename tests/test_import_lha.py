@@ -22,6 +22,6 @@ def test_noms_de_fichiers_windows():
 
 
 def test_module_lisible():
-    data = (ROOT / "in" / "mod" / "Dr Mario" / "Dr Mario.mod").read_bytes()
+    data = (ROOT / "in" / "music" / "Dr Mario" / "Dr Mario.mod").read_bytes()
     assert imp.readable(data) is None
     assert imp.readable(b"\0" * 2000) is not None

@@ -7,7 +7,7 @@ import pytest
 from remaster import modfile, player, midi, analyze, extras
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-MOD = ROOT / "in" / "mod" / "Dr Mario" / "Dr Mario.mod"
+MOD = ROOT / "in" / "music" / "Dr Mario" / "Dr Mario.mod"
 
 
 @pytest.fixture(scope="module")

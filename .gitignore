@@ -8,5 +8,7 @@ out/
 
 # archives de jeux et modules importés (musiques sous droits) : seulement en local
 in/lha/
-in/mod/*
-!in/mod/Dr Mario/
+in/music/*
+!in/music/Dr Mario/
+in/music/Dr Mario/originaux/
+in/music/INVENTAIRE.md

@@ -44,14 +44,14 @@ On peut donc garder la partition et **changer les instruments** :
 
 ## Utilisation
 
-Chaque module à traiter va dans son dossier `in\mod\<nom>\` (ex. `in\mod\Dr Mario\Dr Mario.mod`) ; les résultats sortent dans
+Chaque module à traiter va dans son dossier `in\music\<nom>\` (ex. `in\music\Dr Mario\Dr Mario.mod`) ; les résultats sortent dans
 `out\<nom>\` et la fiche d'instruments est `songs\<nom>.json`.
 
 ```sh
 python -m venv .venv
 .venv\Scripts\python -m pip install -r requirements.txt
 .venv\Scripts\python scripts\setup_tools.py        # FluidSynth, OpenMPT, SoundFonts, LilyPond, piano (≈ 430 Mo, une fois)
-.venv\Scripts\python -m remaster "in\mod\Dr Mario\Dr Mario.mod"
+.venv\Scripts\python -m remaster "in\music\Dr Mario\Dr Mario.mod"
 ```
 
 Dans `out\Dr Mario\` :
@@ -119,35 +119,53 @@ Les noms des samples sont des messages (« composed by betrayer », « greets to
 | 4 | vide | (sert à couper une voie) |
 | ajouts | charleston, crashs (version enrichie) | *Big Rusty Drums* |
 
-## Récupérer les modules des archives de jeux (.lha)
+## Récupérer la musique des archives de jeux (.lha)
 
 Les archives de musiques de jeux Amiga (`in\lha\*.lha`, format « UnExoticA ») contiennent chacune les musiques
-d'un jeu, avec un préfixe qui donne le format : `mod.` = ProTracker ou Soundtracker (ce que lit le projet),
-`med.` OctaMED, `mdat.` TFMX, `dw.` David Whittaker, `rjp.` Richard Joseph, `cust.` lecteur propre au jeu…
+d'un jeu, avec un préfixe qui donne le format : `mod.` ProTracker, `med.` OctaMED, `p4x.` The Player 4, `sfx.`
+SoundFX, `gmc.` Game Music Creator, `di.` Digital Illusions, `mdat.` TFMX, `dw.` David Whittaker, `rjp.` Richard
+Joseph, `cust.` lecteur propre au jeu… (`smp.`, `smpl.` : les samples qui vont avec).
 
 ```sh
+.venv\Scripts\python scripts\build_libxmp.py      # une fois : compile libxmp (il faut le gcc de MSYS2)
 .venv\Scripts\python scripts\import_lha.py --essai   # ce qui serait fait
-.venv\Scripts\python scripts\import_lha.py           # range les modules dans in\mod\<Jeu>\
+.venv\Scripts\python scripts\import_lha.py           # tout ranger dans in\music\<Jeu>\
 ```
 
-- Un module seul : `in\mod\<Jeu>\<Jeu>.mod` ; plusieurs : `<Jeu> - <titre>.mod`. Le nom sert aussi pour la fiche
-  `songs\<nom>.json` et le dossier de sortie `out\<nom>\` (un dossier par musique).
-- Chaque fichier est lu directement dans l'archive (7-Zip, sans extraction sur le disque), puis gardé seulement s'il
-  se lit **et se joue** avec le lecteur du projet. Un module déjà présent (mêmes octets) n'est pas recopié.
-- Les modules **Soundtracker à 15 samples** (l'ancêtre de ProTracker, sans signature « M.K. ») sont lus aussi
-  (`modfile.is_soundtracker`) : 23 des modules importés sont dans ce format.
-- 18/11/2026, 78 archives : **175 modules** dans 26 jeux ; 8 fichiers `mod.` refusés (Warzone, Wolfchild : un autre
-  format malgré le nom) ; 50 jeux n'ont que d'autres formats (voir [ROADMAP](docs/ROADMAP.md)).
-- `in\lha\` et les modules importés ne vont pas dans git (musiques sous droits) ; seul *Dr Mario* y est, pour les tests.
+Pour chaque jeu, `in\music\<Jeu>\` contient :
+- **les musiques en .mod** (ce que lit le projet) : `<Jeu>.mod` s'il n'y en a qu'une, sinon `<Jeu> - <titre>.mod`
+  (le nom sert aussi pour la fiche `songs\<nom>.json` et le dossier de sortie `out\<nom>\`, un par musique).
+  Un fichier déjà en ProTracker ou en **Soundtracker 15 samples** est gardé tel quel ; un autre format est
+  **converti** avec [libxmp](https://github.com/libxmp/libxmp) (`remaster/xmpconv.py`) ;
+- **`originaux\`** : tous les fichiers de l'archive, tels quels, quel que soit le format ;
+- et `in\music\INVENTAIRE.md` fait le point jeu par jeu.
+
+La conversion (`remaster/xmpconv.py`) : libxmp lit le fichier (plus de 90 formats, dont beaucoup de modules
+« compactés » des jeux), on relit ses motifs, samples et effets et on les réécrit en .mod. Les hauteurs suivent la
+table de ProTracker (finetune compris) ; les motifs de longueur libre (OctaMED) sont coupés par 64 lignes ; le tempo
+est **relevé en faisant jouer la musique par libxmp**, puis réécrit en commandes Fxx (OctaMED compte le tempo dans
+une autre unité : sans ça, ses musiques duraient 2 à 7 fois trop longtemps). Contrôles : un .mod de *Dr Mario*
+repasse à l'identique (notes, samples, durée) ; chaque conversion doit se jouer avec le lecteur du projet et durer
+comme chez libxmp à 10 % près ; vérifié aussi avec OpenMPT sur des OctaMED et des SoundFX (même durée que
+l'original, à 0,4 s près).
+
+Bilan du 18/11/2026, 78 archives : **262 musiques en .mod dans 39 jeux** (175 d'origine, dont 23 Soundtracker ;
+87 converties : OctaMED, The Player 4, SoundFX, Digital Illusions, Game Music Creator, Chiptracker, XM).
+**161 fichiers pas encore lus**, gardés dans `originaux\` : formats à lecteur intégré (TFMX, David Whittaker,
+Richard Joseph, `cust`…), voir la [ROADMAP](docs/ROADMAP.md). 1 fichier abîmé dans son archive (Rick Dangerous,
+version alternative).
+
+`in\lha\` et `in\music\` ne vont pas dans git (musiques sous droits, dépôt public) ; seul *Dr Mario* y est,
+pour les tests.
 
 ## Partitions et piano
 
 La méthode complète, pour refaire la même chose avec un autre module : [docs/PARTITIONS.md](docs/PARTITIONS.md).
 
 ```sh
-.venv\Scripts\python -m remaster.partitions "in\mod\Dr Mario\Dr Mario.mod"   # tablatures + batterie (PDF), quelques secondes
-.venv\Scripts\python -m remaster.piano "in\mod\Dr Mario\Dr Mario.mod"        # piano : PDF + MP3 + MIDI, moins d'une minute
-.venv\Scripts\python -m remaster.piano "in\mod\Dr Mario\Dr Mario.mod" --sans-mp3
+.venv\Scripts\python -m remaster.partitions "in\music\Dr Mario\Dr Mario.mod"   # tablatures + batterie (PDF), quelques secondes
+.venv\Scripts\python -m remaster.piano "in\music\Dr Mario\Dr Mario.mod"        # piano : PDF + MP3 + MIDI, moins d'une minute
+.venv\Scripts\python -m remaster.piano "in\music\Dr Mario\Dr Mario.mod" --sans-mp3
 ```
 
 Les partitions partent des notes du remaster (et non du son) : on sait exactement ce que joue chaque voie, à la
@@ -181,7 +199,7 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
 
 ```sh
 .venv\Scripts\python -m pytest              # tests : lecture, durée, hauteurs, bends, accords, ajouts de batterie
-.venv\Scripts\python scripts\check_stems.py "in\mod\Dr Mario\Dr Mario.mod"   # chaque piste comparée au sample d'origine
+.venv\Scripts\python scripts\check_stems.py "in\music\Dr Mario\Dr Mario.mod"   # chaque piste comparée au sample d'origine
 ```
 
 `check_stems.py` rejoue chaque sample d'origine comme l'Amiga et le compare à son remplaçant : décalage de hauteur
@@ -206,6 +224,7 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
 | [Pedalboard](https://github.com/spotify/pedalboard) | réverbération, compresseur, limiteur | GPL |
 | mido, numpy, scipy, soundfile | MIDI, calcul, WAV | libres |
 | [7-Zip](https://www.7-zip.org/) (déjà installé sur le PC, ou dans `tools\7zip\`) | lecture des archives .lha | LGPL |
+| [libxmp](https://github.com/libxmp/libxmp) 4.6.3 (compilée par `scripts\build_libxmp.py`) | lecture et conversion en .mod d'autres formats Amiga | MIT |
 | [LilyPond](https://lilypond.org/) 2.24.4 | gravure des partitions et tablatures (PDF) | GPL-3.0 |
 | [Salamander Grand Piano](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) V3 (Alexander Holm, SF2 FreePats) | piano de l'arrangement (≈ 310 Mo) | CC-BY 3.0 |
 

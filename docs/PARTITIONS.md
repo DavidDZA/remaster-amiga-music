@@ -7,11 +7,11 @@ pour piano seul de *Dr Mario*. Ce guide sert à refaire la même chose pour un a
 
 ```sh
 .venv\Scripts\python scripts\setup_tools.py                       # une fois : LilyPond et le piano dans tools\
-.venv\Scripts\python scripts\dump_patterns.py "in\mod\morceau\morceau.mod"        # 1. comprendre le module
+.venv\Scripts\python scripts\dump_patterns.py "in\music\morceau\morceau.mod"        # 1. comprendre le module
 #                                                                    2. compléter songs\morceau.json
-.venv\Scripts\python -m remaster "in\mod\morceau\morceau.mod"                     # 3. le remaster (les partitions en suivent les notes)
-.venv\Scripts\python -m remaster.partitions "in\mod\morceau\morceau.mod"          # 4. tablatures + batterie (PDF)
-.venv\Scripts\python -m remaster.piano "in\mod\morceau\morceau.mod"               # 5. piano : PDF + MP3 + MIDI
+.venv\Scripts\python -m remaster "in\music\morceau\morceau.mod"                     # 3. le remaster (les partitions en suivent les notes)
+.venv\Scripts\python -m remaster.partitions "in\music\morceau\morceau.mod"          # 4. tablatures + batterie (PDF)
+.venv\Scripts\python -m remaster.piano "in\music\morceau\morceau.mod"               # 5. piano : PDF + MP3 + MIDI
 .venv\Scripts\python scripts\preview_pages.py "out\morceau\partitions"   # 6. relire les pages en images
 .venv\Scripts\python -m pytest                                     # 7. tests
 ```
@@ -38,10 +38,10 @@ rejoue le module tick par tick comme ProTracker ; `remaster/score.py` place chaq
 
 ## Étape 1 : comprendre le module
 
-Le module vient souvent d'une archive de jeu : `scripts\import_lha.py` range dans `in\mod\<Jeu>\` tous les
-modules lisibles des archives de `in\lha\` (voir le README). Les résultats d'une musique vont dans `out\<nom>\`.
+Le module vient souvent d'une archive de jeu : `scripts\import_lha.py` range dans `in\music\<Jeu>\` toutes les
+musiques des archives de `in\lha\` (converties en .mod si besoin) (voir le README). Les résultats d'une musique vont dans `out\<nom>\`.
 
-`scripts/dump_patterns.py "in\mod\morceau\morceau.mod"` affiche les samples (durée, note au C-2) et, pour chaque pattern, quels
+`scripts/dump_patterns.py "in\music\morceau\morceau.mod"` affiche les samples (durée, note au C-2) et, pour chaque pattern, quels
 samples jouent sur quelles voies et quels effets. Avec des numéros de patterns, il affiche le détail comme un tracker.
 
 Ce qu'on a appris sur *Dr Mario* (à chercher de la même façon ailleurs) :

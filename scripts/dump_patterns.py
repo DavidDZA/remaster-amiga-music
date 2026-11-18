@@ -1,7 +1,7 @@
 """Montre un module comme dans un tracker, pour comprendre qui joue quoi avant d'écrire la fiche.
 
-    .venv\\Scripts\\python scripts\\dump_patterns.py "in\\mod\\Dr Mario\\Dr Mario.mod"           # résumé : samples et voies par pattern
-    .venv\\Scripts\\python scripts\\dump_patterns.py "in\\mod\\Dr Mario\\Dr Mario.mod" 4 13       # le détail des patterns 4 et 13
+    .venv\\Scripts\\python scripts\\dump_patterns.py "in\\music\\Dr Mario\\Dr Mario.mod"           # résumé : samples et voies par pattern
+    .venv\\Scripts\\python scripts\\dump_patterns.py "in\\music\\Dr Mario\\Dr Mario.mod" 4 13       # le détail des patterns 4 et 13
 
 Une case : note (C-2…), n° de sample, effet (1xx glissando vers le haut, 2xx vers le bas, Cxx volume, Fxx vitesse).
 """
