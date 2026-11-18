@@ -49,3 +49,16 @@ def test_grille_et_premier_temps():
     # la note longue tombe sur un premier temps : ligne multiple de 16
     t_long = 20 * 0.02 + info["decalage_s"]
     assert round(t_long / info["ligne_s"]) % 16 == 0
+
+
+def test_roles_de_dr_mario():
+    import pathlib
+    from remaster import modfile, player
+    mod = modfile.load(pathlib.Path(__file__).resolve().parent.parent / "in" / "music" / "Dr Mario" / "Dr Mario.mod")
+    r = roles.guess(mod, player.play(mod))
+    assert r[1] == r[2] == "batterie"           # grosse caisse, caisse claire
+    assert r[3] == "basse"
+    assert {r[5], r[11], r[12]} == {"mélodie"}  # lead, guitares
+    cfg = roles.piano_config(mod, player.play(mod), "Dr Mario")
+    assert cfg["piano"]["bass"] == [3] and 3 in cfg["piano"]["harmony"] and 1 not in cfg["piano"]["harmony"]
+    assert cfg["partitions"]["Mélodie"]["lead"] is True

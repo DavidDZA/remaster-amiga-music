@@ -39,15 +39,27 @@ Fait le 18/11/2026 : UADE construit dans tools\uade (modifié pour écrire le jo
 samples), les originaux enregistrés en MP3 (une fois la boucle, deux si elle fait moins de 2 min), et remaster
 possible (`python -m remaster <fichier> --sous-morceau N`), vérifié note pour note sur Dr Mario.
 
-À faire :
-- **Partitions** de ces musiques : déduire la grille (tempo, lignes, mesures) des instants des notes — le lecteur
-  avance par trames de 20 ms ; chercher le pas régulier (souvent 3 à 8 trames par ligne) et la mesure (caisse claire).
-- **Fiches d'instruments** : pour chaque jeu, reconnaître les samples (batterie, basse, lead…) comme pour Dr Mario.
-- Rick Dangerous (`cust.`) : UADE ne le reconnaît pas ; la version alternative est abîmée dans l'archive.
-- 23 morceaux sans boucle trouvée, encore coupés à 5 min (Batman « music », Bone Cruncher, Hybris, Pang, RoboCop,
+## Fait le 19/11/2026 : piano pour n'importe quelle musique
+
+Fiche automatique (`remaster/roles.py`), grille déduite des notes (`paula.on_grid`), reprise quand la boucle est
+jouée deux fois, harmonie par demi-mesure. 16 arrangements faits (liste dans le README), **à écouter par
+l'utilisateur** : son retour dira ce qu'il faut corriger (rôles mal devinés, grille, accords, main gauche).
+
+## À faire
+
+- **Retour d'écoute** sur les 16 pianos ; corriger les fiches (`songs\*.json`) et les règles de `roles.py` en
+  conséquence.
+- **Hybris** (lecteur de synthé) : grille irrégulière, partition peu lisible ; chercher un pas qui varie, ou des
+  triolets.
+- **Tablatures et batterie pour les musiques UADE** : brancher `remaster.partitions` sur `paula.load_grid` comme
+  le piano (la grille et la fiche existent déjà) ; ajouter dans la fiche automatique les parties guitare / basse.
+- **Rick Dangerous** (`cust.`) : UADE ne le reconnaît pas ; la version alternative est abîmée dans l'archive.
+- **23 morceaux sans boucle trouvée**, encore coupés à 5 min (Batman « music », Bone Cruncher, Hybris, Pang, RoboCop,
   Strider, Double Dragon 2…) : leurs notes ne se répètent pas à 99 % sur 20 min. Pistes : voies qui bouclent
   chacune à leur rythme (chercher une boucle par voie), beaucoup de notes tirées au sort (seuil plus large),
   ou comparer le son plutôt que les notes.
+- Piano : les 8 mesures muettes du début de Lotus 2 bootup (batterie seule) ; une option pour commencer à la
+  première note.
 
 ## Ensuite
 

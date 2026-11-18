@@ -4,8 +4,15 @@ Un module Amiga (`.mod` ProTracker) rejoué avec des **instruments modernes**, p
 Tout est gratuit et tourne sur le PC, sans rien installer dans Windows : les outils sont dans le dossier du projet.
 
 Prototype en ligne de commande (17/11/2026), avant une éventuelle vraie appli PC.
-Depuis le 18/11/2026, il écrit aussi les **tablatures** (guitares, basse), la **partition de batterie** et un
-**arrangement pour piano seul** (MP3 + partition) : voir [Partitions et piano](#partitions-et-piano).
+
+Où en est le projet (19/11/2026) :
+- **Toutes les musiques Amiga** d'archives de jeux (`in\lha\`) sont récupérées et rangées par jeu
+  (`in\music\<Jeu>\`) : en .mod (d'origine ou converties avec libxmp) ou, pour les formats à lecteur intégré
+  (TFMX, David Whittaker…), jouées par UADE. 631 originaux en MP3 dans `out\<Jeu>\`.
+- **Remaster** (nouveaux instruments, MP3) : pour un .mod, et pour tout autre format (notes lues par UADE).
+- **Tablatures** (guitares, basse) et **partition de batterie** : pour un .mod (*Dr Mario*).
+- **Arrangement pour piano seul** (MP3 + partition) : pour n'importe quelle musique, avec une fiche automatique.
+  Voir [Partitions et piano](#partitions-et-piano). Rien n'est validé à l'oreille par Claude : l'utilisateur écoute.
 
 ## Le principe
 
@@ -194,8 +201,8 @@ vrai lecteur. Il est construit dans `tools\uade\` (il faut la partie POSIX de MS
   des samples marchent tels quels. Vérifié sur *Dr Mario* joué par UADE : **4 386 notes, toutes au même instant et à
   la même hauteur** que notre lecteur ProTracker, et les 7 samples retrouvés à l'identique.
   Une fiche `songs\<Jeu> - <titre> (n).json` est créée au premier passage (un piano pour tout) : à compléter.
-- Pas encore de **partitions** pour ces musiques : elles n'ont pas de grille de lignes et de mesures (à déduire des
-  notes, voir la ROADMAP).
+- **Piano** (MP3 + partition) : oui, une grille de lignes et de mesures est déduite des notes (`paula.on_grid`,
+  voir [Partitions et piano](#partitions-et-piano)). **Tablatures et batterie** : pas encore pour ces musiques.
 
 ## Partitions et piano
 
@@ -245,13 +252,25 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
     quand la boucle y est jouée deux fois, la partition l'écrit une fois avec une **reprise** (levée à part).
   - Pas de vérification à l'oreille : la fiche automatique se trompe parfois (un lead saturé pris pour de la
     batterie…) ; on la corrige puis on relance.
+  - Faits le 19/11/2026, à écouter : Strider (Custom Version 5 : fiche faite à la main ; Strider 1), Lotus 2
+    bootup, Lotus title, Jim Power ingame_1 et ingame_3, Shadow of the Beast title_and_the_plains (2) et (4),
+    Turrican 3 intro_and_title (1) et world_1 (1), Disposable Hero title, Great Giana Sisters ingame (1), Terry's
+    Big Adventure, Batman chem (1), Skidz, Hybris title (le moins réussi : rythme irrégulier).
 
 ## Contrôles
 
 ```sh
-.venv\Scripts\python -m pytest              # tests : lecture, durée, hauteurs, bends, accords, ajouts de batterie
+.venv\Scripts\python -m pytest              # 58 tests, quelques secondes (voir ci-dessous)
 .venv\Scripts\python scripts\check_stems.py "in\music\Dr Mario\Dr Mario.mod"   # chaque piste comparée au sample d'origine
 ```
+
+Les tests (`tests\`) couvrent : lecture des modules (ProTracker, Soundtracker 15 samples), durée et hauteurs,
+bends, accords, ajouts de batterie, moteurs SFZ et amplis ; conversion libxmp (aller-retour exact sur *Dr Mario*) ;
+import des archives (noms, versions alternatives, rangement par jeu) ; notes lues par UADE (identiques au lecteur
+ProTracker sur *Dr Mario*), boucles (trouvées, notes au hasard tolérées, fausses boucles refusées), une ou deux
+fois la boucle ; grille et premier temps ; tablatures (manche, durées, mesures complètes) ; piano (arrangement,
+tierces, reprise, clavier) ; rôles des samples. Ceux qui demandent UADE, libxmp ou LilyPond sont sautés s'ils
+manquent.
 
 `check_stems.py` rejoue chaque sample d'origine comme l'Amiga et le compare à son remplaçant : décalage de hauteur
 (0 attendu ; il se trompe parfois sur les sons saturés) et calage dans le temps (0 ms attendu).
@@ -295,5 +314,6 @@ Suite prévue (dont le passage à de vrais VST choisis à l'oreille) : [docs/ROA
   sonne si 0). `remaster/library.py` (`KEY_OFFSET`) corrige ; `"key_offset"` dans `sfz` pour une autre banque.
 - La détection des instruments est à faire (ou corriger) à l'oreille, sample par sample : c'est le cœur d'une future
   appli (écouter le sample, choisir un remplaçant dans une liste, réécouter).
-- Formats gérés : `.mod` à 31 samples (M.K., FLT4, 6CHN, 8CHN…) et Soundtracker à 15 samples. Pas encore les `.xm`,
-  `.s3m`, `.it`, ni les formats à lecteur intégré (TFMX, OctaMED…) : voir la ROADMAP.
+- Formats : `.mod` à 31 samples (M.K., FLT4, 6CHN, 8CHN…) et Soundtracker à 15 samples lus directement ; OctaMED,
+  The Player 4, SoundFX, Game Music Creator, XM… convertis en .mod par libxmp ; TFMX, David Whittaker, Richard
+  Joseph, lecteurs maison… joués par UADE (notes lues dans le journal de la puce son). Non lu : Rick Dangerous.

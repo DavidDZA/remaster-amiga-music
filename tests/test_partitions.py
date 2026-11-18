@@ -133,3 +133,19 @@ def test_gravure(ctx, parts, tmp_path):
     ly = tmp_path / "batterie.ly"
     ly.write_text(lily.header("Test", "Batterie", "") + text, encoding="utf-8")
     assert lily.compile_pdf(ly).stat().st_size > 10_000
+
+
+def test_notes_ramenees_dans_le_clavier():
+    assert piano.fold(130) == 106 and piano.fold(10) == 22 and piano.fold(60) == 60
+
+
+def test_partition_piano_avec_reprise(ctx):
+    arr = piano.arrange(ctx, CFG)
+    ctx.repeat_from, ctx.repeat_bars = 1, 8      # levée d'une mesure, puis 8 mesures à jouer deux fois
+    try:
+        text = piano.score_ly(ctx, arr)
+    finally:
+        ctx.repeat_from, ctx.repeat_bars = 0, 0
+    assert text.count(r"\repeat volta 2") == 4  # mélodie, accords, main gauche, repères
+    body = text.split("left = {")[1].split("}")[0]
+    assert body.count("\n") < 30                 # seulement la levée et les 8 mesures, pas tout le morceau
