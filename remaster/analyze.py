@@ -14,9 +14,13 @@ def note_name(midi: float) -> str:
 def root_midi(sample: Sample) -> float | None:
     """Note MIDI que donne le sample joué au C-2 de ProTracker (produit spectral harmonique)."""
     s = sample.as_float()
-    if len(s) < 256:
-        return None
     sr = playback_rate(C2_PERIOD)
+    if len(s) < 256:
+        # son de synthé très court : une période d'onde (souvent en boucle) ; sa hauteur = fréquence / longueur
+        n = sample.loop_length if sample.looped and sample.loop_length >= 8 else len(s)
+        if n < 8 or np.ptp(s) == 0:
+            return None
+        return 69 + 12 * np.log2(sr / n / 440.0)
     seg = s[: min(len(s), 8192)]
     seg = (seg - seg.mean()) * np.hanning(len(seg))
     n = 1 << 16

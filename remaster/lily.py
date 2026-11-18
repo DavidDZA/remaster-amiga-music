@@ -155,4 +155,5 @@ def compile_png(ly_path: pathlib.Path, resolution: int = 100) -> list[pathlib.Pa
     ly_path = ly_path.resolve()
     subprocess.run([str(lilypond_exe()), "-dno-point-and-click", "--png", f"-dresolution={resolution}",
                     "-o", str(ly_path.with_suffix("")), str(ly_path)], capture_output=True, cwd=ly_path.parent)
-    return sorted(ly_path.parent.glob(ly_path.stem + "*.png"))
+    import glob
+    return sorted(ly_path.parent.glob(glob.escape(ly_path.stem) + "*.png"))  # noms avec [ ] : pas un motif

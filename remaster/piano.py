@@ -30,6 +30,7 @@ DEFAULTS = {
     "chords": [],          # samples qui donnent l'harmonie (power chords, chœur)
     "riff": [],            # samples du riff étouffé (main gauche piquée)
     "bass": [],            # samples de la basse
+    "harmony": [],         # sans basse dans une mesure : l'harmonie suit la note la plus grave de ces samples
     "dense": 8,            # au-delà de tant de notes de mélodie par mesure : pas d'accords sous la mélodie
     "soundfont": "SalamanderGrandPiano-V3+20200602.sf2",
     "loudness": -16,
@@ -38,8 +39,8 @@ DEFAULTS = {
                           "predelay_ms": 14, "low_cut_hz": 60, "high_cut_hz": 9000, "width": 100}},
 }
 
-LEGEND = ("Arrangement pour piano seul. Main droite : la mélodie de la guitare lead (hampes en haut) et des accords "
-          "(hampes en bas). Main gauche : la basse en octaves, ou le riff de guitare étouffée (notes piquées). "
+LEGEND = ("Arrangement pour piano seul. Main droite : la mélodie (hampes en haut) et des accords "
+          "(hampes en bas). Main gauche : la basse en octaves, ou le riff (notes piquées). "
           "Péd. : changer la pédale à chaque accord ; sans Péd. : jouer sec. "
           "Lettres encadrées : début d'une partie, avec le temps dans le MP3.")
 
@@ -82,9 +83,29 @@ def harmony(ctx: Context, p: dict, bar_of: list[int]) -> list[tuple[int, int]]:
         first = [h for h in hs if h.sample == p["chords"][0]]  # le premier sample listé passe avant (guitare)
         src = first or hs
         changes[r] = min(min(h.pitches) for h in src) % 12
+    # sans instrument d'accords : la basse donne l'harmonie, mais une basse qui bouge en croches ferait un accord
+    # par note. Par demi-mesure, on garde la note de basse qui sonne le plus longtemps.
+    half = score.ROWS_PER_BAR // 2
+    weights: dict[int, dict[int, int]] = {}
     for h in ctx.hits:
         if h.sample in bass_s and bar_of[h.row] not in bars_with_chords:
-            changes.setdefault(h.row, h.pitches[0] % 12)
+            for r in range(h.row, h.end):
+                w = weights.setdefault(r - r % half, {})
+                w[h.pitches[0] % 12] = w.get(h.pitches[0] % 12, 0) + 1
+    # mesures sans accords ni basse : la note la plus grave qui sonne (samples « harmony »), par demi-mesure
+    harm_s = set(p.get("harmony", []))
+    if harm_s:
+        bars_with_bass = {bar_of[h.row] for h in ctx.hits if h.sample in bass_s}
+        low: dict[int, int] = {}
+        for h in ctx.hits:
+            if h.sample in harm_s and bar_of[h.row] not in bars_with_chords | bars_with_bass:
+                for r in range(h.row, min(h.end, len(bar_of))):
+                    low[r] = min(low.get(r, 999), min(h.pitches))
+        for r, pitch in low.items():
+            w = weights.setdefault(r - r % half, {})
+            w[pitch % 12] = w.get(pitch % 12, 0) + 1
+    for r, w in weights.items():
+        changes.setdefault(r, max(w, key=lambda pc: (w[pc], -pc)))
     out = []
     for r in sorted(changes):
         if not out or out[-1][1] != changes[r]:
@@ -177,7 +198,7 @@ def arrange(ctx: Context, cfg: dict) -> Arrangement:
         riff = any(h.sample in riff_s for h in bhits)
         mel = mel_by_bar.get(b, [])
         dense = len(mel) > p["dense"]
-        has_harmony = any(h.sample in chord_s | bass_s for h in bhits)
+        has_harmony = any(h.sample in chord_s | bass_s | set(p.get("harmony", [])) for h in bhits)
         # repère de pédale (texte) quand on passe du sec au lié et inversement
         want = None if not bhits else (not riff)
         if want is not None and want != pedal_state:
@@ -281,8 +302,10 @@ def melody_notes(ctx: Context, evs: list[score.Event]) -> list[PNote]:
         for k in range(1, e.end - e.row + 1):
             val = bend[k] if k < len(bend) else bend[-1]
             end_here = k == e.end - e.row
-            # nouvelle note si la hauteur atteinte change et tient au moins deux lignes
-            held = all((bend[j] if j < len(bend) else bend[-1]) == val for j in range(k, min(k + 2, e.end - e.row)))
+            # nouvelle note si la hauteur atteinte change et tient au moins quatre lignes (un glissement d'une note
+            # à l'autre, fréquent dans les musiques de jeux, ne fait pas de notes en plus)
+            held = e.end - e.row - k >= 4 and all((bend[j] if j < len(bend) else bend[-1]) == val
+                                                   for j in range(k, k + 4))
             if end_here or (val != cur and held and abs(val) <= 3):
                 out.append(PNote(r, e.row + k, (top + cur,), 82))
                 r, cur = e.row + k, val
@@ -291,16 +314,32 @@ def melody_notes(ctx: Context, evs: list[score.Event]) -> list[PNote]:
     starts = sorted(ctx.sections) + [len(ctx.bars)]
     for k in range(len(starts) - 1):
         notes = [n for n in out if starts[k] <= bar_of[n.row] < starts[k + 1]]
-        if notes and sum(n.pitches[0] for n in notes) / len(notes) < 64:
+        while notes and sum(n.pitches[0] for n in notes) / len(notes) < 64:
             for n in notes:
                 n.pitches = (n.pitches[0] + 12,)
-    for n in out:  # une note isolée trop grave pour la main droite (sous sol 3) : une octave plus haut
-        if n.pitches[0] < 55:
-            n.pitches = (n.pitches[0] + 12,)
+        while notes and sum(n.pitches[0] for n in notes) / len(notes) > 84:  # trop aiguë (au-dessus du do 6)
+            for n in notes:
+                n.pitches = (n.pitches[0] - 12,)
+    for n in out:  # une note isolée hors de la main droite (sous sol 3, au-dessus du do 7) : ramenée par octaves
+        p = n.pitches[0]
+        while p < 55:
+            p += 12
+        while p > 96:
+            p -= 12
+        n.pitches = (p,)
     return [n for n in out if n.end > n.row]
 
 
 # --- son ----------------------------------------------------------------------------------------------------------
+
+def fold(p: int) -> int:
+    """Une note ramenée dans le clavier du piano (la 0 … do 8), par octaves."""
+    while p < 21:
+        p += 12
+    while p > 108:
+        p -= 12
+    return p
+
 
 def to_midi(ctx: Context, arr: Arrangement, seed: int = 7) -> list[tuple[float, mido.Message]]:
     t = score.row_seconds(ctx.song)
@@ -316,7 +355,7 @@ def to_midi(ctx: Context, arr: Arrangement, seed: int = 7) -> list[tuple[float, 
             vel = nt.velocity + rnd.randint(-3, 3)
             if accent_beats and nt.row % score.ROWS_PER_BEAT == 0:
                 vel += 6
-            for pch in nt.pitches:
+            for pch in sorted({fold(x) for x in nt.pitches}):
                 ev.append((max(0.0, on), mido.Message("note_on", channel=0, note=pch, velocity=max(1, min(127, vel)))))
                 ev.append((max(on + 0.03, off), mido.Message("note_off", channel=0, note=pch, velocity=0)))
     add(arr.melody, True)
@@ -360,6 +399,12 @@ def render_mp3(ctx: Context, arr: Arrangement, p: dict, out_dir: pathlib.Path, m
     audio, sr = sf.read(wav, dtype="float32", always_2d=True)
     wav.unlink()
     x = audio.T.copy()
+    if ctx.fade:  # même fin que l'original enregistré par UADE : fondu sur les dernières secondes de la boucle
+        t1 = int(ctx.song.duration * sr)
+        t0 = max(0, t1 - int(ctx.fade * sr))
+        if t1 < x.shape[1]:
+            x[:, t1:] = 0
+        x[:, t0:t1] *= np.linspace(1.0, 0.0, t1 - t0, dtype=np.float32)
     if p.get("reverb"):
         x = fx.apply(x, [{"type": "vst", **p["reverb"]}], sr)
     loud = np.where(np.max(np.abs(x), axis=0) > 1e-4)[0]
@@ -407,18 +452,30 @@ def score_ly(ctx: Context, arr: Arrangement) -> str:
     for b in range(len(ctx.bars)):
         if mel[b].startswith("s") and acc[b].startswith("s"):
             mel[b] = mel[b].replace("s", "R", 1)
+    # une musique qui boucle, jouée deux fois dans le MP3 : la levée (avant la 1re barre de la boucle) une fois,
+    # puis un tour de boucle avec une reprise
+    a, n = ctx.repeat_from, ctx.repeat_bars
+
+    def part(bars_txt: list[str], marks: bool = False) -> str:
+        if not n:
+            return ctx.marks_voice(arr.marks) if marks else ctx.join_bars(bars_txt)
+        if marks:
+            head, body = (ctx.marks_voice(arr.marks, 0, a) if a else ""), ctx.marks_voice(arr.marks, a, a + n)
+        else:
+            head, body = (ctx.join_bars(bars_txt[:a]) if a else ""), ctx.join_bars(bars_txt[a:a + n], a)
+        return f"{head}\n  \\repeat volta 2 {{\n  {body}\n  }}"
     return f"""melody = {{
   \\compressEmptyMeasures
-  {ctx.join_bars(mel)}
+  {part(mel)}
 }}
 accomp = {{
-  {ctx.join_bars(acc)}
+  {part(acc)}
 }}
 left = {{
-  {ctx.join_bars(left)}
+  {part(left)}
 }}
 marks = {{
-  {ctx.marks_voice(arr.marks)}
+  {part([], marks=True)}
 }}
 \\score {{
   \\new PianoStaff \\with {{ instrumentName = "Piano" }} <<
@@ -434,9 +491,10 @@ marks = {{
 """
 
 
-def make(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, log=print, audio: bool = True):
+def make(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, log=print, audio: bool = True,
+         ctx: Context | None = None):
     p = settings(cfg)
-    ctx = Context(mod_path, cfg)
+    ctx = ctx or Context(mod_path, cfg)
     out_dir.mkdir(parents=True, exist_ok=True)
     arr = arrange(ctx, cfg)
     log(f"  piano : mélodie {len(arr.melody)} notes, accords {len(arr.chords)}, main gauche {len(arr.left)}")
@@ -447,7 +505,7 @@ def make(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, log=print, au
                   encoding="utf-8")
     made = [lily.compile_pdf(ly)]
     if audio:
-        made.append(render_mp3(ctx, arr, p, out_dir, mod_path.stem))
+        made.append(render_mp3(ctx, arr, p, out_dir, ctx.title))
     for m in made:
         log(f"→ {m}")
     return made
@@ -462,10 +520,47 @@ def main():
     ap.add_argument("--config", type=pathlib.Path)
     ap.add_argument("--out", type=pathlib.Path)
     ap.add_argument("--sans-mp3", action="store_true", help="seulement la partition")
+    ap.add_argument("--sous-morceau", type=int, help="pour un format autre que .mod : n° du morceau (1, 2…)")
     a = ap.parse_args()
-    cfg = load_config(a.config or ROOT / "songs" / f"{a.mod.stem}.json")
     from .paths import work_dir
-    make(a.mod, cfg, a.out or work_dir(a.mod), audio=not a.sans_mp3)
+    from .__main__ import is_protracker, uade_name
+    from . import roles
+    import json
+    if is_protracker(a.mod):
+        cfg_path = a.config or ROOT / "songs" / f"{a.mod.stem}.json"
+        from . import modfile, player as pl
+        if not cfg_path.exists():
+            mod = modfile.load(a.mod)
+            cfg_path.write_text(json.dumps(roles.piano_config(mod, pl.play(mod), a.mod.stem), ensure_ascii=False,
+                                           indent=2), encoding="utf-8")
+            print(f"  fiche automatique créée : {cfg_path} (à vérifier)")
+        cfg = load_config(cfg_path)
+        if "piano" not in cfg:  # fiche de remaster sans partie piano : rôles devinés, sans toucher au fichier
+            mod = modfile.load(a.mod)
+            auto = roles.piano_config(mod, pl.play(mod), a.mod.stem)
+            cfg = {**cfg, "piano": auto["piano"], "partitions": cfg.get("partitions") or auto["partitions"]}
+        make(a.mod, cfg, a.out or work_dir(a.mod), audio=not a.sans_mp3)
+        return
+    # musique à lecteur intégré : notes lues par UADE, posées sur une grille, longueur du MP3 d'origine
+    from . import paula
+    lo, hi = paula.subsongs(a.mod)
+    number = a.sous_morceau or 1
+    name = uade_name(a.mod, number, hi - lo + 1)
+    cfg_path = a.config or ROOT / "songs" / f"{name}.json"
+    mod, song, info = paula.load_grid(a.mod, lo + number - 1)
+    if not cfg_path.exists():
+        cfg_path.write_text(json.dumps(roles.piano_config(mod, song, name), ensure_ascii=False, indent=2),
+                            encoding="utf-8")
+        print(f"  fiche automatique créée : {cfg_path} (à vérifier)")
+    cfg = load_config(cfg_path)
+    print(f"  grille : une ligne = {info['ligne_s'] * 1000:.0f} ms (noire = {info['noire_bpm']}), "
+          f"boucle {info['boucle']}, {info['tours']} tour(s), {info['mesures_par_tour']:.2f} mesures par tour")
+    ctx = Context(a.mod, cfg, mod=mod, song=song, title=name)
+    if info["reprise"]:
+        ctx.repeat_bars = round(info["mesures_par_tour"])
+        ctx.repeat_from = info["reprise_debut"]
+    ctx.fade = info["fondu"]
+    make(a.mod, cfg, a.out or work_dir(a.mod, name), audio=not a.sans_mp3, ctx=ctx)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,139 @@
+{
+  "title": "Turrican 3 - intro_and_title (1)",
+  "artist": "",
+  "soundfont": "GeneralUser-GS.sf2",
+  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
+  "samples": {
+    "1": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (254 notes, 17 hauteurs, médiane F#4, voies [1, 2, 3], bruit 0.21)"
+    },
+    "2": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (171 notes, 19 hauteurs, médiane F#4, voies [1, 2], bruit 0.24)"
+    },
+    "3": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (25 notes, 2 hauteurs, médiane F6, voies [1, 2], bruit 0.62)",
+      "drum": 38
+    },
+    "4": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (340 notes, 9 hauteurs, médiane D#4, voies [1, 2], bruit 0.44)"
+    },
+    "5": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (221 notes, 9 hauteurs, médiane G#4, voies [1], bruit 0.22)"
+    },
+    "6": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (380 notes, 16 hauteurs, médiane A#4, voies [1, 2], bruit 0.24)"
+    },
+    "7": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (116 notes, 7 hauteurs, médiane G#3, voies [1, 2], bruit 0.19)"
+    },
+    "8": {
+      "name": "Ignoré",
+      "comment": "rôle deviné : ignoré (3 notes, 1 hauteurs, médiane G#2, voies [2, 3], bruit 0.77)",
+      "mute": true
+    },
+    "9": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (188 notes, 2 hauteurs, médiane A#6, voies [2, 3], bruit 0.59)",
+      "drum": 38
+    },
+    "10": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (20 notes, 1 hauteurs, médiane A3, voies [2, 3], bruit 0.74)",
+      "drum": 38
+    },
+    "11": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (24 notes, 1 hauteurs, médiane E1, voies [2], bruit 0.65)",
+      "drum": 38
+    },
+    "12": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (101 notes, 8 hauteurs, médiane F#4, voies [2], bruit 0.21)"
+    },
+    "13": {
+      "name": "Basse",
+      "comment": "rôle deviné : basse (84 notes, 4 hauteurs, médiane E2, voies [2], bruit 0.32)"
+    },
+    "14": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (41 notes, 5 hauteurs, médiane D#3, voies [2, 3], bruit 0.52)"
+    },
+    "15": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (320 notes, 3 hauteurs, médiane F#2, voies [2, 3], bruit 0.79)",
+      "drum": 38
+    },
+    "16": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (626 notes, 2 hauteurs, médiane A1, voies [3], bruit 0.59)",
+      "drum": 38
+    },
+    "17": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (94 notes, 1 hauteurs, médiane A#6, voies [3], bruit 0.59)",
+      "drum": 38
+    },
+    "18": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (72 notes, 2 hauteurs, médiane G6, voies [3], bruit 0.60)",
+      "drum": 38
+    },
+    "19": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (57 notes, 2 hauteurs, médiane G6, voies [3], bruit 0.62)",
+      "drum": 38
+    },
+    "20": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (46 notes, 2 hauteurs, médiane C#5, voies [3], bruit 0.74)",
+      "drum": 38
+    },
+    "21": {
+      "name": "Ignoré",
+      "comment": "rôle deviné : ignoré (1 notes, 1 hauteurs, médiane D2, voies [4], bruit 1.00)",
+      "mute": true
+    }
+  },
+  "partitions": {
+    "Mélodie": {
+      "instrument": "guitare",
+      "samples": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        12,
+        14
+      ],
+      "lead": true
+    }
+  },
+  "piano": {
+    "melody": "Mélodie",
+    "chords": [],
+    "riff": [],
+    "bass": [
+      13
+    ],
+    "harmony": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      7,
+      12,
+      13,
+      14
+    ]
+  }
+}

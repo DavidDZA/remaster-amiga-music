@@ -1,0 +1,20 @@
+{
+  "title": "Strider (Custom Version, morceau 5)",
+  "artist": "",
+  "soundfont": "GeneralUser-GS.sf2",
+  "samples": {
+    "1": {"name": "Basse", "program": 33,
+          "comment": "voie 1, croches : fa#, la, sol#, ré, mi (fa# mineur)"},
+    "2": {"name": "Bip", "mute": true,
+          "comment": "16 octets, une seule hauteur, deux coups au début : pas une note de musique"},
+    "3": {"name": "Mélodie", "program": 0,
+          "comment": "voie 2, son tenu en boucle, la mélodie (la, sol#, fa#, la, sol#, mi…)"},
+    "4": {"name": "Mélodie (doublure)", "program": 0, "mute": true,
+          "comment": "voie 3, la même mélodie à l'octave : une seule fois au piano"}
+  },
+  "partitions": {
+    "Mélodie": {"instrument": "guitare", "samples": [3], "lead": true}
+  },
+  "piano": {"melody": "Mélodie", "chords": [], "riff": [], "bass": [1],
+            "comment": "pas d'instrument d'accords : l'harmonie suit la basse, la tierce vient de la mélodie et de la tonalité"}
+}

@@ -1,0 +1,93 @@
+{
+  "title": "Lotus 2 - bootup",
+  "artist": "",
+  "soundfont": "GeneralUser-GS.sf2",
+  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
+  "samples": {
+    "1": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (304 notes, 1 hauteurs, médiane B1, voies [1], bruit 0.33)",
+      "drum": 38
+    },
+    "2": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (244 notes, 1 hauteurs, médiane B6, voies [1, 2], bruit 0.68)",
+      "drum": 38
+    },
+    "3": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (63 notes, 1 hauteurs, médiane B6, voies [1, 2], bruit 0.68)",
+      "drum": 38
+    },
+    "4": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (62 notes, 1 hauteurs, médiane B6, voies [1, 2], bruit 0.63)",
+      "drum": 38
+    },
+    "5": {
+      "name": "Basse",
+      "comment": "rôle deviné : basse (532 notes, 15 hauteurs, médiane C2, voies [2, 3], bruit 0.15)"
+    },
+    "6": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (22 notes, 1 hauteurs, médiane D7, voies [1, 3, 4], bruit 0.75)",
+      "drum": 38
+    },
+    "7": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (12 notes, 1 hauteurs, médiane D#5, voies [1, 3, 4], bruit 0.72)",
+      "drum": 38
+    },
+    "8": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (215 notes, 1 hauteurs, médiane E7, voies [1, 2], bruit 0.54)",
+      "drum": 38
+    },
+    "9": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (373 notes, 3 hauteurs, médiane A4, voies [2, 4], bruit 0.56)",
+      "drum": 38
+    },
+    "10": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (511 notes, 2 hauteurs, médiane F3, voies [2, 4], bruit 0.60)",
+      "drum": 38
+    },
+    "11": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (266 notes, 18 hauteurs, médiane F4, voies [2, 3], bruit 0.27)"
+    },
+    "12": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (64 notes, 11 hauteurs, médiane F4, voies [3], bruit 0.00)"
+    },
+    "31": {
+      "name": "Ignoré",
+      "comment": "rôle deviné : ignoré (1 notes, 1 hauteurs, médiane F#2, voies [3], bruit 0.47)",
+      "mute": true
+    }
+  },
+  "partitions": {
+    "Mélodie": {
+      "instrument": "guitare",
+      "samples": [
+        11,
+        12
+      ],
+      "lead": true
+    }
+  },
+  "piano": {
+    "melody": "Mélodie",
+    "chords": [],
+    "riff": [],
+    "bass": [
+      5
+    ],
+    "harmony": [
+      5,
+      11,
+      12
+    ]
+  }
+}

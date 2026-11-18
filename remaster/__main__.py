@@ -36,7 +36,8 @@ def uade_name(path: pathlib.Path, number: int | None, count: int) -> str:
     """Même nom que scripts/render_originals.py : « <Jeu> - <titre> (n) » pour in\\music\\<Jeu>\\originaux\\<fichier>."""
     sys.path.insert(0, str(render.ROOT / "scripts"))
     import import_lha  # noqa: PLC0415
-    game = path.parent.parent.name if path.parent.name == "originaux" else path.parent.name
+    from .paths import game_of
+    game = game_of(path)
     name = f"{game} - {import_lha.uade_title(path)}"
     return name if count <= 1 else f"{name} ({number or 1})"
 

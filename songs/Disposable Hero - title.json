@@ -1,0 +1,120 @@
+{
+  "title": "Disposable Hero - title",
+  "artist": "",
+  "soundfont": "GeneralUser-GS.sf2",
+  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
+  "samples": {
+    "1": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (108 notes, 3 hauteurs, médiane B2, voies [1, 2, 3, 4], bruit 0.15)"
+    },
+    "2": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (320 notes, 3 hauteurs, médiane F7, voies [1, 2, 4], bruit 0.68)",
+      "drum": 38
+    },
+    "3": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (125 notes, 4 hauteurs, médiane B2, voies [1, 2, 3, 4], bruit 0.68)",
+      "drum": 38
+    },
+    "4": {
+      "name": "Ignoré",
+      "comment": "rôle deviné : ignoré (2 notes, 2 hauteurs, médiane F5, voies [2, 4], bruit 0.19)",
+      "mute": true
+    },
+    "5": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (718 notes, 9 hauteurs, médiane C3, voies [1, 2, 4], bruit 0.24)"
+    },
+    "6": {
+      "name": "Basse",
+      "comment": "rôle deviné : basse (443 notes, 10 hauteurs, médiane C#1, voies [1, 3, 4], bruit 0.49)"
+    },
+    "7": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (4 notes, 1 hauteurs, médiane G#2, voies [2, 4], bruit 0.25)"
+    },
+    "8": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (10 notes, 5 hauteurs, médiane G#4, voies [2], bruit 0.23)"
+    },
+    "9": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (7 notes, 2 hauteurs, médiane D0, voies [1, 2, 4], bruit 0.21)"
+    },
+    "10": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (122 notes, 15 hauteurs, médiane F#4, voies [1, 3, 4], bruit 0.15)"
+    },
+    "11": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (544 notes, 10 hauteurs, médiane B3, voies [1, 2, 3], bruit 0.24)"
+    },
+    "12": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (8 notes, 2 hauteurs, médiane D#5, voies [1, 2, 3], bruit 0.76)",
+      "drum": 38
+    },
+    "13": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (7 notes, 2 hauteurs, médiane G4, voies [1, 2], bruit 0.53)",
+      "drum": 38
+    },
+    "14": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (25 notes, 2 hauteurs, médiane G#2, voies [1, 2, 3, 4], bruit 0.31)",
+      "drum": 38
+    },
+    "15": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (32 notes, 1 hauteurs, médiane B4, voies [3], bruit 0.41)",
+      "drum": 38
+    },
+    "16": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (4 notes, 2 hauteurs, médiane E3, voies [3], bruit 0.31)"
+    },
+    "17": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (7 notes, 4 hauteurs, médiane G2, voies [1, 2, 3, 4], bruit 0.33)"
+    }
+  },
+  "partitions": {
+    "Mélodie": {
+      "instrument": "guitare",
+      "samples": [
+        1,
+        5,
+        7,
+        8,
+        9,
+        10,
+        11,
+        16,
+        17
+      ],
+      "lead": true
+    }
+  },
+  "piano": {
+    "melody": "Mélodie",
+    "chords": [],
+    "riff": [],
+    "bass": [
+      6
+    ],
+    "harmony": [
+      1,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      16,
+      17
+    ]
+  }
+}

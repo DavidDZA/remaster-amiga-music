@@ -124,7 +124,7 @@ def to_song(ev, smp: dict, duration: float, title: str = "") -> tuple[Module, So
                     lc = (lch << 16) | lcl
                     nbytes = (ln or 65536) * 2
                     key = (lc, nbytes)
-                    if ln <= 1:  # longueur nulle ou d'un mot : un sample vide, qui coupe la voie
+                    if ln <= 1 or per == 0:  # sample vide (coupe la voie), ou note sans hauteur encore écrite
                         sample, end_at, loop_pending = 0, None, None
                     elif key in smp:
                         if key not in keys:
@@ -244,6 +244,87 @@ def find_loop(ev, min_loop: float = 5.0, tol: float = 0.05, rare: float = 0.01) 
             continue
         return A, L
     return None
+
+
+TWO_LOOPS_BELOW = 120   # comme scripts/render_originals.py : un tour plus court que ça, on en joue deux
+FADE = 4
+
+
+def on_grid(mod: Module, song: Song, ev, eighth_max_bpm: float = 220) -> tuple[Module, Song, dict]:
+    """Une grille de lignes et de mesures pour une musique lue par UADE (les partitions en ont besoin), et la même
+    longueur que son MP3 d'origine : un tour de boucle, ou deux s'il fait moins de 2 min, plus le fondu.
+
+    Pas de la grille : l'écart le plus fréquent entre deux notes (en trames de 20 ms) est pris pour une croche
+    (une ligne = une double croche, comme un .mod), sauf si ça donne une noire à plus de `eighth_max_bpm` : c'est
+    alors une double croche. Le temps zéro est la première note."""
+    notes = [(i, c, t.note_period) for c, ch in enumerate(song.ticks) for i, t in enumerate(ch) if t.trigger]
+    frames = sorted({i for i, _c, _p in notes})
+    gaps = np.diff(frames)
+    gaps = gaps[gaps > 0]
+    step = int(np.bincount(gaps).argmax()) if len(gaps) else 6
+    # valeur de l'écart le plus fréquent : croche, double, triple croche… la première qui donne une noire à
+    # `eighth_max_bpm` au plus (un lecteur TFMX qui orne ses notes toutes les 2 trames ne joue pas à ♩ = 375)
+    row_frames = step
+    for m in (0.5, 1, 2, 4, 8):
+        rf = step * m
+        if rf >= 1 and rf == int(rf) and 60 / (4 * rf * FRAME) <= eighth_max_bpm:
+            row_frames = int(rf)
+            break
+    row = row_frames * FRAME
+    bar_frames = 16 * row_frames
+    # phase de la grille : le décalage qui met le plus de notes pile sur une ligne
+    fr = np.array(frames)
+    phase = max(range(row_frames), key=lambda o: int(np.sum((fr - o) % row_frames == 0)))
+    # barre de mesure : sur les temps forts, là où démarrent les notes longues (et les notes graves)
+    dur: dict[tuple[int, int], int] = {}
+    by_ch: dict[int, list[int]] = {}
+    for i, c, _p in notes:
+        by_ch.setdefault(c, []).append(i)
+    for c, lst in by_ch.items():
+        for k, i in enumerate(lst):
+            dur[(c, i)] = (lst[k + 1] if k + 1 < len(lst) else i + bar_frames) - i
+    weight = np.zeros(bar_frames)
+    for (c, i), d in dur.items():
+        weight[i % bar_frames] += min(d, bar_frames) / row_frames
+    downbeat = max(range(phase, bar_frames, row_frames),
+                   key=lambda d: weight[d] + 0.5 * weight[(d + 4 * row_frames) % bar_frames]
+                   + weight[(d + 8 * row_frames) % bar_frames] + 0.5 * weight[(d + 12 * row_frames) % bar_frames])
+    pad = (bar_frames - downbeat) % bar_frames   # silence ajouté au début : la ligne 0 tombe sur un premier temps
+    loop = find_loop(ev)
+    if loop is None:
+        a, length, passes, total = 0.0, 0.0, 1, min(song.duration, 300.0)
+    else:
+        a, length = loop
+        passes = 1 if a + length >= TWO_LOOPS_BELOW else 2
+        total = min(song.duration, a + passes * length + FADE)
+    nframes = int(total / FRAME) + 1
+    blank = [Tick(0.0, 0, 0.0, 0, False, 0)] * pad
+    ticks = [[Tick(k * FRAME, t.sample, t.period, t.volume, t.trigger, t.note_period)
+              for k, t in enumerate(blank + ch[:nframes])] for ch in song.ticks]
+    total += pad * FRAME
+    nrows = int((total - 1e-6) / row) + 1   # la dernière ligne commence avant la fin
+    rows = [(i // 128, i % 128, i * row) for i in range(nrows)]
+    new = Song(song.channels, ticks, [k * FRAME for k in range(len(ticks[0]))], total, rows)
+    mod = Module(mod.title, mod.channels, mod.samples, list(range(rows[-1][0] + 1)), 0, [])
+    per_pass = length / row / 16 if loop else 0
+    whole = loop is not None and abs(per_pass - round(per_pass)) < 0.05
+    info = {"pas_trames": step, "ligne_s": row, "noire_bpm": round(60 / (4 * row) + 1e-6),
+            "boucle": loop, "tours": passes, "mesures_par_tour": per_pass, "decalage_s": pad * FRAME,
+            # reprise : un tour = un nombre entier de mesures ; elle commence à la première barre après le début
+            # de la boucle (ce qui précède est une levée, écrite une fois)
+            "reprise": passes == 2 and whole,
+            "reprise_debut": int(np.ceil(((a + pad * FRAME) / row - 1e-6) / 16)) if loop else 0,
+            "fondu": FADE if loop else 0.0}
+    return mod, new, info
+
+
+def load_grid(music: pathlib.Path, subsong: int = -1, seconds: int = 1200):
+    """(Module, Song sur une grille de lignes, infos) : pour les partitions et le piano (voir on_grid)."""
+    with tempfile.TemporaryDirectory() as tmp:
+        info = record(music, pathlib.Path(tmp), subsong, seconds)
+        ev, shift = align(events(info["log"]))
+        mod, song = to_song(ev, samples(info["smp"]), max(1.0, info["seconds"] - shift), music.name)
+    return on_grid(mod, song, ev)
 
 
 def load(music: pathlib.Path, subsong: int = -1, seconds: int = 300, keep: pathlib.Path | None = None):

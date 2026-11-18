@@ -16,8 +16,9 @@ OUT = ROOT / "out"
 def game_of(music: pathlib.Path) -> str:
     """Le jeu d'une musique, d'après son dossier dans in\\music ; sinon le nom du fichier."""
     p = pathlib.Path(music).resolve()
-    if p.parent.name == "originaux":
-        return p.parent.parent.name
+    for d in p.parents:  # in\music\<Jeu>\originaux\[sous-dossier de l'archive\]<fichier>
+        if d.name == "originaux":
+            return d.parent.name
     if p.parent.parent.name == "music":
         return p.parent.name
     return p.stem

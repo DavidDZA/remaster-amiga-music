@@ -149,6 +149,21 @@ reprennent exactement les règles de `extras.py` (`hihat_rows`, `crash_rows`).
    **Dragonfly Hall** (sec 80 %, salle de 26 m, 1,9 s) → MP3 320 kbit/s à −16 LUFS (un piano seul à −14 serait trop
    compressé).
 
+### Piano d'une musique sans fiche, ou lue par UADE
+
+`remaster/roles.py` devine les rôles (batterie, basse, mélodie) et écrit `songs\<musique>.json` ; pour une
+musique UADE, `paula.on_grid` pose les notes sur une grille de lignes et de mesures (voir le README). Pièges
+rencontrés le 19/11/2026 :
+
+- un timbre un peu bruité (lead ou basse saturés) n'est pas de la batterie s'il joue plus de 4 hauteurs ;
+- un son de synthé pur (onde de quelques octets) n'est pas de la batterie ; sa hauteur = fréquence / longueur ;
+- TFMX : un même sample sert à plusieurs parties : la main gauche suit alors la note la plus grave qui sonne ;
+- l'écart le plus fréquent entre notes peut être un ornement (2 trames en TFMX) : on prend la valeur qui donne
+  un tempo plausible ;
+- une basse en croches donnerait un accord par note : l'harmonie prend la note dominante par demi-mesure ;
+- une mélodie qui glisse d'une note à l'autre (portamento) : une hauteur n'est une note que si elle tient
+  4 lignes.
+
 ## Étape 5 : vérifier
 
 - **Messages de la commande** : notes remontées, notes enlevées. Beaucoup d'enlevées = revoir la répartition des

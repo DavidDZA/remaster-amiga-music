@@ -48,11 +48,15 @@ LEGEND_DRUMS = ("Hampes en bas : grosse caisse. Hampes en haut : caisse claire (
 class Context:
     """Ce qui est commun à toutes les parties d'un morceau."""
 
-    def __init__(self, mod_path: pathlib.Path, cfg: dict):
-        self.mod = modfile.load(mod_path)
-        self.song = player.play(self.mod)
+    def __init__(self, mod_path: pathlib.Path, cfg: dict, mod=None, song=None, title: str | None = None):
+        """mod, song : une musique déjà chargée (lue par UADE et posée sur une grille : paula.on_grid)."""
+        self.mod = mod if mod is not None else modfile.load(mod_path)
+        self.song = song if song is not None else player.play(self.mod)
         self.cfg = cfg
-        self.title = mod_path.stem
+        self.title = title or mod_path.stem
+        self.repeat_bars = 0   # > 0 : ces mesures-là, à partir de repeat_from, sont à jouer deux fois (reprise)
+        self.repeat_from = 0   # mesures avant la reprise : la levée, écrite une fois
+        self.fade = 0.0        # fondu de fin du MP3 (secondes), comme l'original enregistré par UADE
         self.composer = cfg.get("artist", "")
         self.bars = score.bars(self.song)
         self.tempi = score.bar_tempi(self.song, self.bars)
@@ -81,13 +85,13 @@ class Context:
                 r = stop
         return out
 
-    def join_bars(self, bars_txt: list[str]) -> str:
+    def join_bars(self, bars_txt: list[str], first: int = 0) -> str:
         """Regroupe les mesures vides qui se suivent (R1*12 : une seule pause chiffrée ; s1*12 pour une voix
         invisible), sans passer un repère ni un changement de tempo. LilyPond ne regroupe les pauses que si
         aucune autre voix de la portée ne coupe la suite de mesures."""
         out = []
         run, kind = 0, None
-        for b, txt in enumerate(bars_txt):
+        for b, txt in enumerate(bars_txt, start=first):
             txt = "s1" if txt == "s16*16" else txt
             breaks = b in self.sections or (b > 0 and self.tempi[b] != self.tempi[b - 1])
             if run and (txt != kind or breaks):
@@ -102,13 +106,13 @@ class Context:
             out.append(f"{kind}*{run}" if run > 1 else kind)
         return "\n  ".join(out)
 
-    def marks_voice(self, marks: dict[int, list[str]]) -> str:
-        """marks : {ligne globale: [textes]}."""
+    def marks_voice(self, marks: dict[int, list[str]], first: int = 0, upto: int | None = None) -> str:
+        """marks : {ligne globale: [textes]} ; first, upto : seulement ces mesures (partition avec reprise)."""
         out = []
-        for b, (start, n) in enumerate(self.bars):
+        for b, (start, n) in list(enumerate(self.bars))[first:upto]:
             local = {r - start: t for r, t in marks.items() if start <= r < start + n}
             out.append(lily.spacer_bar(n, local, lily.bar_prefix(b, self.tempi, self.sections)))
-        return self.join_bars(out)
+        return self.join_bars(out, first)
 
 
 def fretted_part(ctx: Context, name: str, hs: list[score.Hit], kind: str) -> tuple[str, dict]:

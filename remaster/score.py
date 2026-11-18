@@ -81,6 +81,8 @@ def hits(song: Song, mod: Module, cfg: dict) -> list[Hit]:
             inst = insts[key]
             if inst.mute:
                 continue
+            if inst.drum is None and not tk.note_period:
+                continue  # pas de hauteur
             if inst.drum is not None:
                 pitches = (inst.drum,)
             else:
@@ -137,7 +139,9 @@ def bar_tempi(song: Song, bar_list) -> list[int]:
     t = row_seconds(song)
     out = []
     for s, n in bar_list:
-        bpms = [round(60 / ((t[i + 1] - t[i]) * ROWS_PER_BEAT)) for i in range(s, s + n)]
+        # arrondi stable : 187,5 donne toujours 188 (les durées calculées valent 187,4999… ou 187,5000…)
+        bpms = [int(round(60 / ((t[i + 1] - t[i]) * ROWS_PER_BEAT), 2) + 0.5) for i in range(s, s + n)
+                if t[i + 1] > t[i]] or [120]
         out.append(max(set(bpms), key=bpms.count))
     return out
 

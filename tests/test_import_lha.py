@@ -45,3 +45,11 @@ def test_rangement_par_jeu():
     assert paths.game_dir(dm) == ROOT / "out" / "Dr Mario"
     assert paths.work_dir(dm) == ROOT / "out" / "Dr Mario" / "Dr Mario"
     assert paths.work_dir(dm, "Turrican 3 - world_1 (2)").name == "Turrican 3 - world_1 (2)"
+
+
+def test_jeu_d_un_fichier_en_sous_dossier():
+    from remaster import paths
+    f = ROOT / "in" / "music" / "Strider" / "originaux" / "Custom_Version" / "cust.Strider"
+    assert paths.game_of(f) == "Strider"
+    assert paths.work_dir(f, "Strider - Strider [Custom Version] (5)") == \
+        ROOT / "out" / "Strider" / "Strider - Strider [Custom Version] (5)"

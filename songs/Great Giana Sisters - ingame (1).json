@@ -1,0 +1,69 @@
+{
+  "title": "Great Giana Sisters - ingame (1)",
+  "artist": "",
+  "soundfont": "GeneralUser-GS.sf2",
+  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
+  "samples": {
+    "1": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (193 notes, 11 hauteurs, médiane C#4, voies [1], bruit 0.36)"
+    },
+    "2": {
+      "name": "Basse",
+      "comment": "rôle deviné : basse (284 notes, 23 hauteurs, médiane F2, voies [1, 2], bruit 0.20)"
+    },
+    "3": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (8 notes, 3 hauteurs, médiane F#1, voies [1], bruit 0.54)",
+      "drum": 38
+    },
+    "4": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (78 notes, 14 hauteurs, médiane B4, voies [2, 3], bruit 0.33)"
+    },
+    "5": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (16 notes, 4 hauteurs, médiane A4, voies [2], bruit 0.17)"
+    },
+    "6": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (197 notes, 2 hauteurs, médiane B1, voies [3, 4], bruit 0.63)",
+      "drum": 38
+    },
+    "7": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (60 notes, 2 hauteurs, médiane F#2, voies [3, 4], bruit 0.75)",
+      "drum": 38
+    },
+    "8": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (8 notes, 1 hauteurs, médiane G#0, voies [4], bruit 0.54)",
+      "drum": 38
+    }
+  },
+  "partitions": {
+    "Mélodie": {
+      "instrument": "guitare",
+      "samples": [
+        1,
+        4,
+        5
+      ],
+      "lead": true
+    }
+  },
+  "piano": {
+    "melody": "Mélodie",
+    "chords": [],
+    "riff": [],
+    "bass": [
+      2
+    ],
+    "harmony": [
+      1,
+      2,
+      4,
+      5
+    ]
+  }
+}

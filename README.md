@@ -233,6 +233,18 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
   ou la basse en octaves. Pédale changée à chaque accord, sauf dans les riffs. Son : **Salamander Grand Piano V3**
   (Yamaha C5, 16 nuances, SoundFont jouée par FluidSynth) dans la réverbération **Dragonfly Hall**, −16 LUFS.
   Le MP3 garde le tempo du module : il se cale sur l'original et les remasters.
+- **Piano pour n'importe quelle musique** (19/11/2026) : `python -m remaster.piano <fichier> [--sous-morceau N]`,
+  ou une liste avec `scripts\piano_batch.py liste.txt` (lignes « fichier | n° »). Résultat dans
+  `out\<Jeu>\<musique>\` : `(piano).mp3`, `.mid` et `partitions\… - Piano.pdf`.
+  - Sans fiche, une **fiche automatique** est écrite (`remaster/roles.py`, à corriger à la main) : batterie (un
+    ou deux sons fixes, ou un bruit à peu de hauteurs), basse (la ligne la plus grave), mélodie (le reste ; à chaque
+    mesure, la voie la plus haute). Sans basse dans une mesure, la main gauche suit la note la plus grave qui sonne.
+  - Musiques lues par UADE : une **grille** est déduite des notes (`paula.on_grid`) : l'écart le plus fréquent
+    entre deux notes devient une croche (ou une double croche… pour rester sous ♩ = 220), calée sur les notes, et
+    la barre de mesure sur les temps forts (notes longues et graves). La longueur est celle du MP3 d'origine ;
+    quand la boucle y est jouée deux fois, la partition l'écrit une fois avec une **reprise** (levée à part).
+  - Pas de vérification à l'oreille : la fiche automatique se trompe parfois (un lead saturé pris pour de la
+    batterie…) ; on la corrige puis on relance.
 
 ## Contrôles
 
