@@ -464,7 +464,8 @@ def main():
     ap.add_argument("--sans-mp3", action="store_true", help="seulement la partition")
     a = ap.parse_args()
     cfg = load_config(a.config or ROOT / "songs" / f"{a.mod.stem}.json")
-    make(a.mod, cfg, a.out or ROOT / "out" / a.mod.stem, audio=not a.sans_mp3)
+    from .paths import work_dir
+    make(a.mod, cfg, a.out or work_dir(a.mod), audio=not a.sans_mp3)
 
 
 if __name__ == "__main__":

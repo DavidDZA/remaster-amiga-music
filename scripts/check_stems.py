@@ -59,7 +59,8 @@ def main():
     mod_path = pathlib.Path(sys.argv[1])
     mod = modfile.load(mod_path)
     song = player.play(mod)
-    stems = render.ROOT / "out" / mod_path.stem / "stems"
+    from remaster.paths import work_dir
+    stems = work_dir(mod_path) / "stems"
     for wav in sorted(stems.glob("s*.flac")):
         sample, ch = int(wav.stem[1:3]), int(wav.stem.split("-v")[1][0]) - 1
         new, rate = sf.read(wav, dtype="float32", always_2d=True)

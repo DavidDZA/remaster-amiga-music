@@ -257,7 +257,8 @@ def main():
     ap.add_argument("--out", type=pathlib.Path)
     a = ap.parse_args()
     cfg = load_config(a.config or ROOT / "songs" / f"{a.mod.stem}.json")
-    make(a.mod, cfg, a.out or ROOT / "out" / a.mod.stem / "partitions")
+    from .paths import work_dir
+    make(a.mod, cfg, a.out or work_dir(a.mod) / "partitions")
 
 
 if __name__ == "__main__":

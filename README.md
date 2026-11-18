@@ -44,8 +44,12 @@ On peut donc garder la partition et **changer les instruments** :
 
 ## Utilisation
 
-Chaque module à traiter va dans son dossier `in\music\<nom>\` (ex. `in\music\Dr Mario\Dr Mario.mod`) ; les résultats sortent dans
-`out\<nom>\` et la fiche d'instruments est `songs\<nom>.json`.
+Les musiques sont rangées par jeu dans `in\music\<Jeu>\` (ex. `in\music\Dr Mario\Dr Mario.mod`) ; la fiche
+d'instruments d'une musique est `songs\<musique>.json`. Les résultats aussi sont rangés par jeu :
+
+- `out\<Jeu>\` : **toutes les musiques du jeu à plat**, en MP3 de l'original (`scripts\render_originals.py`) ;
+- `out\<Jeu>\<musique>\` : un sous-dossier seulement pour une musique qu'on **retravaille** (remasters, piano,
+  partitions, pistes séparées). Le chemin se déduit de celui de la musique (`remaster/paths.py`).
 
 ```sh
 python -m venv .venv
@@ -54,11 +58,11 @@ python -m venv .venv
 .venv\Scripts\python -m remaster "in\music\Dr Mario\Dr Mario.mod"
 ```
 
-Dans `out\Dr Mario\` :
+Dans `out\Dr Mario\` : `Dr Mario (original).mp3`, le module tel quel (rendu OpenMPT), pour comparer ; et dans
+`out\Dr Mario\Dr Mario\`, le travail :
 
 | Fichier | Contenu |
 |---|---|
-| `Dr Mario (original).mp3` | le module tel quel (rendu OpenMPT), pour comparer |
 | `Dr Mario (remaster fidèle).mp3` | mêmes notes, nouveaux instruments |
 | `Dr Mario (remaster enrichi).mp3` | pareil + charleston et crashs ajoutés |
 | `Dr Mario (remaster).mid` | la partition en MIDI, pour la reprendre dans un logiciel de musique |
@@ -134,7 +138,8 @@ Joseph, `cust.` lecteur propre au jeu… (`smp.`, `smpl.` : les samples qui vont
 
 Pour chaque jeu, `in\music\<Jeu>\` contient :
 - **les musiques en .mod** (ce que lit le projet) : `<Jeu>.mod` s'il n'y en a qu'une, sinon `<Jeu> - <titre>.mod`
-  (le nom sert aussi pour la fiche `songs\<nom>.json` et le dossier de sortie `out\<nom>\`, un par musique).
+  (le nom sert aussi pour la fiche `songs\<nom>.json`, le MP3 `out\<Jeu>\<nom> (original).mp3` et le dossier de
+  travail `out\<Jeu>\<nom>\`).
   Un fichier déjà en ProTracker ou en **Soundtracker 15 samples** est gardé tel quel ; un autre format est
   **converti** avec [libxmp](https://github.com/libxmp/libxmp) (`remaster/xmpconv.py`) ;
 - **`originaux\`** : tous les fichiers de l'archive, tels quels, quel que soit le format ;
@@ -166,14 +171,17 @@ vrai lecteur. Il est construit dans `tools\uade\` (il faut la partie POSIX de MS
 
 ```sh
 .venv\Scripts\python scripts\build_uade.py                     # une fois
-.venv\Scripts\python scripts\render_uade.py                    # tous les originaux pas encore lus → MP3
+.venv\Scripts\python scripts\render_originals.py              # l'original de toutes les musiques → MP3
 .venv\Scripts\python -m remaster "in\music\Turrican 3\originaux\mdat.world_1" --sous-morceau 2
 ```
 
-- **Écouter** (`scripts/render_uade.py`) : chaque sous-morceau devient `out\<Jeu> - <titre> (n)\... (original).mp3`
-  (un dossier par musique). Fin : quand le lecteur l'annonce, après 5 s de silence, ou à 5 min (beaucoup bouclent).
-  Les bruitages muets ou de moins de 3 s sont écartés. 18/11/2026 : **501 morceaux, 44 jeux, ≈ 1 000 min** (en
-  20 min) ; liste dans `in\music\AUDIO-UADE.md`.
+- **Écouter** (`scripts/render_originals.py`, qui fait aussi les .mod avec OpenMPT) : chaque sous-morceau devient
+  `out\<Jeu>\<Jeu> - <titre> (n) (original).mp3`. Une autre version du même morceau (sous-dossier de l'archive :
+  `Custom_Versions`…) porte son nom entre crochets : « Batman - cave [Custom Versions] ». Fin : quand le lecteur
+  l'annonce, après 5 s de silence, ou à 5 min (beaucoup bouclent). **Les morceaux de moins de 15 s (jingles,
+  bruitages) ne sont pas gardés** (`--min`, jugé sur le MP3 produit).
+  18/11/2026 : **631 MP3 dans 78 dossiers de jeux** (237 .mod joués par OpenMPT, 394 morceaux joués par UADE) ;
+  liste dans `in\music\ECOUTE.md`.
 - **Remasteriser** (`remaster/paula.py`) : notre UADE est légèrement modifié (`scripts/build_uade.py`, `patch_uade`) :
   il écrit le **journal de la puce son Paula** (période, volume, adresse et longueur du sample de chaque voie ; le
   démarrage du DMA d'une voie = une note) et **copie chaque sample joué** depuis la mémoire Amiga. On en refait les
@@ -199,7 +207,7 @@ double croche près. Une ligne de pattern = une double croche, 16 lignes = une m
 vitesse du module (*Dr Mario* : ♩ = 150, 125 et 107). Chaque partie commence par une lettre encadrée avec le temps
 dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond** (`remaster/lily.py`).
 
-| Fichier (`out\Dr Mario\partitions\`) | Contenu |
+| Fichier (`out\Dr Mario\Dr Mario\partitions\`) | Contenu |
 |---|---|
 | `Guitare 1 (lead).pdf` | portée + tablature : la ligne de lead la plus haute à chaque mesure, bends (b. ½, b. 1, lâcher), glissandos, vibrato |
 | `Guitare 2 (rythmique).pdf` | power chords et quintes étouffées (P.M. - - -, accords ouverts accentués), plus les autres lignes de lead |

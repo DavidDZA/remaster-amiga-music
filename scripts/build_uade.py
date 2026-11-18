@@ -11,7 +11,7 @@ sockets : le gcc MinGW ne suffit pas). Étapes :
 4. installe dans tools\\uade : bin\\ (uade2wav.exe, uadecore.exe, msys-2.0.dll) et data\\ (score, uaerc,
    eagleplayer.conf, uade.conf, players\\ : les 175 lecteurs Amiga).
 
-Les chemins passés à UADE doivent être de la forme /cygdrive/f/… (voir scripts\\render_uade.py).
+Les chemins passés à UADE doivent être de la forme /cygdrive/f/… (voir remaster\\paula.py).
 """
 import pathlib
 import shutil

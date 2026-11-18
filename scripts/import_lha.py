@@ -12,7 +12,7 @@ Pour chaque jeu, dans in\\music\\<Jeu>\\ :
 - **les musiques en .mod**, que lit Remaster AMIGA Music : le fichier d'origine s'il est déjà en ProTracker ou
   Soundtracker, sinon **converti** avec libxmp (remaster/xmpconv.py) quand libxmp sait le lire. Chaque .mod est
   vérifié : il se joue avec le lecteur du projet et dure comme chez libxmp (à 10 % près) ;
-  nom : <Jeu>.mod s'il n'y a qu'une musique, sinon <Jeu> - <titre>.mod (unique : il sert pour songs\\ et out\\) ;
+  nom : <Jeu>.mod s'il n'y a qu'une musique, sinon <Jeu> - <titre>.mod (unique : il sert pour songs\\ et out\\<Jeu>\\) ;
 - **originaux\\** : tous les fichiers de l'archive, tels quels, quel que soit le format (rien n'est perdu ;
   les formats pas encore lus pourront l'être plus tard) ;
 et in\\music\\INVENTAIRE.md : ce qui est lisible, converti, pas encore lu, abîmé.
@@ -84,6 +84,25 @@ def title_of(path: str) -> str:
     elif "." in name:
         name = name.split(".", 1)[1]
     return clean(name)
+
+
+def uade_title(path: pathlib.Path) -> str:
+    """Titre d'une musique de originaux\\, unique dans son jeu : une autre version du même morceau (rangée dans un
+    sous-dossier de l'archive : Custom_Versions, AGA_Version…) reçoit le nom du sous-dossier entre crochets,
+    ou à défaut son format : « cave [Custom Versions] », « cave [jd] »."""
+    path = pathlib.Path(path)
+    root = next((p for p in path.parents if p.name == "originaux"), path.parent)
+    t = title_of(path.name)
+    same = [f for f in root.rglob("*") if f.is_file() and f != path and title_of(f.name) == t
+            and music_kind(f.name) not in COMPANIONS and music_kind(f.name) != "?"]
+    if not same:
+        return t
+    sub = path.parent.relative_to(root)
+    if sub.parts:
+        return f"{t} [{clean(' '.join(sub.parts).replace('_', ' '))}]"
+    if any(f.parent == path.parent for f in same):
+        return f"{t} [{music_kind(path.name)}]"
+    return t
 
 
 def clean(s: str) -> str:
@@ -240,7 +259,7 @@ def write_inventory(path: pathlib.Path, inventory):
     lines += [f"- {NAMES[k] + ' (`' + k + '.`)' if k in NAMES else '`' + k + '.`'} : {n} fichier{'s' if n > 1 else ''}"
               for k, n in later.most_common()]
     lines += ["", "Ils sont gardés dans `originaux\\`. Ce sont des musiques à lecteur intégré : "
-              "`scripts/render_uade.py` les enregistre en MP3 avec UADE (voir AUDIO-UADE.md), et "
+              "`scripts/render_originals.py` les enregistre en MP3 avec UADE (voir ECOUTE.md), et "
               "`python -m remaster <fichier> --sous-morceau N` les remasterise (notes lues par UADE, "
               "remaster/paula.py).", ""]
     path.write_text("\n".join(lines), encoding="utf-8")

@@ -12,7 +12,7 @@ pour piano seul de *Dr Mario*. Ce guide sert à refaire la même chose pour un a
 .venv\Scripts\python -m remaster "in\music\morceau\morceau.mod"                     # 3. le remaster (les partitions en suivent les notes)
 .venv\Scripts\python -m remaster.partitions "in\music\morceau\morceau.mod"          # 4. tablatures + batterie (PDF)
 .venv\Scripts\python -m remaster.piano "in\music\morceau\morceau.mod"               # 5. piano : PDF + MP3 + MIDI
-.venv\Scripts\python scripts\preview_pages.py "out\morceau\partitions"   # 6. relire les pages en images
+.venv\Scripts\python scripts\preview_pages.py "out\Jeu\morceau\partitions"   # 6. relire les pages en images
 .venv\Scripts\python -m pytest                                     # 7. tests
 ```
 
@@ -42,7 +42,7 @@ Les partitions demandent un module à lignes et mesures (ProTracker, Soundtracke
 à lecteur intégré lues par UADE n'en ont pas encore (voir la ROADMAP).
 
 Le module vient souvent d'une archive de jeu : `scripts\import_lha.py` range dans `in\music\<Jeu>\` toutes les
-musiques des archives de `in\lha\` (converties en .mod si besoin) (voir le README). Les résultats d'une musique vont dans `out\<nom>\`.
+musiques des archives de `in\lha\` (converties en .mod si besoin) (voir le README). Les résultats d'une musique qu'on retravaille vont dans `out\<Jeu>\<nom>\`.
 
 `scripts/dump_patterns.py "in\music\morceau\morceau.mod"` affiche les samples (durée, note au C-2) et, pour chaque pattern, quels
 samples jouent sur quelles voies et quels effets. Avec des numéros de patterns, il affiche le détail comme un tracker.
@@ -153,7 +153,7 @@ reprennent exactement les règles de `extras.py` (`hihat_rows`, `crash_rows`).
 
 - **Messages de la commande** : notes remontées, notes enlevées. Beaucoup d'enlevées = revoir la répartition des
   samples dans `partitions`.
-- **Les pages** : `scripts/preview_pages.py` → `out\<nom>\partitions\apercu\*.png`. Claude les regarde une par une
+- **Les pages** : `scripts/preview_pages.py` → `out\<Jeu>\<nom>\partitions\apercu\*.png`. Claude les regarde une par une
   (il ne lit pas un PDF page à page). À regarder : doigtés (cordes voisines, pas de saut de 10 cases), pauses
   regroupées, P.M., accords sous la mélodie, pas de note piquée liée.
 - **Le MP3 du piano** : durée = celle du module + 3 s de réverbération ; niveau −16 LUFS ; crête −1,5 dB ; aucun

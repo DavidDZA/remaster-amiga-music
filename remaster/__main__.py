@@ -1,15 +1,15 @@
-"""python -m remaster <musique> [--sous-morceau N] [--config songs/<nom>.json] [--out out/<nom>]
+"""python -m remaster <musique> [--sous-morceau N] [--config songs/<nom>.json] [--out out/<jeu>/<nom>]
 
 <musique> : un .mod (ProTracker, Soundtracker), ou n'importe quel autre format Amiga (TFMX, David Whittaker,
 lecteur propre au jeu…) : ses notes sont alors lues par UADE dans ce que le lecteur envoie à la puce son
-(remaster/paula.py). Pour ceux-là, --sous-morceau choisit le morceau (1, 2… comme les dossiers de out\\).
+(remaster/paula.py). Pour ceux-là, --sous-morceau choisit le morceau (1, 2… comme dans le nom des MP3 de out\\<Jeu>\\).
 """
 from __future__ import annotations
 import argparse
 import json
 import pathlib
 import sys
-from . import modfile, analyze, render
+from . import modfile, analyze, render, paths
 
 
 def draft_config(mod: modfile.Module, title: str) -> dict:
@@ -33,11 +33,11 @@ def is_protracker(path: pathlib.Path) -> bool:
 
 
 def uade_name(path: pathlib.Path, number: int | None, count: int) -> str:
-    """Même nom que scripts/render_uade.py : « <Jeu> - <titre> (n) » pour in\\music\\<Jeu>\\originaux\\<fichier>."""
+    """Même nom que scripts/render_originals.py : « <Jeu> - <titre> (n) » pour in\\music\\<Jeu>\\originaux\\<fichier>."""
     sys.path.insert(0, str(render.ROOT / "scripts"))
     import import_lha  # noqa: PLC0415
     game = path.parent.parent.name if path.parent.name == "originaux" else path.parent.name
-    name = f"{game} - {import_lha.title_of(path.name)}"
+    name = f"{game} - {import_lha.uade_title(path)}"
     return name if count <= 1 else f"{name} ({number or 1})"
 
 
@@ -48,7 +48,7 @@ def main():
     ap.add_argument("--sous-morceau", type=int, help="pour un format autre que .mod : n° du morceau (1, 2…)")
     ap.add_argument("--max", type=int, default=300, help="durée maximale (secondes) pour un format autre que .mod")
     ap.add_argument("--config", type=pathlib.Path, help="fiche des instruments (JSON) ; par défaut songs/<nom>.json")
-    ap.add_argument("--out", type=pathlib.Path, help="dossier de sortie ; par défaut out/<nom>")
+    ap.add_argument("--out", type=pathlib.Path, help="dossier de travail ; par défaut out/<jeu>/<nom>")
     ap.add_argument("--no-original", action="store_true", help="ne pas refaire le MP3 de l'original")
     a = ap.parse_args()
     source, name = None, a.mod.stem
@@ -62,7 +62,7 @@ def main():
         if not lo <= lo + number - 1 <= hi:
             raise SystemExit(f"{a.mod.name} a {hi - lo + 1} morceau(x) : --sous-morceau entre 1 et {hi - lo + 1}")
         name = uade_name(a.mod, number, hi - lo + 1)
-        out_dir = a.out or render.ROOT / "out" / name
+        out_dir = a.out or paths.work_dir(a.mod, name)
         print(f"Lecture des notes avec UADE : {a.mod.name}, morceau {number}/{hi - lo + 1}…")
         mod, song, info = paula.load(a.mod, lo + number - 1, a.max, keep=out_dir)
         print(f"  {info.get('player', '?')} : {len(mod.samples)} samples, "
@@ -75,7 +75,7 @@ def main():
         cfg_path.write_text(json.dumps(draft_config(mod, title), ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"Fiche d'instruments créée : {cfg_path} (à compléter, puis relancer)")
     cfg = render.load_config(cfg_path)
-    render.remaster(a.mod, cfg, a.out or render.ROOT / "out" / name, original=not a.no_original,
+    render.remaster(a.mod, cfg, a.out or paths.work_dir(a.mod, name), original=not a.no_original,
                     source=source, name=name)
     if source is not None:
         (source[2]).unlink(missing_ok=True)

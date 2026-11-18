@@ -9,7 +9,7 @@ import numpy as np
 import soundfile as sf
 import pedalboard as pb
 import imageio_ffmpeg
-from . import modfile, player, midi, analyze, extras, reference, sfz, library, fx
+from . import modfile, player, midi, analyze, extras, reference, sfz, library, fx, paths
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TOOLS = ROOT / "tools"
@@ -225,11 +225,14 @@ def to_mp3(wav: pathlib.Path, mp3: pathlib.Path, tags: dict, loudness: float = -
 
 
 def render_original(mod_path: pathlib.Path, out_dir: pathlib.Path, tags: dict):
-    wav = out_dir / "original.wav"
-    subprocess.run([str(openmpt_exe()), "--batch", "--quiet", "--stereo", "60", "--samplerate", str(SR),
-                    "--no-float", "--force", "-o", str(wav), str(mod_path)], check=True, capture_output=True)
-    to_mp3(wav, out_dir / f"{mod_path.stem} (original).mp3", {**tags, "title": f"{tags.get('title', mod_path.stem)} (original Amiga)"})
-    wav.unlink()
+    import tempfile
+    # un fichier temporaire par musique : plusieurs musiques d'un même jeu peuvent être enregistrées en même temps
+    with tempfile.TemporaryDirectory() as tmp:
+        wav = pathlib.Path(tmp) / "original.wav"
+        subprocess.run([str(openmpt_exe()), "--batch", "--quiet", "--stereo", "60", "--samplerate", str(SR),
+                        "--no-float", "--force", "-o", str(wav), str(mod_path)], check=True, capture_output=True)
+        to_mp3(wav, out_dir / f"{mod_path.stem} (original).mp3",
+               {**tags, "title": f"{tags.get('title', mod_path.stem)} (original Amiga)"})
 
 
 def export_samples(mod: modfile.Module, out_dir: pathlib.Path):
@@ -244,10 +247,14 @@ def export_samples(mod: modfile.Module, out_dir: pathlib.Path):
 
 
 def remaster(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, original: bool = True, log=print,
-             source=None, name: str | None = None):
-    """source : (Module, Song, WAV d'origine) déjà prêts, pour une musique qui n'est pas un .mod (remaster/paula.py).
+             source=None, name: str | None = None, original_dir: pathlib.Path | None = None):
+    """out_dir : le dossier de travail de la musique (out\\<Jeu>\\<musique>\\) ; le MP3 de l'original va avec les
+    autres musiques du jeu (original_dir, par défaut out\\<Jeu>\\).
+    source : (Module, Song, WAV d'origine) déjà prêts, pour une musique qui n'est pas un .mod (remaster/paula.py).
     name : nom des fichiers produits (par défaut celui du fichier de musique)."""
     out_dir.mkdir(parents=True, exist_ok=True)
+    original_dir = original_dir or paths.game_dir(mod_path)
+    original_dir.mkdir(parents=True, exist_ok=True)
     stem = name or mod_path.stem
     if source is None:
         mod = modfile.load(mod_path)
@@ -292,9 +299,10 @@ def remaster(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, original:
         made.append(_write_mix(extra_stems, master, out_dir, f"{stem} (remaster enrichi).mp3",
                                {**tags, "title": f"{title} (enrichi)"}))
     if original and source is None:
-        render_original(mod_path, out_dir, tags)
+        render_original(mod_path, original_dir, tags)
     elif original:
-        to_mp3(original_wav, out_dir / f"{stem} (original).mp3", {**tags, "title": f"{title} (original Amiga)"})
+        to_mp3(original_wav, original_dir / f"{stem} (original).mp3",
+               {**tags, "title": f"{title} (original Amiga)"})
     export_samples(mod, out_dir)
     for m in made:
         log(f"→ {m}")
