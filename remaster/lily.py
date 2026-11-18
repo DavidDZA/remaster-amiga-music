@@ -141,6 +141,7 @@ def header(title: str, subtitle: str, composer: str, legend: str = "") -> str:
 
 def compile_pdf(ly_path: pathlib.Path) -> pathlib.Path:
     """Grave le .ly en PDF dans le même dossier ; lève une erreur lisible si LilyPond échoue."""
+    ly_path = ly_path.resolve()  # LilyPond tourne dans le dossier du fichier : chemins absolus
     r = subprocess.run([str(lilypond_exe()), "-dno-point-and-click", "-o", str(ly_path.with_suffix("")), str(ly_path)],
                        capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=ly_path.parent)
     pdf = ly_path.with_suffix(".pdf")
@@ -151,6 +152,7 @@ def compile_pdf(ly_path: pathlib.Path) -> pathlib.Path:
 
 def compile_png(ly_path: pathlib.Path, resolution: int = 100) -> list[pathlib.Path]:
     """Version image (pour vérifier la gravure)."""
+    ly_path = ly_path.resolve()
     subprocess.run([str(lilypond_exe()), "-dno-point-and-click", "--png", f"-dresolution={resolution}",
                     "-o", str(ly_path.with_suffix("")), str(ly_path)], capture_output=True, cwd=ly_path.parent)
     return sorted(ly_path.parent.glob(ly_path.stem + "*.png"))

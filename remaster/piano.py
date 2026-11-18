@@ -1,6 +1,6 @@
 """Arrangement pour piano seul : un MP3 (Salamander Grand Piano) et sa partition (PDF).
 
-    python -m remaster.piano "Dr Mario.mod"
+    python -m remaster.piano "in\\mod\\Dr Mario\\Dr Mario.mod"
 
 Règles d'arrangement (fiche du morceau, clé `piano`) :
 - **main droite, hampes en haut** : la mélodie, prise dans la partie de lead des tablatures (`melody`). Un bend

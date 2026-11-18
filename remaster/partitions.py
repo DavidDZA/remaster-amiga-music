@@ -1,6 +1,6 @@
 """Tablatures (guitares, basse) et partition de batterie, en PDF.
 
-    python -m remaster.partitions "Dr Mario.mod"
+    python -m remaster.partitions "in\\mod\\Dr Mario\\Dr Mario.mod"
 
 Les parties sont décrites dans la fiche du morceau (`songs/<nom>.json`, clé `partitions`) :
 

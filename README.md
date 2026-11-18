@@ -44,11 +44,14 @@ On peut donc garder la partition et **changer les instruments** :
 
 ## Utilisation
 
+Chaque module à traiter va dans son dossier `in\mod\<nom>\` (ex. `in\mod\Dr Mario\Dr Mario.mod`) ; les résultats sortent dans
+`out\<nom>\` et la fiche d'instruments est `songs\<nom>.json`.
+
 ```sh
 python -m venv .venv
 .venv\Scripts\python -m pip install -r requirements.txt
 .venv\Scripts\python scripts\setup_tools.py        # FluidSynth, OpenMPT, SoundFonts, LilyPond, piano (≈ 430 Mo, une fois)
-.venv\Scripts\python -m remaster "Dr Mario.mod"
+.venv\Scripts\python -m remaster "in\mod\Dr Mario\Dr Mario.mod"
 ```
 
 Dans `out\Dr Mario\` :
@@ -118,10 +121,12 @@ Les noms des samples sont des messages (« composed by betrayer », « greets to
 
 ## Partitions et piano
 
+La méthode complète, pour refaire la même chose avec un autre module : [docs/PARTITIONS.md](docs/PARTITIONS.md).
+
 ```sh
-.venv\Scripts\python -m remaster.partitions "Dr Mario.mod"   # tablatures + batterie (PDF), quelques secondes
-.venv\Scripts\python -m remaster.piano "Dr Mario.mod"        # piano : PDF + MP3 + MIDI, moins d'une minute
-.venv\Scripts\python -m remaster.piano "Dr Mario.mod" --sans-mp3
+.venv\Scripts\python -m remaster.partitions "in\mod\Dr Mario\Dr Mario.mod"   # tablatures + batterie (PDF), quelques secondes
+.venv\Scripts\python -m remaster.piano "in\mod\Dr Mario\Dr Mario.mod"        # piano : PDF + MP3 + MIDI, moins d'une minute
+.venv\Scripts\python -m remaster.piano "in\mod\Dr Mario\Dr Mario.mod" --sans-mp3
 ```
 
 Les partitions partent des notes du remaster (et non du son) : on sait exactement ce que joue chaque voie, à la
@@ -155,7 +160,7 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
 
 ```sh
 .venv\Scripts\python -m pytest              # tests : lecture, durée, hauteurs, bends, accords, ajouts de batterie
-.venv\Scripts\python scripts\check_stems.py "Dr Mario.mod"   # chaque piste comparée au sample d'origine
+.venv\Scripts\python scripts\check_stems.py "in\mod\Dr Mario\Dr Mario.mod"   # chaque piste comparée au sample d'origine
 ```
 
 `check_stems.py` rejoue chaque sample d'origine comme l'Amiga et le compare à son remplaçant : décalage de hauteur

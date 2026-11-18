@@ -2,7 +2,7 @@
 
 - hauteur : décalage (en demi-tons) qui fait le mieux coïncider les spectres moyens ; 0 attendu, ±12 = mauvaise octave ;
 - calage : décalage (ms) entre les attaques de l'original et du remaster ; 0 attendu.
-Usage : python scripts/check_stems.py "Dr Mario.mod"
+Usage : python scripts/check_stems.py "in/mod/Dr Mario/Dr Mario.mod"
 """
 import math
 import sys
