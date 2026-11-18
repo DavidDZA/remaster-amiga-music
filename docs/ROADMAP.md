@@ -44,6 +44,10 @@ possible (`python -m remaster <fichier> --sous-morceau N`), vérifié note pour 
   avance par trames de 20 ms ; chercher le pas régulier (souvent 3 à 8 trames par ligne) et la mesure (caisse claire).
 - **Fiches d'instruments** : pour chaque jeu, reconnaître les samples (batterie, basse, lead…) comme pour Dr Mario.
 - Rick Dangerous (`cust.`) : UADE ne le reconnaît pas ; la version alternative est abîmée dans l'archive.
+- 23 morceaux sans boucle trouvée, encore coupés à 5 min (Batman « music », Bone Cruncher, Hybris, Pang, RoboCop,
+  Strider, Double Dragon 2…) : leurs notes ne se répètent pas à 99 % sur 20 min. Pistes : voies qui bouclent
+  chacune à leur rythme (chercher une boucle par voie), beaucoup de notes tirées au sort (seuil plus large),
+  ou comparer le son plutôt que les notes.
 
 ## Ensuite
 
