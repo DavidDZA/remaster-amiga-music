@@ -178,8 +178,13 @@ vrai lecteur. Il est construit dans `tools\uade\` (il faut la partie POSIX de MS
 - **Écouter** (`scripts/render_originals.py`, qui fait aussi les .mod avec OpenMPT) : chaque sous-morceau devient
   `out\<Jeu>\<Jeu> - <titre> (n) (original).mp3`. Une autre version du même morceau (sous-dossier de l'archive :
   `Custom_Versions`…) porte son nom entre crochets : « Batman - cave [Custom Versions] ». Fin : quand le lecteur
-  l'annonce, après 5 s de silence, ou à 5 min (beaucoup bouclent). **Les morceaux de moins de 15 s (jingles,
-  bruitages) ne sont pas gardés** (`--min`, jugé sur le MP3 produit).
+  l'annonce ou après 5 s de silence. **Une musique qui boucle sans fin est jouée une fois** (de son début à la fin
+  du premier tour de boucle), **ou deux fois si un tour fait moins de 2 minutes** (et tant pis si c'est encore
+  court), avec un fondu de 4 s. La boucle est trouvée dans le journal de la puce son (`paula.find_loop`) : le plus
+  petit décalage L et le premier instant A tels que chaque note (voie, sample, hauteur) revient L secondes plus tard
+  jusqu'à la fin de l'enregistrement (20 min au plus, `--max`). Sans boucle ni fin en 20 min : les 5 premières
+  minutes. **Les morceaux de moins de 15 s (jingles, bruitages) ne sont pas gardés** (`--min`, jugé sur le MP3).
+  `--boucles` refait les MP3 UADE qui avaient été coupés à 5 min.
   18/11/2026 : **631 MP3 dans 78 dossiers de jeux** (237 .mod joués par OpenMPT, 394 morceaux joués par UADE) ;
   liste dans `in\music\ECOUTE.md`.
 - **Remasteriser** (`remaster/paula.py`) : notre UADE est légèrement modifié (`scripts/build_uade.py`, `patch_uade`) :

@@ -7,8 +7,9 @@
 - les .mod de in\\music\\<Jeu>\\ (d'origine ou convertis) : joués par OpenMPT, une fois du début à la fin ;
 - les musiques à lecteur intégré de in\\music\\<Jeu>\\originaux\\ (TFMX, David Whittaker, Richard Joseph, `cust`…) :
   jouées par UADE, qui émule l'Amiga et le vrai lecteur du format (tools\\uade, scripts\\build_uade.py). Chaque
-  sous-morceau donne un MP3 « <Jeu> - <titre> (n) ». Fin : quand le lecteur l'annonce, après 5 s de silence, ou au
-  bout de --max secondes (300 : beaucoup bouclent sans fin). Les morceaux de moins de 15 s (jingles, bruitages) ne sont pas gardés (--min).
+  sous-morceau donne un MP3 « <Jeu> - <titre> (n) ». Fin : quand le lecteur l'annonce, ou après 5 s de silence ;
+  une musique qui boucle sans fin (beaucoup) est jouée une fois, ou deux si un tour fait moins de 2 min, avec un
+  fondu de 4 s (boucle trouvée dans le journal de la puce son : remaster/paula.py, find_loop). Les morceaux de moins de 15 s (jingles, bruitages) ne sont pas gardés (--min).
 
 Toutes les musiques d'un jeu sont à plat dans out\\<Jeu>\\ ; une musique qu'on retravaille a en plus son sous-dossier
 out\\<Jeu>\\<musique>\\ (remasters, piano, partitions). Compte rendu : in\\music\\ECOUTE.md.
@@ -29,6 +30,9 @@ sys.path.insert(0, str(ROOT))
 from remaster import render, modfile, player  # noqa: E402
 
 MIN_SECONDS = 15  # plus court : un jingle ou un bruitage, pas gardé
+TWO_LOOPS_BELOW = 120  # un tour de boucle plus court que ça : on en joue deux
+FADE = 4  # fondu de fin (secondes) après la coupe à la boucle
+FALLBACK = 300  # boucle introuvable : on garde les 5 premières minutes
 
 UADE = ROOT / "tools" / "uade"
 spec = importlib.util.spec_from_file_location("import_lha", ROOT / "scripts" / "import_lha.py")
@@ -99,9 +103,46 @@ def render_mod(game: str, mod: pathlib.Path, out_root: pathlib.Path, again: bool
     return [(mod.stem, "ok", "OpenMPT")]
 
 
+def looped_badly(mp3: pathlib.Path) -> bool:
+    """MP3 UADE à refaire avec --boucles : coupé à 5 min, ou boucle de plus de 10 min (fausse boucle trouvée en fin
+    d'enregistrement par une version précédente)."""
+    import re
+    import imageio_ffmpeg
+    e = subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(), "-hide_banner", "-i", str(mp3)], capture_output=True,
+                       text=True, encoding="utf-8", errors="replace").stderr
+    seconds = mp3_seconds(mp3)
+    if "UADE" not in e:
+        return False
+    return (FALLBACK - 5 <= seconds <= FALLBACK + 10) or ("boucle 1 fois" in e and seconds > 600)
+
+
+def cut_at_loop(x: np.ndarray, sr: int, log_ev, natural_end: bool) -> tuple[np.ndarray, str]:
+    """Une musique qui boucle sans fin : un tour de boucle, ou deux si un tour fait moins de TWO_LOOPS_BELOW
+    secondes (et tant pis si c'est encore court) ; un fondu de FADE s, pris sur la suite, évite une coupure sèche.
+    Sans boucle trouvée : les FALLBACK premières secondes. x commence à la première note (comme le journal)."""
+    from remaster import paula
+    if natural_end:
+        return x, "fin du morceau"
+    loop = paula.find_loop(log_ev)
+    if loop is None:
+        cut, how = FALLBACK, f"pas de boucle trouvée : {FALLBACK // 60} min"
+    else:
+        a, length = loop
+        cut, how = a + length, "boucle 1 fois"
+        if cut < TWO_LOOPS_BELOW:
+            cut, how = a + 2 * length, "boucle 2 fois"
+    end = min(len(x), int((cut + FADE) * sr))
+    y = x[:end].copy()
+    f0 = min(int(cut * sr), end)
+    if end > f0:
+        y[f0:end] *= np.linspace(1.0, 0.0, end - f0, dtype=np.float32)[:, None]
+    return y, how
+
+
 def render_uade(game: str, music: pathlib.Path, out_root: pathlib.Path, seconds: int, again: bool,
-                min_s: float = MIN_SECONDS) -> list:
-    """Tous les sous-morceaux d'un fichier : [(nom, état, lecteur)]."""
+                min_s: float = MIN_SECONDS, redo_long: bool = False, only: int | None = None) -> list:
+    """Les sous-morceaux d'un fichier (ou seulement le n° `only`, compté depuis 0) : [(nom, état, lecteur)]."""
+    from remaster import paula
     title = f"{game} - {imp.uade_title(music)}"
     results = []
     with tempfile.TemporaryDirectory() as tmp:
@@ -111,28 +152,36 @@ def render_uade(game: str, music: pathlib.Path, out_root: pathlib.Path, seconds:
         _cur, lo, hi = (int(x) for x in probe["subsongs"].split())
         subs = list(range(lo, hi + 1))
         for k, s in enumerate(subs):
+            if only is not None and k != only:
+                continue
             name = imp.clean(title if len(subs) == 1 else f"{title} ({k + 1})")
             dest = out_root / game / f"{name} (original).mp3"
-            if dest.exists() and not again:
+            if dest.exists() and not again and not (redo_long and looped_badly(dest)):
                 results.append((name, "déjà là", "UADE"))
                 continue
-            wav = pathlib.Path(tmp, f"{s}.wav")
-            info = uade(music, wav, s, seconds)
-            if not info["ok"] or not wav.exists():
+            work = pathlib.Path(tmp, str(s))
+            work.mkdir()
+            try:
+                info = paula.record(music, work, s, seconds)  # son + journal de la puce son (pour la boucle)
+            except ValueError:
                 results.append((name, "lecture impossible", ""))
                 continue
-            x, sr = sf.read(wav, dtype="float32", always_2d=True)
+            x, sr = sf.read(info["wav"], dtype="float32", always_2d=True)
             loud = np.where(np.abs(x).max(axis=1) > 10 ** (-50 / 20))[0]
             if len(loud) == 0 or (loud[-1] - loud[0]) / sr < min_s:
                 continue  # muet, ou jingle / bruitage trop court
             x = x[loud[0]: loud[-1] + sr // 2]
+            ev, _shift = paula.align(paula.events(info["log"]))
+            x, how = cut_at_loop(x, sr, ev, natural_end=info["seconds"] < seconds - 1)
+            if len(x) / sr < min_s:
+                continue
             dest.parent.mkdir(parents=True, exist_ok=True)
             clean_wav = pathlib.Path(tmp, f"{s}-c.wav")
             sf.write(clean_wav, x, sr, subtype="PCM_16")
             player = info.get("player") or info.get("format") or "?"
             render.to_mp3(clean_wav, dest, {"title": name, "album": game,
-                                            "comment": f"Original Amiga ({player}), enregistré avec UADE"}, -14)
-            results.append((name, "ok", player))
+                                            "comment": f"Original Amiga ({player}), enregistré avec UADE ; {how}"}, -14)
+            results.append((name, "ok", f"{player} ({how})"))
     return results
 
 
@@ -142,21 +191,31 @@ def main():
     ap.add_argument("jeux", nargs="*", help="noms de dossiers de in\\music (tous par défaut)")
     ap.add_argument("--music", type=pathlib.Path, default=ROOT / "in" / "music")
     ap.add_argument("--out", type=pathlib.Path, default=ROOT / "out")
-    ap.add_argument("--max", type=int, default=300, help="durée maximale d'un morceau lu par UADE (secondes)")
+    ap.add_argument("--max", type=int, default=1200,
+                    help="enregistrement maximal d'un morceau lu par UADE, pour trouver sa boucle (secondes)")
+    ap.add_argument("--boucles", action="store_true",
+                    help="refaire les MP3 UADE coupés à 5 min (règle de la boucle)")
     ap.add_argument("--min", type=float, default=MIN_SECONDS, help="durée minimale gardée (secondes)")
     ap.add_argument("--refaire", action="store_true", help="refaire aussi les MP3 qui existent déjà")
     a = ap.parse_args()
     games = [d for d in sorted(a.music.iterdir()) if d.is_dir() and (not a.jeux or d.name in a.jeux)]
-    jobs = [("mod", g.name, f) for g in games for f in sorted(g.glob("*.mod"))]
-    jobs += [("uade", g.name, f) for g in games for f in candidates(g)]
-    print(f"{len(jobs)} fichiers ({sum(j[0] == 'mod' for j in jobs)} .mod, {sum(j[0] == 'uade' for j in jobs)} UADE)",
+    jobs = [("mod", g.name, f, None) for g in games for f in sorted(g.glob("*.mod"))]
+    from remaster import paula
+    for g in games:
+        for f in candidates(g):
+            try:
+                lo, hi = paula.subsongs(f)
+            except ValueError:
+                lo, hi = 0, 0
+            jobs += [("uade", g.name, f, k) for k in range(hi - lo + 1)]  # un travail par sous-morceau
+    print(f"{len(jobs)} morceaux ({sum(j[0] == 'mod' for j in jobs)} .mod, {sum(j[0] == 'uade' for j in jobs)} UADE)",
           flush=True)
     report: dict[str, list] = {}
     with cf.ThreadPoolExecutor(max_workers=6) as pool:
         futs = {}
-        for kind, g, f in jobs:
+        for kind, g, f, k in jobs:
             fn = (lambda g=g, f=f: render_mod(g, f, a.out, a.refaire, a.min)) if kind == "mod" else \
-                 (lambda g=g, f=f: render_uade(g, f, a.out, a.max, a.refaire, a.min))
+                 (lambda g=g, f=f, k=k: render_uade(g, f, a.out, a.max, a.refaire, a.min, a.boucles, k))
             futs[pool.submit(fn)] = (g, f)
         for fut in cf.as_completed(futs):
             g, f = futs[fut]

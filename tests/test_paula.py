@@ -55,3 +55,72 @@ def test_dr_mario_comme_le_lecteur_protracker():
         assert all(got[k][1] == exp[k][1] for k in exp)                # mêmes hauteurs
         pairs = {(got[k][0], exp[k][0]) for k in exp}
         assert len({a for a, _ in pairs}) == len(pairs)                # un sample UADE = un sample du module
+
+
+def boucle(intro: int, motif: list[int], tours: int, pas: float = 0.25):
+    """Journal d'une musique : `intro` notes, puis `motif` (périodes) répété `tours` fois sur la voie 0."""
+    rows, t = [], 0.0
+    pers = [300 + i for i in range(intro)] + motif * tours
+    for p in pers:
+        rows += [(t, 0, paula.LEN, 50), (t, 0, paula.LCH, 0), (t, 0, paula.LCL, 0x1000), (t, 0, paula.PER, p),
+                 (t, 0, paula.LOOP, 0)]
+        t += pas
+    return journal(rows)
+
+
+def test_boucle_trouvee():
+    ev = boucle(intro=8, motif=list(range(400, 432)), tours=5)  # tour de 32 notes différentes = 8 s
+    a, length = paula.find_loop(ev)
+    assert a == pytest.approx(8 * 0.25) and length == pytest.approx(8.0)
+
+
+def test_pas_de_boucle():
+    ev = journal([(i * 0.25, 0, k, v) for i in range(200) for k, v in ((paula.LEN, 50), (paula.PER, 300 + i),
+                                                                       (paula.LOOP, 0))])
+    assert paula.find_loop(ev) is None
+
+
+def test_une_ou_deux_fois_la_boucle():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("r", ROOT / "scripts" / "render_originals.py")
+    r = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(r)
+    sr = 100
+    x = np.ones((sr * 600, 2), np.float32)
+    # tour de 80 s après 10 s d'intro : 90 s < 2 min → deux tours (170 s) + fondu
+    ev = boucle(intro=40, motif=list(range(500, 820)), tours=6)          # 320 notes × 0,25 s = 80 s
+    y, how = r.cut_at_loop(x, sr, ev, natural_end=False)
+    assert how == "boucle 2 fois" and len(y) / sr == pytest.approx(10 + 160 + r.FADE, abs=0.1)
+    assert y[-1, 0] == pytest.approx(0, abs=0.02)                       # fin en fondu
+    # tour de 150 s : un seul
+    ev = boucle(intro=0, motif=list(range(500, 1100)), tours=3)          # 600 notes × 0,25 s = 150 s
+    y, how = r.cut_at_loop(x, sr, ev, natural_end=False)
+    assert how == "boucle 1 fois" and len(y) / sr == pytest.approx(150 + r.FADE, abs=0.1)
+    # morceau qui s'arrête de lui-même : intact
+    y, how = r.cut_at_loop(x[:sr * 90], sr, ev, natural_end=True)
+    assert len(y) == sr * 90
+
+
+def test_boucle_avec_quelques_notes_au_hasard():
+    # 40 tours d'un motif de 40 notes ; dans 2 tours, une note change (roulement tiré au sort) : 0,1 % des notes
+    motif = list(range(500, 540))
+    pers = motif * 40
+    pers[40 * 7 + 5] = 999
+    pers[40 * 23 + 17] = 998
+    rows, t = [], 0.0
+    for p in pers:
+        rows += [(t, 0, paula.LEN, 50), (t, 0, paula.PER, p), (t, 0, paula.LOOP, 0)]
+        t += 0.25
+    a, length = paula.find_loop(journal(rows))
+    assert a == pytest.approx(0) and length == pytest.approx(10.0)
+
+
+def test_changement_de_partie_n_est_pas_une_boucle():
+    # A A A A B B B B C D E F… : le motif de 10 s ne se répète pas jusqu'à la fin
+    a_part, b_part = list(range(500, 540)), list(range(600, 640))
+    pers = a_part * 4 + b_part * 4 + list(range(700, 1100))
+    rows, t = [], 0.0
+    for p in pers:
+        rows += [(t, 0, paula.LEN, 50), (t, 0, paula.PER, p), (t, 0, paula.LOOP, 0)]
+        t += 0.25
+    assert paula.find_loop(journal(rows)) is None

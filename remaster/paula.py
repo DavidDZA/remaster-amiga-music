@@ -178,6 +178,74 @@ def trimmed_wav(wav: pathlib.Path, dest: pathlib.Path):
     sf.write(dest, x[loud[0]:] if len(loud) else x, sr, subtype="PCM_16")
 
 
+def find_loop(ev, min_loop: float = 5.0, tol: float = 0.05, rare: float = 0.01) -> tuple[float, float] | None:
+    """(début A, durée L) de la boucle : à partir de A, chaque note (voie, longueur du sample, hauteur) revient L s plus
+    tard, jusqu'à la fin de l'enregistrement (au moins un tour complet de confirmation). None si rien ne se répète.
+
+    ev : événements recalés (align). On compare la suite des notes décalée de k notes : la plus petite boucle dont
+    la répétition couvre toute la fin, avec un écart de temps constant (à `tol` s près)."""
+    times, chans, types, vals = ev
+    # état de chaque voie au moment de chaque note : adresse du sample, longueur, période
+    lc = np.zeros(4, np.int64)
+    ln = np.zeros(4, np.int64)
+    per = np.zeros(4, np.int64)
+    tok, tt = [], []
+    for t, c, k, v in zip(times, chans, types, vals):
+        if c > 3:
+            continue
+        if k == LCH:
+            lc[c] = (lc[c] & 0xFFFF) | (v << 16)
+        elif k == LCL:
+            lc[c] = (lc[c] & ~0xFFFF) | v
+        elif k == LEN:
+            ln[c] = v
+        elif k == PER:
+            per[c] = v
+        elif k == LOOP and ln[c] > 1:
+            # sans l'adresse du sample : beaucoup de lecteurs fabriquent leurs sons dans des tampons qui bougent
+            tok.append(hash((int(c), int(ln[c]), int(per[c]))))
+            tt.append(t)
+    n = len(tok)
+    if n < 20:
+        return None
+    tok = np.array(tok, np.int64)
+    tt = np.array(tt, float)
+    # l'enregistrement s'arrête net : la ou les dernières notes peuvent être incomplètes, on ne les compare pas
+    end = tt[-1]
+    n = int(np.searchsorted(tt, end - 2.0, side="right"))
+    if n < 20:
+        return None
+    tok, tt = tok[:n], tt[:n]
+    end = tt[-1]
+    for k in range(1, n // 2):
+        same = tok[:-k] == tok[k:]
+        m = n - k
+        # à partir de i0, au plus `rare` des notes diffèrent de celles k notes plus loin : certaines musiques tirent au
+        # sort quelques notes (roulements, effets). Un vrai changement de partie en fait différer bien plus.
+        suffix_bad = np.cumsum((~same)[::-1])[::-1]
+        ok = np.nonzero(suffix_bad <= rare * (m - np.arange(m)))[0]
+        if not len(ok):
+            continue
+        matches = np.nonzero(same[ok[0]:])[0]
+        if not len(matches):
+            continue
+        i0 = int(ok[0] + matches[0])                # la boucle commence à la première note qui revient
+        if i0 >= m - 1:
+            continue
+        sel = np.nonzero(same[i0:])[0] + i0
+        shift = tt[sel + k] - tt[sel]
+        L = float(np.median(shift))
+        if L < min_loop or np.abs(shift - L).max() > tol:
+            continue
+        A = float(tt[i0])
+        if end - A < 2 * L - tol:                   # la répétition doit couvrir un tour entier
+            continue
+        if A > end / 2:                             # une vraie boucle commence tôt (après l'intro), pas à la fin
+            continue
+        return A, L
+    return None
+
+
 def load(music: pathlib.Path, subsong: int = -1, seconds: int = 300, keep: pathlib.Path | None = None):
     """(Module, Song, infos UADE) d'une musique de n'importe quel format. keep : dossier où garder le son d'UADE."""
     with tempfile.TemporaryDirectory() as tmp:

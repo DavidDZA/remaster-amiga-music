@@ -36,14 +36,13 @@ Pistes : exporter aussi en **Guitar Pro** / **MusicXML** (pour TuxGuitar, MuseSc
 ## Musiques à lecteur intégré (TFMX, David Whittaker…)
 
 Fait le 18/11/2026 : UADE construit dans tools\uade (modifié pour écrire le journal de la puce son et copier les
-samples), 501 morceaux de 44 jeux enregistrés en MP3, et remaster possible (`python -m remaster <fichier>
---sous-morceau N`), vérifié note pour note sur Dr Mario.
+samples), les originaux enregistrés en MP3 (une fois la boucle, deux si elle fait moins de 2 min), et remaster
+possible (`python -m remaster <fichier> --sous-morceau N`), vérifié note pour note sur Dr Mario.
 
 À faire :
 - **Partitions** de ces musiques : déduire la grille (tempo, lignes, mesures) des instants des notes — le lecteur
   avance par trames de 20 ms ; chercher le pas régulier (souvent 3 à 8 trames par ligne) et la mesure (caisse claire).
 - **Fiches d'instruments** : pour chaque jeu, reconnaître les samples (batterie, basse, lead…) comme pour Dr Mario.
-- Les morceaux qui bouclent : couper au premier tour de boucle (détecter la répétition des notes) plutôt qu'à 5 min.
 - Rick Dangerous (`cust.`) : UADE ne le reconnaît pas ; la version alternative est abîmée dans l'archive.
 
 ## Ensuite
