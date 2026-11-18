@@ -119,6 +119,27 @@ Les noms des samples sont des messages (« composed by betrayer », « greets to
 | 4 | vide | (sert à couper une voie) |
 | ajouts | charleston, crashs (version enrichie) | *Big Rusty Drums* |
 
+## Récupérer les modules des archives de jeux (.lha)
+
+Les archives de musiques de jeux Amiga (`in\lha\*.lha`, format « UnExoticA ») contiennent chacune les musiques
+d'un jeu, avec un préfixe qui donne le format : `mod.` = ProTracker ou Soundtracker (ce que lit le projet),
+`med.` OctaMED, `mdat.` TFMX, `dw.` David Whittaker, `rjp.` Richard Joseph, `cust.` lecteur propre au jeu…
+
+```sh
+.venv\Scripts\python scripts\import_lha.py --essai   # ce qui serait fait
+.venv\Scripts\python scripts\import_lha.py           # range les modules dans in\mod\<Jeu>\
+```
+
+- Un module seul : `in\mod\<Jeu>\<Jeu>.mod` ; plusieurs : `<Jeu> - <titre>.mod`. Le nom sert aussi pour la fiche
+  `songs\<nom>.json` et le dossier de sortie `out\<nom>\` (un dossier par musique).
+- Chaque fichier est lu directement dans l'archive (7-Zip, sans extraction sur le disque), puis gardé seulement s'il
+  se lit **et se joue** avec le lecteur du projet. Un module déjà présent (mêmes octets) n'est pas recopié.
+- Les modules **Soundtracker à 15 samples** (l'ancêtre de ProTracker, sans signature « M.K. ») sont lus aussi
+  (`modfile.is_soundtracker`) : 23 des modules importés sont dans ce format.
+- 18/11/2026, 78 archives : **175 modules** dans 26 jeux ; 8 fichiers `mod.` refusés (Warzone, Wolfchild : un autre
+  format malgré le nom) ; 50 jeux n'ont que d'autres formats (voir [ROADMAP](docs/ROADMAP.md)).
+- `in\lha\` et les modules importés ne vont pas dans git (musiques sous droits) ; seul *Dr Mario* y est, pour les tests.
+
 ## Partitions et piano
 
 La méthode complète, pour refaire la même chose avec un autre module : [docs/PARTITIONS.md](docs/PARTITIONS.md).
@@ -184,6 +205,7 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
 | [Big Rusty Drums](https://github.com/sfzinstruments/karoryfer.big-rusty-drums) (Karoryfer) | batterie | CC0 |
 | [Pedalboard](https://github.com/spotify/pedalboard) | réverbération, compresseur, limiteur | GPL |
 | mido, numpy, scipy, soundfile | MIDI, calcul, WAV | libres |
+| [7-Zip](https://www.7-zip.org/) (déjà installé sur le PC, ou dans `tools\7zip\`) | lecture des archives .lha | LGPL |
 | [LilyPond](https://lilypond.org/) 2.24.4 | gravure des partitions et tablatures (PDF) | GPL-3.0 |
 | [Salamander Grand Piano](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) V3 (Alexander Holm, SF2 FreePats) | piano de l'arrangement (≈ 310 Mo) | CC-BY 3.0 |
 
@@ -202,4 +224,5 @@ Suite prévue (dont le passage à de vrais VST choisis à l'oreille) : [docs/ROA
   sonne si 0). `remaster/library.py` (`KEY_OFFSET`) corrige ; `"key_offset"` dans `sfz` pour une autre banque.
 - La détection des instruments est à faire (ou corriger) à l'oreille, sample par sample : c'est le cœur d'une future
   appli (écouter le sample, choisir un remplaçant dans une liste, réécouter).
-- Formats gérés : `.mod` à 31 samples (M.K., FLT4, 6CHN, 8CHN…). Pas encore les `.xm`, `.s3m`, `.it`.
+- Formats gérés : `.mod` à 31 samples (M.K., FLT4, 6CHN, 8CHN…) et Soundtracker à 15 samples. Pas encore les `.xm`,
+  `.s3m`, `.it`, ni les formats à lecteur intégré (TFMX, OctaMED…) : voir la ROADMAP.

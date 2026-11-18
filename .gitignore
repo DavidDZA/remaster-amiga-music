@@ -5,3 +5,8 @@ __pycache__/
 .pytest_cache/
 # MP3, stems et samples générés
 out/
+
+# archives de jeux et modules importés (musiques sous droits) : seulement en local
+in/lha/
+in/mod/*
+!in/mod/Dr Mario/

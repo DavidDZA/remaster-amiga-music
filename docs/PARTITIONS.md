@@ -38,6 +38,9 @@ rejoue le module tick par tick comme ProTracker ; `remaster/score.py` place chaq
 
 ## Étape 1 : comprendre le module
 
+Le module vient souvent d'une archive de jeu : `scripts\import_lha.py` range dans `in\mod\<Jeu>\` tous les
+modules lisibles des archives de `in\lha\` (voir le README). Les résultats d'une musique vont dans `out\<nom>\`.
+
 `scripts/dump_patterns.py "in\mod\morceau\morceau.mod"` affiche les samples (durée, note au C-2) et, pour chaque pattern, quels
 samples jouent sur quelles voies et quels effets. Avec des numéros de patterns, il affiche le détail comme un tracker.
 

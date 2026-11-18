@@ -33,6 +33,14 @@ Pistes : exporter aussi en **Guitar Pro** / **MusicXML** (pour TuxGuitar, MuseSc
 (E5, D5…) au-dessus de la guitare rythmique ; une partition piano simplifiée (niveau débutant) ; batterie fidèle
 (sans les ajouts) sur demande.
 
+## Autres formats de musique Amiga
+
+L'import des archives .lha (18/11/2026) a laissé de côté 50 jeux sans module ProTracker. Fichiers trouvés, par
+format : `smp`/`rjp` Richard Joseph (55), `cust` lecteurs maison (36), `med` OctaMED (29), `sjs` (25), `pap` (22),
+`dw` David Whittaker (18), `p4x` The Player 4 (17), `mdat`/`smpl` TFMX (28), `jd` (12)…
+Pistes : convertir en .mod ce que sait lire OpenMPT (OctaMED, The Player 4, XM…) ; pour les formats à lecteur
+intégré (TFMX, Richard Joseph, David Whittaker, `cust`), passer par UADE pour en tirer les notes.
+
 ## Ensuite
 
 - **Écoute rapide** : un extrait de 20 s rendu en quelques secondes, pour comparer deux réglages.

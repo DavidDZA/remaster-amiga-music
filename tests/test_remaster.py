@@ -1,5 +1,6 @@
 import pathlib
 import math
+import struct
 import mido
 import numpy as np
 import pytest
@@ -107,3 +108,39 @@ def test_cache_des_pistes_ignore_le_mixage():
     key = lambda i: render._part_key("s", ev, i, 10.0, 0, "sf")
     assert key(a) == key(b)  # EQ après l'ampli, panoramique, volume : pas de nouveau rendu
     assert key(a) != key(c)  # vélocité : le son change
+
+
+def _soundtracker_bytes(extra_orders=b"") -> bytes:
+    """Un petit module Soundtracker 15 samples : 1 pattern, une note sur la voie 1, un sample de 64 octets."""
+    d = bytearray(b"st15 test".ljust(20, b"\0"))
+    for i in range(15):
+        name = f"smp{i + 1}".encode().ljust(22, b"\0")
+        ln = 32 if i == 0 else 0  # en mots de 2 octets
+        d += name + struct.pack(">HBBHH", ln, 0, 64 if i == 0 else 0, 0, 1)
+    d += bytes([1, 120]) + (b"\0" + extra_orders).ljust(128, b"\0")
+    pattern = bytearray(1024)
+    pattern[0:4] = bytes([0x01, 0xAC, 0x10, 0x00])  # C-2 (période 428), sample 1
+    d += pattern + bytes(range(64))
+    return bytes(d)
+
+
+def test_module_soundtracker_15_samples(tmp_path):
+    p = tmp_path / "st.mod"
+    p.write_bytes(_soundtracker_bytes())
+    m = modfile.load(p)
+    assert m.channels == 4 and len(m.samples) == 15 and m.orders == [0]
+    assert m.patterns[0][0][0].period == 428 and m.patterns[0][0][0].sample == 1
+    assert len(m.samples[0].data) == 64
+    assert player.play(m).duration > 0
+
+
+def test_soundtracker_restes_dans_l_ordre(tmp_path):
+    # un rip qui laisse des numéros de patterns après la fin du morceau (Operation Wolf) : on compte 1 pattern
+    p = tmp_path / "st.mod"
+    p.write_bytes(_soundtracker_bytes(extra_orders=bytes([9, 14])))
+    assert modfile.soundtracker_patterns(p.read_bytes()) == 1
+    assert len(modfile.load(p).patterns) == 1
+
+
+def test_pas_un_module(tmp_path):
+    assert not modfile.is_soundtracker(bytes(range(256)) * 20)

@@ -51,6 +51,44 @@ class Module:
     patterns: list[list[list[Note]]] = field(default_factory=list)  # [pattern][row][channel]
 
 
+def is_soundtracker(d: bytes) -> bool:
+    """Un module Soundtracker à 15 samples (l'ancêtre de ProTracker, sans signature) ? Contrôles de cohérence :
+    longueur du morceau, ordre des patterns, volumes, et taille du fichier compatible avec patterns + samples."""
+    return soundtracker_patterns(d) is not None
+
+
+def soundtracker_patterns(d: bytes) -> int | None:
+    """Nombre de patterns d'un module Soundtracker 15 samples, ou None si ce n'en est pas un.
+
+    Normalement : le plus grand n° de la liste d'ordre (128 cases) + 1. Mais certains rips laissent des restes après
+    la fin du morceau : on essaie aussi en ne comptant que les positions jouées, et on garde le compte qui donne la
+    taille du fichier (patterns + samples)."""
+    if len(d) < 600 + 1024:
+        return None
+    song_len = d[470]
+    orders = d[472:600]
+    if not 1 <= song_len <= 128 or max(orders[:song_len]) >= 64:
+        return None
+    total = 0
+    for i in range(15):
+        o = 20 + i * 30
+        ln, ft, vol, _ls, _ll = struct.unpack(">HBBHH", d[o + 22:o + 30])
+        if vol > 64 or ft > 15:
+            return None
+        total += ln * 2
+    best = None
+    for npat in {max(orders) + 1, max(orders[:song_len]) + 1}:
+        if npat > 64:
+            continue
+        need = 600 + npat * 1024
+        # les samples peuvent être un peu tronqués dans les rips ; les patterns, jamais
+        if need + total * 0.9 <= len(d) <= need + total + 65536:
+            gap = abs(len(d) - need - total)
+            if best is None or gap < best[0]:
+                best = (gap, npat)
+    return best[1] if best else None
+
+
 def load(path) -> Module:
     with open(path, "rb") as f:
         d = f.read()
@@ -58,21 +96,27 @@ def load(path) -> Module:
     channels = CHANNEL_TAGS.get(tag)
     if channels is None and tag[2:4] == b"CH" and tag[:2].isdigit():
         channels = int(tag[:2])
+    nsmp = 31
     if channels is None:
-        raise ValueError(f"format non reconnu (signature {tag!r}) : seuls les modules à 31 samples sont gérés")
+        if not is_soundtracker(d):
+            raise ValueError(f"format non reconnu (signature {tag!r}) : ni ProTracker, ni Soundtracker 15 samples")
+        channels, nsmp = 4, 15  # Soundtracker : 15 samples, pas de signature
     title = d[:20].split(b"\0")[0].decode("latin-1")
     heads = []
-    for i in range(31):
+    for i in range(nsmp):
         o = 20 + i * 30
         name = d[o:o + 22].split(b"\0")[0].decode("latin-1")
         ln, ft, vol, ls, ll = struct.unpack(">HBBHH", d[o + 22:o + 30])
         ft = ft & 0x0F
         heads.append((name, ln * 2, ft - 16 if ft > 7 else ft, min(vol, 64), ls * 2, ll * 2))
-    song_len = d[950]
-    restart = d[951] if d[951] < 127 else 0
-    orders = list(d[952:952 + song_len])
-    npat = max(d[952:952 + 128]) + 1
-    off = 1084
+    h = 20 + nsmp * 30  # 950 (31 samples) ou 470 (15 samples)
+    song_len = d[h]
+    restart = d[h + 1] if d[h + 1] < 127 else 0
+    if nsmp == 15:
+        restart = 0  # chez Soundtracker cet octet est un tempo, pas un point de reprise
+    orders = list(d[h + 2:h + 2 + song_len])
+    npat = max(d[h + 2:h + 2 + 128]) + 1 if nsmp == 31 else soundtracker_patterns(d)
+    off = h + 2 + 128 + (4 if nsmp == 31 else 0)
     patterns = []
     for _ in range(npat):
         rows = []
