@@ -36,13 +36,14 @@ class Instrument:
     highpass: float | None = None
     mute: bool = False
     sfz: dict | None = None      # {"bank": ..., "program": ..., "cc": {n: valeur}} : banque SFZ au lieu de FluidSynth
+    vsti: dict | None = None     # {"plugin": "Surge XT", "state": "vst/<musique>/s05.bin"} : instrument VST3 (vst.py)
     fx: list = field(default_factory=list)  # chaîne d'effets (voir fx.py)
     by_channel: dict = field(default_factory=dict)  # réglages propres à une voie du module : {"2": {...}}
     double: dict | None = None   # double prise gauche / droite : {"sfz": autre banque, "width": 0.85, "delay_ms": 12}
     part: str = ""               # suffixe de piste (« G », « D » pour une partie doublée)
-    share: float = 1.0
+    share: float = 1.0           # part du sample d'origine que joue cette piste (0,5 pour une partie doublée)
     choke: bool = False          # un nouveau coup coupe le précédent (guitares, basse)
-    dedupe: bool = True          # ignore une note déjà jouée au même instant, même hauteur, sur une autre voie           # part du sample d'origine que joue cette piste (0,5 pour une partie doublée)
+    dedupe: bool = True          # ignore une note déjà jouée au même instant, même hauteur, sur une autre voie
 
 
 def _seconds_to_ticks(t: float) -> int:

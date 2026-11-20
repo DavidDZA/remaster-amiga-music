@@ -6,6 +6,7 @@ lecteur propre au jeu…) : ses notes sont alors lues par UADE dans ce que le le
 """
 from __future__ import annotations
 import argparse
+import dataclasses
 import json
 import pathlib
 import sys
@@ -42,6 +43,48 @@ def uade_name(path: pathlib.Path, number: int | None, count: int) -> str:
     return name if count <= 1 else f"{name} ({number or 1})"
 
 
+@dataclasses.dataclass
+class Music:
+    mod: modfile.Module
+    song: object             # player.Song
+    source: tuple | None     # (Module, Song, WAV d'origine) pour une musique lue par UADE, sinon None
+    name: str                # nom des fichiers produits et de la fiche
+    out_dir: pathlib.Path
+    cfg_path: pathlib.Path
+
+
+def open_music(path: pathlib.Path, sous_morceau: int | None = None, max_s: int = 300,
+               out: pathlib.Path | None = None, config: pathlib.Path | None = None, log=print) -> Music:
+    """Lit une musique (.mod, ou tout autre format par UADE) ; crée sa fiche d'instruments si elle n'existe pas."""
+    source, name = None, path.stem
+    if is_protracker(path):
+        from . import player
+        mod = modfile.load(path)
+        song = player.play(mod)
+        title = mod.title or path.stem
+        out_dir = out or paths.work_dir(path, name)
+    else:
+        from . import paula
+        lo, hi = paula.subsongs(path)
+        number = sous_morceau or 1
+        if not lo <= lo + number - 1 <= hi:
+            raise SystemExit(f"{path.name} a {hi - lo + 1} morceau(x) : --sous-morceau entre 1 et {hi - lo + 1}")
+        name = uade_name(path, number, hi - lo + 1)
+        out_dir = out or paths.work_dir(path, name)
+        log(f"Lecture des notes avec UADE : {path.name}, morceau {number}/{hi - lo + 1}…")
+        mod, song, info = paula.load(path, lo + number - 1, max_s, keep=out_dir)
+        log(f"  {info.get('player', '?')} : {len(mod.samples)} samples, "
+            f"{sum(t.trigger for ch in song.ticks for t in ch)} notes, {song.duration:.0f} s")
+        source = (mod, song, out_dir / "uade.wav")
+        title = name
+    cfg_path = config or render.ROOT / "songs" / f"{name}.json"
+    if not cfg_path.exists():
+        cfg_path.parent.mkdir(parents=True, exist_ok=True)
+        cfg_path.write_text(json.dumps(draft_config(mod, title), ensure_ascii=False, indent=2), encoding="utf-8")
+        log(f"Fiche d'instruments créée : {cfg_path} (à compléter, puis relancer)")
+    return Music(mod, song, source, name, out_dir, cfg_path)
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(description="Remasterise une musique Amiga en MP3 avec des instruments modernes.")
@@ -52,34 +95,11 @@ def main():
     ap.add_argument("--out", type=pathlib.Path, help="dossier de travail ; par défaut out/<jeu>/<nom>")
     ap.add_argument("--no-original", action="store_true", help="ne pas refaire le MP3 de l'original")
     a = ap.parse_args()
-    source, name = None, a.mod.stem
-    if is_protracker(a.mod):
-        mod = modfile.load(a.mod)
-        title = mod.title or a.mod.stem
-    else:
-        from . import paula
-        lo, hi = paula.subsongs(a.mod)
-        number = a.sous_morceau or 1
-        if not lo <= lo + number - 1 <= hi:
-            raise SystemExit(f"{a.mod.name} a {hi - lo + 1} morceau(x) : --sous-morceau entre 1 et {hi - lo + 1}")
-        name = uade_name(a.mod, number, hi - lo + 1)
-        out_dir = a.out or paths.work_dir(a.mod, name)
-        print(f"Lecture des notes avec UADE : {a.mod.name}, morceau {number}/{hi - lo + 1}…")
-        mod, song, info = paula.load(a.mod, lo + number - 1, a.max, keep=out_dir)
-        print(f"  {info.get('player', '?')} : {len(mod.samples)} samples, "
-              f"{sum(t.trigger for ch in song.ticks for t in ch)} notes, {song.duration:.0f} s")
-        source = (mod, song, out_dir / "uade.wav")
-        title = name
-    cfg_path = a.config or render.ROOT / "songs" / f"{name}.json"
-    if not cfg_path.exists():
-        cfg_path.parent.mkdir(parents=True, exist_ok=True)
-        cfg_path.write_text(json.dumps(draft_config(mod, title), ensure_ascii=False, indent=2), encoding="utf-8")
-        print(f"Fiche d'instruments créée : {cfg_path} (à compléter, puis relancer)")
-    cfg = render.load_config(cfg_path)
-    render.remaster(a.mod, cfg, a.out or paths.work_dir(a.mod, name), original=not a.no_original,
-                    source=source, name=name)
-    if source is not None:
-        (source[2]).unlink(missing_ok=True)
+    m = open_music(a.mod, a.sous_morceau, a.max, a.out, a.config)
+    cfg = render.load_config(m.cfg_path)
+    render.remaster(a.mod, cfg, m.out_dir, original=not a.no_original, source=m.source, name=m.name)
+    if m.source is not None:
+        (m.source[2]).unlink(missing_ok=True)
 
 
 if __name__ == "__main__":

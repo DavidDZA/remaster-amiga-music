@@ -5,7 +5,7 @@ Tout est gratuit et tourne sur le PC, sans rien installer dans Windows : les out
 
 Prototype en ligne de commande (17/11/2026), avant une éventuelle vraie appli PC.
 
-Où en est le projet (19/11/2026) :
+Où en est le projet (20/11/2026) :
 - **Toutes les musiques Amiga** d'archives de jeux (`in\lha\`) sont récupérées et rangées par jeu
   (`in\music\<Jeu>\`) : en .mod (d'origine ou converties avec libxmp) ou, pour les formats à lecteur intégré
   (TFMX, David Whittaker…), jouées par UADE. 631 originaux en MP3 dans `out\<Jeu>\`.
@@ -13,6 +13,9 @@ Où en est le projet (19/11/2026) :
 - **Tablatures** (guitares, basse) et **partition de batterie** : pour un .mod (*Dr Mario*).
 - **Arrangement pour piano seul** (MP3 + partition) : pour n'importe quelle musique, avec une fiche automatique.
   Voir [Partitions et piano](#partitions-et-piano). Rien n'est validé à l'oreille par Claude : l'utilisateur écoute.
+- **Instruments et effets VST3** (20/11/2026) : n'importe quel sample peut être joué par un VST (Surge XT, Dexed…),
+  dont on **choisit le son à l'oreille** dans sa fenêtre pendant que les notes de la musique passent en boucle.
+  Voir [VST : choisir le son à l'oreille](#vst--choisir-le-son-à-loreille).
 
 ## Le principe
 
@@ -28,7 +31,8 @@ On peut donc garder la partition et **changer les instruments** :
 4. **Vers le MIDI** (`remaster/midi.py`) : une piste par couple (sample, voie), monophonique comme l'Amiga ; les
    glissandos et le vibrato deviennent du *pitch bend* (amplitude ±24 demi-tons), le volume du CC 11. Une note peut
    devenir un accord (power chord `[0, 7, 12]` pour une guitare saturée).
-5. **Rendu** (`remaster/render.py`) : chaque piste est jouée soit par une **banque SFZ** (de vrais instruments
+5. **Rendu** (`remaster/render.py`) : chaque piste est jouée soit par un **instrument VST3** au son choisi à
+   l'oreille (`remaster/vst.py`), soit par une **banque SFZ** (de vrais instruments
    enregistrés note par note, plusieurs nuances et plusieurs prises par note) avec le lecteur maison
    `remaster/sfz.py`, soit par **FluidSynth** avec une **SoundFont** General MIDI (pour ce qui n'a pas encore de
    meilleure banque, comme le chœur). Les banques SFZ sont téléchargées **à la demande** (`remaster/library.py`) :
@@ -91,8 +95,9 @@ Pour chaque sample (`"1"` à `"31"`) :
 
 | Clé | Rôle |
 |---|---|
+| `vsti` | un instrument VST3 : `{"plugin": "Surge XT", "state": "vst/Dr Mario/s05.bin", "bend_range": 2}` (fait par `python -m remaster.choisir`, voir [VST](#vst--choisir-le-son-à-loreille)) ; passe avant `sfz` et `program` |
 | `sfz` | une banque SFZ : `{"bank": "black-and-green-guitars", "program": "Programs/07-black_twang.sfz", "cc": {}}` (banques connues : `remaster/library.py`) |
-| `fx` | chaîne d'effets : `nam` (ampli), `cab` (baffle), et tout effet de Pedalboard (`PeakFilter`, `Compressor`, `Delay`…), avec `mix` facultatif (voir `remaster/fx.py`) |
+| `fx` | chaîne d'effets : `nam` (ampli), `cab` (baffle), `vst` (effet VST3, avec son état), et tout effet de Pedalboard (`PeakFilter`, `Compressor`, `Delay`…), avec `mix` facultatif (voir `remaster/fx.py`) |
 | `double` | double prise gauche / droite : `{"sfz": autre banque, "width": 0.85, "delay_ms": 11}` |
 | `by_channel` | réglages propres à une voie du module : `{"2": {...}}` |
 | `choke` | un nouveau coup coupe le précédent (guitares, basse) |
@@ -129,6 +134,56 @@ Les noms des samples sont des messages (« composed by betrayer », « greets to
 | 12 | guitare en power chord (la quinte est dans le spectre) | power chords (3 cordes) : à gauche guitare *black* → Engl Savage, à droite guitare *green* → 6505+ MXR ; baffle 4×12 Greenback |
 | 4 | vide | (sert à couper une voie) |
 | ajouts | charleston, crashs (version enrichie) | *Big Rusty Drums* |
+
+## VST : choisir le son à l'oreille
+
+Claude ne peut pas écouter : les sons réglés « à la main » sonnaient amateurs (retour du 17/11/2026). Avec un VST, on
+part des presets faits par des gens qui écoutent, et c'est l'utilisateur qui choisit.
+
+```sh
+.venv\Scripts\python -m remaster.vst                                                  # les VST trouvés, essayés un par un
+.venv\Scripts\python -m remaster.choisir "in\music\Dr Mario\Dr Mario.mod"             # les samples et ce qui les joue
+.venv\Scripts\python -m remaster.choisir "in\music\Dr Mario\Dr Mario.mod" --sample 5  # liste des instruments, puis choix
+.venv\Scripts\python -m remaster.choisir "in\music\Dr Mario\Dr Mario.mod" --sample 5 --vst "Surge XT" --debut 40
+.venv\Scripts\python -m remaster.choisir "in\music\Dr Mario\Dr Mario.mod" --sample 5 --effet "DragonflyPlateReverb"
+.venv\Scripts\python -m remaster "in\music\Dr Mario\Dr Mario.mod"                     # puis le remaster, avec le son choisi
+```
+
+- **Où sont les VST** (`remaster/vst.py`) : `tools\vst3\` (VST libres en zip, téléchargés par
+  `scripts\setup_tools.py`), `tools\dragonfly\`, et `C:\Program Files\Common Files\VST3` (VST installés par leur
+  installeur). Un VST se désigne par son nom de fichier sans « .vst3 ».
+- **Catalogue** (`python -m remaster.vst`) : chaque VST est chargé **dans un processus à part** ; s'il fait planter
+  le programme (c'est le cas de MT Power Drum Kit 2), seul ce processus tombe et le VST est marqué « inutilisable ».
+  Résultat gardé dans `tools\vst3\catalogue.json`, refait pour un VST nouveau ou mis à jour (`--refaire` : tout).
+- **Choisir** (`python -m remaster.choisir`) : la fenêtre du VST s'ouvre et **20 s de la musique passent en boucle**
+  dans le VST, vers les haut-parleurs : seulement les notes de ce sample (toutes ses voies), avec ses hauteurs, ses
+  bends et son volume. On change de preset, on l'entend aussitôt. On ferme la fenêtre quand ça plaît : l'**état du
+  VST** (preset et réglages) est enregistré dans `songs\vst\<musique>\s05.bin` et la fiche reçoit la clé `vsti`.
+  Relancer `choisir` sur le même sample repart du son déjà choisi. `--debut`, `--duree` : l'extrait ; `--volume` :
+  volume d'écoute (0,5 ; le son est de toute façon écrêté à 0,9 pour les oreilles).
+  `--effet NOM` : pareil pour un effet, ajouté à la fin de la chaîne `fx` du sample ; l'extrait est d'abord rendu
+  avec l'instrument actuel.
+- **Rendu** : la piste est jouée par le VST avec l'état enregistré. Le volume du module (CC 11, que beaucoup de
+  synthés ignorent) devient la **vélocité** des notes (`"expression": "cc11"` pour le garder) ; les bends sont
+  recalculés pour l'amplitude du synthé (`"bend_range"`, ±2 demi-tons par défaut : à mettre à 12 si on règle le
+  synthé à ±12, sinon les glissandos larges sont écrêtés). Un autre preset choisi = la piste est refaite (l'état fait
+  partie de la clé du cache) ; sans VST, les pistes déjà rendues restent bonnes.
+- Certains VST ne chargent leur preset qu'au premier passage de son (Surge XT rendait du silence) : `vst.prepare`
+  leur fait jouer un quart de seconde à vide avant le vrai rendu.
+
+VST libres téléchargés par `scripts\setup_tools.py` (vérifiés le 20/11/2026 : chargés, une note jouée) :
+
+| VST | Type | Pour quoi |
+|---|---|---|
+| [Surge XT](https://surge-synthesizer.github.io/) 1.3.4 (+ Surge XT Effects) | synthé hybride, ≈ 2 000 presets | leads, nappes, basses synthé, cloches, sons « Amiga » modernisés |
+| [Dexed](https://asb2m10.github.io/dexed/) 1.1.0 | synthé FM façon DX7 | pianos électriques, cloches, basses FM, cuivres synthé |
+| [JC303](https://github.com/midilab/jc303) 0.14.0 | basse acide façon TB-303 | basses techno / acid |
+| [Firefly Synth 2](https://github.com/sjoerdvankreel/firefly-synth-2) 2.1.7 (+ FX) | synthé soustractif / FM | leads, nappes, effets |
+| Dragonfly (Room, Hall, Plate, Early Reflections) | réverbérations | déjà utilisées au mixage |
+| [sfizz](https://sfz.tools/sfizz/) 1.2.3 (`tools\sfizz\`, `sfizz_render.exe`) | lecteur SFZ complet | pas encore branché (voir ROADMAP) |
+
+VST à installer soi-même (gratuits, souvent avec un compte ou un e-mail) : liste dans [docs/ROADMAP.md](docs/ROADMAP.md).
+Après l'installation, `python -m remaster.vst` les essaie et les ajoute au catalogue.
 
 ## Récupérer la musique des archives de jeux (.lha)
 
@@ -260,7 +315,7 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
 ## Contrôles
 
 ```sh
-.venv\Scripts\python -m pytest              # 58 tests, quelques secondes (voir ci-dessous)
+.venv\Scripts\python -m pytest              # 66 tests, moins d'une minute (voir ci-dessous)
 .venv\Scripts\python scripts\check_stems.py "in\music\Dr Mario\Dr Mario.mod"   # chaque piste comparée au sample d'origine
 ```
 
@@ -269,8 +324,9 @@ bends, accords, ajouts de batterie, moteurs SFZ et amplis ; conversion libxmp (a
 import des archives (noms, versions alternatives, rangement par jeu) ; notes lues par UADE (identiques au lecteur
 ProTracker sur *Dr Mario*), boucles (trouvées, notes au hasard tolérées, fausses boucles refusées), une ou deux
 fois la boucle ; grille et premier temps ; tablatures (manche, durées, mesures complètes) ; piano (arrangement,
-tierces, reprise, clavier) ; rôles des samples. Ceux qui demandent UADE, libxmp ou LilyPond sont sautés s'ils
-manquent.
+tierces, reprise, clavier) ; rôles des samples ; VST (recherche des plugins, catalogue qui écarte ceux qui
+plantent, bends et volume envoyés au synthé, extrait en boucle, cache des pistes, rendu avec Surge XT et son état
+rechargé). Ceux qui demandent UADE, libxmp, LilyPond ou Surge XT sont sautés s'ils manquent.
 
 `check_stems.py` rejoue chaque sample d'origine comme l'Amiga et le compare à son remplaçant : décalage de hauteur
 (0 attendu ; il se trompe parfois sur les sons saturés) et calage dans le temps (0 ms attendu).
@@ -291,7 +347,9 @@ manquent.
 | ffmpeg (paquet `imageio-ffmpeg`) | niveau sonore, MP3 | LGPL / GPL |
 | [Dragonfly Reverb](https://github.com/michaelwillis/dragonfly-reverb) 3.2.10 | réverbération (VST3) | GPL-3.0 |
 | [Big Rusty Drums](https://github.com/sfzinstruments/karoryfer.big-rusty-drums) (Karoryfer) | batterie | CC0 |
-| [Pedalboard](https://github.com/spotify/pedalboard) | réverbération, compresseur, limiteur | GPL |
+| [Pedalboard](https://github.com/spotify/pedalboard) | réverbération, compresseur, limiteur ; hôte des VST3 (fenêtre, rendu, écoute en direct) | GPL |
+| [Surge XT](https://surge-synthesizer.github.io/), [Dexed](https://asb2m10.github.io/dexed/), [JC303](https://github.com/midilab/jc303), [Firefly Synth 2](https://github.com/sjoerdvankreel/firefly-synth-2) | instruments VST3 (`tools\vst3\`) | GPL-3.0 |
+| [sfizz](https://sfz.tools/sfizz/) 1.2.3 | lecteur SFZ complet (`tools\sfizz\`) | BSD-2 |
 | mido, numpy, scipy, soundfile | MIDI, calcul, WAV | libres |
 | [7-Zip](https://www.7-zip.org/) (déjà installé sur le PC, ou dans `tools\7zip\`) | lecture des archives .lha | LGPL |
 | [libxmp](https://github.com/libxmp/libxmp) 4.6.3 (compilée par `scripts\build_libxmp.py`) | lecture et conversion en .mod d'autres formats Amiga | MIT |
@@ -303,7 +361,7 @@ manquent.
 
 ## Limites et pistes
 
-Suite prévue (dont le passage à de vrais VST choisis à l'oreille) : [docs/ROADMAP.md](docs/ROADMAP.md).
+Suite prévue (VST à installer, choix des sons à l'oreille) : [docs/ROADMAP.md](docs/ROADMAP.md).
 
 
 - Le lecteur SFZ maison couvre ce qu'utilisent ces banques, pas toute la norme SFZ (pas de filtres, de LFO, ni de

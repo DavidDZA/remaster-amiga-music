@@ -1,28 +1,57 @@
 # Roadmap
 
-## À faire en priorité : de vrais VST, choisis à l'oreille (« option 1 »)
+## Fait le 20/11/2026 : les VST, choisis à l'oreille (« option 1 »)
 
-Décidé le 17/11/2026 : l'utilisateur veut passer aux VST gratuits de qualité, mais n'a pas eu le temps de les
-installer. **À faire dès que possible.**
+Décidé le 17/11/2026 (le rendu fait sans oreilles sonnait amateur : guitares nasillardes, kick inaudible, écho, flou).
+L'utilisateur veut **le plus de VST possible**, pas seulement batterie, basse et guitare : d'autres musiques suivront
+(synthés à la Hülsbeck, orchestre, orgue…).
 
-Pourquoi : le rendu actuel est fait sans oreilles (Claude ne peut pas écouter). Retour du 17/11 sur la v2 : guitares
-nasillardes, kick inaudible, impression d'écho permanent et de flou, « difficile à écouter ». Un bon VST arrive avec des
-presets réglés par des gens qui écoutent, et l'utilisateur peut choisir le son lui-même.
+Fait : `remaster/vst.py` (recherche dans `tools\vst3\`, `tools\dragonfly\` et `C:\Program Files\Common Files\VST3`,
+catalogue qui essaie chaque VST dans un processus à part, rendu d'une piste, écoute en direct), clé `vsti` de la fiche,
+effets `vst` avec leur état, et `python -m remaster.choisir` : la fenêtre du VST s'ouvre, l'extrait de la musique passe
+en boucle dans le VST, on ferme quand le son plaît, l'état est enregistré (`songs\vst\<musique>\`). Mode d'emploi :
+README, section « VST ». Vérifié : chargement, rendu, état rechargé (Surge XT ne chargeait son preset qu'au premier
+passage de son : corrigé), écoute en boucle en temps réel fenêtre ouverte. **Aucun son choisi pour l'instant** : c'est
+à l'utilisateur, à l'oreille.
 
-Principe :
-1. L'utilisateur installe quelques VST3 gratuits (parfois un compte, un e-mail ou un code au premier lancement) :
-   - batterie : **MT Power Drum Kit 2** (Manda Audio, kit rock, VST3, gratuit avec demandes de don) ;
-   - ampli métal : **Ignite Amps Emissary + NadIR** (baffles), ou **ML Sound Lab Amped Roots Free** ;
-   - basse : un VSTi de basse gratuit (Ample Bass P Lite II, à vérifier), ou la banque SFZ actuelle + un ampli basse ;
-   - guitare : les VSTi de guitare électrique gratuits sont rares (Shreddage *Free* demande Kontakt Player) ; garder
-     les guitares DI échantillonnées et ne changer que l'ampli, sauf meilleure trouvaille.
-2. L'outil ouvre la **fenêtre du VST** (`plugin.show_editor()` de Pedalboard) : l'utilisateur choisit un preset en
-   écoutant, l'outil enregistre l'état du plugin (`raw_state`) dans la fiche du morceau (`songs/<nom>.json` ou un
-   fichier à côté).
-3. Le rendu rejoue ensuite ce VST avec cet état : `"type": "vst"` dans `fx` (déjà en place pour les effets), et un
-   nouveau moteur `"vsti"` pour les instruments (Pedalboard joue un instrument VST3 à partir de messages MIDI).
-4. Les VST3 restent dans `tools/` si l'installeur le permet (dossier personnalisé), sinon dans
-   `C:\Program Files\Common Files\VST3` (le chargeur les cherche aux deux endroits).
+VST libres déjà là (zip, `scripts\setup_tools.py`) : Surge XT (+ Effects), Dexed, JC303, Firefly Synth 2 (+ FX),
+Dragonfly ; sfizz (lecteur SFZ) en ligne de commande.
+
+### VST à installer par l'utilisateur (gratuits)
+
+Après chaque installation : `python -m remaster.vst` (essai et ajout au catalogue). Ceux marqués « compte » demandent
+une inscription gratuite. Rien de tout ça n'est encore essayé dans l'outil.
+
+| Famille | VST | Remarque |
+|---|---|---|
+| Orchestre, pianos, chœurs, guitares… | **Spitfire LABS** | des dizaines d'instruments enregistrés ; appli Spitfire, compte |
+| Orchestre | **BBC Symphony Orchestra Discover** (Spitfire) | cordes, bois, cuivres, percussions ; compte |
+| Tout instrument échantillonné | **Decent Sampler** + bibliothèques gratuites (Pianobook, Decent Samples) | des centaines d'instruments |
+| Banques SFZ | **sfizz** (VST3, installeur sfizz-ui) | choisir une banque SFZ dans une fenêtre ; ouvre VCSL, Virtual Playing Orchestra… |
+| Synthés | **Vital** (compte), **OB-Xd 2**, **Odin 2**, **Vaporizer2**, **TAL-NoiseMaker**, **u-he Zebralette 3**, **Tyrell N6** | leads, nappes, basses ; OB-Xd, Odin 2, Vaporizer2 : open source |
+| Batterie | **Steven Slate Drums 5.5 Free** (compte), **Sitala** | MT Power Drum Kit 2 est installé mais **plante** dans Pedalboard (voir plus bas) |
+| Basse | **Ample Bass P Lite II** | basse électrique |
+| Guitare acoustique | **Ample Guitar M Lite II** | |
+| Amplis guitare | **Neural Amp Modeler** (open source), **Ignite Emissary + NadIR**, **ML Sound Lab Amped Roots Free** | |
+| Effets | **Valhalla Supermassive** (réverb, écho), **TDR Nova** (égaliseur), **TDR Kotelnikov** (compresseur), **Airwindows Consolidated** (open source, des centaines d'effets), **Chow Tape Model** | |
+
+Installer en VST3 dans le dossier proposé (`C:\Program Files\Common Files\VST3`) ; un installeur qui laisse choisir
+le dossier peut aussi viser `tools\vst3\` du projet.
+
+### Reste à faire côté VST
+
+- **Choisir les sons à l'oreille** sur une première musique (Dr Mario, ou une musique de synthé), puis comparer au
+  remaster actuel.
+- **MT Power Drum Kit 2** plante au chargement (accès mémoire interdit dans le VST, même avec Pedalboard 0.8.9, 0.9.6,
+  0.9.26 ; d'autres hôtes le signalent aussi en VST3). Pistes : un autre hôte (DawDreamer, Carla), ou une autre batterie.
+- **Amplitude du pitch bend** : 2 demi-tons par défaut ; la mesurer en jouant une note bendée et en lisant la hauteur,
+  au lieu de la demander.
+- **Nom du preset** dans la fiche (Pedalboard ne le donne pas : à lire dans l'état quand le VST l'y écrit).
+- **sfizz** : remplacer le lecteur SFZ maison (`remaster/sfz.py`, sans filtres ni LFO ni relâchement) par
+  `sfizz_render.exe`, ou par le VST sfizz une fois installé.
+- **Choisir pour une partie doublée** (`double`, prise de droite) et **par voie** (`by_channel`) : `choisir` règle le
+  sample entier, prise de gauche.
+- Plus de VST libres en zip à ajouter à `scripts\setup_tools.py` au fil des trouvailles.
 
 ## Fait le 18/11/2026 : partitions et piano
 

@@ -12,3 +12,6 @@ in/music/*
 !in/music/Dr Mario/
 in/music/Dr Mario/originaux/
 in/music/INVENTAIRE.md
+
+# réglages locaux de Claude Code
+.claude/settings.local.json

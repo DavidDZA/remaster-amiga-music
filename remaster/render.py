@@ -9,7 +9,7 @@ import numpy as np
 import soundfile as sf
 import pedalboard as pb
 import imageio_ffmpeg
-from . import modfile, player, midi, analyze, extras, reference, sfz, library, fx, paths
+from . import modfile, player, midi, analyze, extras, reference, sfz, library, fx, paths, vst
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TOOLS = ROOT / "tools"
@@ -115,6 +115,11 @@ def _part_key(name, ev, inst: midi.Instrument, duration: float, seed: int, defau
     for k in ("name", "gain_db", "pan", "reverb", "share", "part", "fx", "by_channel", "double"):
         sound.pop(k, None)  # réglages de mixage : n'obligent pas à refaire le son
     sound["heavy_fx"] = split_fx(inst.fx)[0]
+    if sound.get("vsti") is None:
+        sound.pop("vsti", None)  # pas de VST : même clé qu'avant leur arrivée (le cache des pistes reste bon)
+    states = [vst.state_hash(inst.vsti)] + [vst.state_hash(f) for f in sound["heavy_fx"] if f.get("type") == "vst"]
+    if any(states):
+        sound["vst_states"] = states  # un autre preset choisi = une piste à refaire
     h.update(json.dumps([ENGINE_VERSION, name, sound, duration, seed, default_sf, SR],
                         sort_keys=True, default=str).encode())
     for t, m in ev:
@@ -124,7 +129,8 @@ def _part_key(name, ev, inst: midi.Instrument, duration: float, seed: int, defau
 
 def render_part(name: str, ev, inst: midi.Instrument, duration: float, stem_dir: pathlib.Path,
                 default_sf: str, seed: int = 0) -> np.ndarray:
-    """Une piste : banque SFZ (lecteur maison) ou SoundFont (FluidSynth), puis sa chaîne d'effets. (2, n)
+    """Une piste : instrument VST3, banque SFZ (lecteur maison) ou SoundFont (FluidSynth), puis sa chaîne
+    d'effets. (2, n)
 
     Le son avant les effets légers (EQ, compresseur… placés après le dernier ampli ou baffle) est gardé dans stems/ :
     s'il n'a pas changé (mêmes notes, même instrument, mêmes amplis), il est relu tel quel.
@@ -136,7 +142,9 @@ def render_part(name: str, ev, inst: midi.Instrument, duration: float, stem_dir:
     if flac.exists() and len(saved) == 2 and saved[0] == key:
         audio, _ = sf.read(flac, dtype="float32", always_2d=True)
         return fx.apply(audio.T.copy() * float(saved[1]), light, SR)
-    if inst.sfz:
+    if inst.vsti:
+        audio = vst.render(inst.vsti, ev, duration + midi.TAIL, SR, source_bend_range=midi.BEND_RANGE)
+    elif inst.sfz:
         ck = (inst.sfz["bank"], inst.sfz["program"], tuple(sorted((inst.sfz.get("cc") or {}).items())))
         if ck not in _SFZ_CACHE:
             _SFZ_CACHE[ck] = library.load_sfz(inst.sfz["bank"], inst.sfz["program"], inst.sfz.get("cc"))

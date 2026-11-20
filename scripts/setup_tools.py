@@ -18,6 +18,19 @@ DOWNLOADS = [
      "https://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/MuseScore_General.sf3"),
     ("lilypond", "lilypond.zip",  # gravure des partitions et tablatures (GPL)
      "https://gitlab.com/lilypond/lilypond/-/releases/v2.24.4/downloads/lilypond-2.24.4-mingw-x86_64.zip"),
+    # VST3 libres, en zip (sans installeur) : rangés dans tools/vst3/, essayés par  python -m remaster.vst
+    ("vst3/surge", "surge.zip",  # Surge XT : synthé hybride, ≈ 2 000 presets (GPL-3.0)
+     "https://github.com/surge-synthesizer/releases-xt/releases/download/1.3.4/surge-xt-win64-1.3.4-pluginsonly.zip"),
+    ("vst3/dexed", "dexed.zip",  # Dexed : synthé FM façon Yamaha DX7, cartouches de sons (GPL-3.0)
+     "https://github.com/asb2m10/dexed/releases/download/v1.1.0/Dexed-1.1.0-win.zip"),
+    ("vst3/jc303", "jc303.zip",  # JC303 : basse acide façon TB-303 (GPL-3.0)
+     "https://github.com/midilab/jc303/releases/download/v0.14.0/jc303-0.14.0-windows_x64-plugins.zip"),
+    ("vst3/firefly", "firefly.zip",  # Firefly Synth 2 : synthé soustractif / FM (GPL-3.0)
+     "https://github.com/sjoerdvankreel/firefly-synth-2/releases/download/v2.1.7/FireflySynth2-windows-vst3-Release.zip"),
+    ("vst3/firefly-fx", "firefly-fx.zip",  # ses effets (filtres, distorsion, délais)
+     "https://github.com/sjoerdvankreel/firefly-synth-2/releases/download/v2.1.7/FireflySynth2FX-windows-vst3-Release.zip"),
+    ("sfizz", "sfizz.zip",  # sfizz : lecteur SFZ complet, sfizz_render.exe (BSD-2)
+     "https://github.com/sfztools/sfizz/releases/download/1.2.3/sfizz-1.2.3-win64.zip"),
     ("piano", "salamander.tar.xz",  # Salamander Grand Piano V3, Yamaha C5, en SF2 (CC-BY 3.0, Alexander Holm) : 310 Mo
      "https://freepats.zenvoid.org/Piano/SalamanderGrandPiano/SalamanderGrandPiano-SF2-V3+20200602.tar.xz"),
 ]
