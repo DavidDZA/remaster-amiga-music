@@ -1,0 +1,132 @@
+{
+  "title": "Lotus 2 - bootup",
+  "artist": "",
+  "soundfont": "GeneralUser-GS.sf2",
+  "partitions": {
+    "Mélodie": {
+      "instrument": "guitare",
+      "samples": [
+        11,
+        12
+      ],
+      "lead": true
+    }
+  },
+  "piano": {
+    "melody": "Mélodie",
+    "chords": [],
+    "riff": [],
+    "bass": [
+      5
+    ],
+    "harmony": [
+      5,
+      11,
+      12
+    ]
+  },
+  "samples": {
+    "31": {
+      "name": "Ignoré",
+      "mute": true
+    },
+    "1": {
+      "name": "Batterie",
+      "drum": 36,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 36 (la plus proche du son)"
+    },
+    "2": {
+      "name": "Batterie",
+      "drum": 42,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 42 (la plus proche du son)"
+    },
+    "3": {
+      "name": "Batterie",
+      "drum": 42,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 42 (la plus proche du son)"
+    },
+    "4": {
+      "name": "Batterie",
+      "drum": 46,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 46 (la plus proche du son)"
+    },
+    "6": {
+      "name": "Batterie",
+      "drum": 44,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 44 (la plus proche du son)"
+    },
+    "7": {
+      "name": "Batterie",
+      "drum": 40,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 40 (la plus proche du son)"
+    },
+    "8": {
+      "name": "Batterie",
+      "drum": 42,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 42 (la plus proche du son)"
+    },
+    "9": {
+      "name": "Batterie",
+      "drum": 40,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 40 (la plus proche du son)"
+    },
+    "10": {
+      "name": "Batterie",
+      "drum": 40,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 40 (la plus proche du son)"
+    },
+    "5": {
+      "name": "Basse",
+      "program": 38,
+      "velocity": 100,
+      "reverb": 0.0,
+      "comment": "fidèle : instrument GM 38 (le plus proche du sample : écart 6.3)"
+    },
+    "11": {
+      "name": "Mélodie",
+      "program": 77,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 77 (le plus proche du sample : écart 6.3)"
+    },
+    "12": {
+      "name": "Mélodie",
+      "program": 111,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 111 (le plus proche du sample : écart 4.8)"
+    }
+  },
+  "comment": "remaster fidèle à l'esprit des instruments (scripts/style_fidele.py) : le son GM le plus proche de chaque sample, mesuré (timbre, enveloppe) ; choisi sans écoute",
+  "master": {
+    "loudness": -14,
+    "balance": "original"
+  }
+}

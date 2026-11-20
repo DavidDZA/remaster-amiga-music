@@ -51,8 +51,9 @@ GM_NAMES = ["piano", "piano brillant", "piano électrique", "piano bastringue", 
 def amiga_sound(s: modfile.Sample, seconds: float) -> tuple[np.ndarray, float]:
     """Le sample tel que l'Amiga le joue au C-2 (boucle comprise), à SR ; et sa fréquence d'échantillonnage d'origine."""
     x = s.as_float()
-    if s.looped:
-        a, n = s.loop_start, s.loop_length
+    looped = s.looped or len(x) < 256  # forme d'onde de synthé de quelques octets : l'Amiga la joue en boucle
+    if looped:
+        a, n = (s.loop_start, s.loop_length) if s.looped else (0, len(x))
         body, loop = x[:a + n], x[a:a + n]
         need = int(seconds * modfile.playback_rate(modfile.C2_PERIOD)) - len(body)
         if need > 0 and len(loop):
@@ -113,6 +114,8 @@ def closest_gm(s: modfile.Sample, root: float, seconds: float, programs) -> tupl
     fmax = rate / 2 * 2 ** ((note - root) / 12)
     f0 = features(orig, seconds, fmax)
     programs = list(programs)
+    if np.isnan(f0).all():  # son inexploitable (vide) : un lead carré, le plus « Amiga »
+        return (80 if 80 in programs else programs[0]), float("nan")
     sounds = render_series([(p, 0, note) for p in programs], drums=False)
     d = [distance(f0, features(x, seconds, fmax)) for x in sounds]
     best = int(np.nanargmin(d))

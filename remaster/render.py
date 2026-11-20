@@ -49,7 +49,8 @@ def instrument(cfg: dict, mod: modfile.Module, sample: int, ch: int | None = Non
     if inst.root is None and inst.drum is None:
         # accord général de la musique (« tuning_cents », voir analyze.tuning_offset) : une musique accordée un
         # quart de ton trop haut fait tomber ses notes d'un côté ou de l'autre de l'arrondi selon le sample
-        inst.root = analyze.root_midi(mod.samples[sample - 1]) - cfg.get("tuning_cents", 0) / 100
+        root = analyze.root_midi(mod.samples[sample - 1])
+        inst.root = None if root is None else root - cfg.get("tuning_cents", 0) / 100
     return inst
 
 

@@ -1,0 +1,80 @@
+{
+  "title": "Jim Power - ingame_3",
+  "artist": "",
+  "soundfont": "GeneralUser-GS.sf2",
+  "partitions": {
+    "Mélodie": {
+      "instrument": "guitare",
+      "samples": [
+        1,
+        3
+      ],
+      "lead": true
+    }
+  },
+  "piano": {
+    "melody": "Mélodie",
+    "chords": [],
+    "riff": [],
+    "bass": [
+      6
+    ],
+    "harmony": [
+      1,
+      3,
+      6
+    ]
+  },
+  "samples": {
+    "4": {
+      "name": "Ignoré",
+      "mute": true
+    },
+    "5": {
+      "name": "Ignoré",
+      "mute": true
+    },
+    "2": {
+      "name": "Batterie",
+      "drum": 36,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 36 (la plus proche du son)"
+    },
+    "7": {
+      "name": "Batterie",
+      "drum": 40,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 40 (la plus proche du son)"
+    },
+    "1": {
+      "name": "Mélodie",
+      "program": 90,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 90 (le plus proche du sample : écart 5.7)"
+    },
+    "3": {
+      "name": "Mélodie",
+      "program": 29,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 29 (le plus proche du sample : écart 4.6)"
+    },
+    "6": {
+      "name": "Basse",
+      "program": 37,
+      "velocity": 100,
+      "reverb": 0.0,
+      "comment": "fidèle : instrument GM 37 (le plus proche du sample : écart 7.8)"
+    }
+  },
+  "comment": "remaster fidèle à l'esprit des instruments (scripts/style_fidele.py) : le son GM le plus proche de chaque sample, mesuré (timbre, enveloppe) ; choisi sans écoute",
+  "master": {
+    "loudness": -14,
+    "balance": "original"
+  }
+}

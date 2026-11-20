@@ -1,0 +1,214 @@
+{
+  "title": "Hybris - title",
+  "artist": "",
+  "soundfont": "GeneralUser-GS.sf2",
+  "partitions": {
+    "Mélodie": {
+      "instrument": "guitare",
+      "samples": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        21
+      ],
+      "lead": true
+    }
+  },
+  "piano": {
+    "melody": "Mélodie",
+    "chords": [],
+    "riff": [],
+    "bass": [
+      20
+    ],
+    "harmony": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      20,
+      21
+    ]
+  },
+  "samples": {
+    "16": {
+      "name": "Batterie",
+      "drum": 36,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 36 (la plus proche du son)"
+    },
+    "17": {
+      "name": "Batterie",
+      "drum": 42,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 42 (la plus proche du son)"
+    },
+    "18": {
+      "name": "Batterie",
+      "drum": 38,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 38 (la plus proche du son)"
+    },
+    "19": {
+      "name": "Batterie",
+      "drum": 42,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 42 (la plus proche du son)"
+    },
+    "1": {
+      "name": "Mélodie",
+      "program": 21,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 21 (le plus proche du sample : écart 6.1)"
+    },
+    "2": {
+      "name": "Mélodie",
+      "program": 58,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 58 (le plus proche du sample : écart 10.2)"
+    },
+    "3": {
+      "name": "Mélodie",
+      "program": 21,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 21 (le plus proche du sample : écart 12.1)"
+    },
+    "4": {
+      "name": "Mélodie",
+      "program": 21,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 21 (le plus proche du sample : écart 9.3)"
+    },
+    "5": {
+      "name": "Mélodie",
+      "program": 80,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 80 (le plus proche du sample : écart 11.4)"
+    },
+    "6": {
+      "name": "Mélodie",
+      "program": 58,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 58 (le plus proche du sample : écart 10.1)"
+    },
+    "7": {
+      "name": "Mélodie",
+      "program": 21,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 21 (le plus proche du sample : écart 12.0)"
+    },
+    "8": {
+      "name": "Mélodie",
+      "program": 63,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 63 (le plus proche du sample : écart 6.7)"
+    },
+    "9": {
+      "name": "Mélodie",
+      "program": 57,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 57 (le plus proche du sample : écart 8.7)"
+    },
+    "10": {
+      "name": "Mélodie",
+      "program": 21,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 21 (le plus proche du sample : écart 9.5)"
+    },
+    "11": {
+      "name": "Mélodie",
+      "program": 63,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 63 (le plus proche du sample : écart 5.8)"
+    },
+    "12": {
+      "name": "Mélodie",
+      "program": 80,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 80 (le plus proche du sample : écart 13.5)"
+    },
+    "13": {
+      "name": "Mélodie",
+      "program": 111,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 111 (le plus proche du sample : écart 7.2)"
+    },
+    "14": {
+      "name": "Mélodie",
+      "program": 63,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 63 (le plus proche du sample : écart 6.2)"
+    },
+    "15": {
+      "name": "Mélodie",
+      "program": 111,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 111 (le plus proche du sample : écart 6.2)"
+    },
+    "20": {
+      "name": "Basse",
+      "program": 36,
+      "velocity": 100,
+      "reverb": 0.0,
+      "comment": "fidèle : instrument GM 36 (le plus proche du sample : écart 20.6)"
+    },
+    "21": {
+      "name": "Mélodie",
+      "program": 87,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 87 (le plus proche du sample : écart 5.5)"
+    }
+  },
+  "comment": "remaster fidèle à l'esprit des instruments (scripts/style_fidele.py) : le son GM le plus proche de chaque sample, mesuré (timbre, enveloppe) ; choisi sans écoute",
+  "master": {
+    "loudness": -14,
+    "balance": "original"
+  }
+}

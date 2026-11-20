@@ -1,0 +1,99 @@
+{
+  "title": "Great Giana Sisters - ingame (1)",
+  "artist": "",
+  "soundfont": "GeneralUser-GS.sf2",
+  "partitions": {
+    "Mélodie": {
+      "instrument": "guitare",
+      "samples": [
+        1,
+        4,
+        5
+      ],
+      "lead": true
+    }
+  },
+  "piano": {
+    "melody": "Mélodie",
+    "chords": [],
+    "riff": [],
+    "bass": [
+      2
+    ],
+    "harmony": [
+      1,
+      2,
+      4,
+      5
+    ]
+  },
+  "tuning_cents": 43,
+  "comment_accord": "tuning_cents mesuré le 21/11/2026 (analyze.tuning_offset sur les samples mélodiques et la basse) : la musique est accordée +43 cents ; sans ça, la mélodie du sample 4 tombait un demi-ton au-dessus de la basse dans le piano",
+  "samples": {
+    "3": {
+      "name": "Batterie",
+      "drum": 36,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 36 (la plus proche du son)"
+    },
+    "6": {
+      "name": "Batterie",
+      "drum": 36,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 36 (la plus proche du son)"
+    },
+    "7": {
+      "name": "Batterie",
+      "drum": 38,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 38 (la plus proche du son)"
+    },
+    "8": {
+      "name": "Batterie",
+      "drum": 36,
+      "drum_kit": 16,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Power, note 36 (la plus proche du son)"
+    },
+    "1": {
+      "name": "Mélodie",
+      "program": 105,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 105 (le plus proche du sample : écart 8.2)"
+    },
+    "2": {
+      "name": "Basse",
+      "program": 34,
+      "velocity": 100,
+      "reverb": 0.0,
+      "comment": "fidèle : instrument GM 34 (le plus proche du sample : écart 6.6)"
+    },
+    "4": {
+      "name": "Mélodie",
+      "program": 3,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 3 (le plus proche du sample : écart 6.0)"
+    },
+    "5": {
+      "name": "Mélodie",
+      "program": 83,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 83 (le plus proche du sample : écart 4.2)"
+    }
+  },
+  "comment": "remaster fidèle à l'esprit des instruments (scripts/style_fidele.py) : le son GM le plus proche de chaque sample, mesuré (timbre, enveloppe) ; choisi sans écoute",
+  "master": {
+    "loudness": -14,
+    "balance": "original"
+  }
+}

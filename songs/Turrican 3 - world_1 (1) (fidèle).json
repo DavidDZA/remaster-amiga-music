@@ -1,0 +1,103 @@
+{
+  "title": "Turrican 3 - world_1 (1)",
+  "artist": "",
+  "soundfont": "GeneralUser-GS.sf2",
+  "partitions": {
+    "Mélodie": {
+      "instrument": "guitare",
+      "samples": [
+        1,
+        2,
+        3
+      ],
+      "lead": true
+    }
+  },
+  "piano": {
+    "melody": "Mélodie",
+    "chords": [],
+    "riff": [],
+    "bass": [],
+    "harmony": [
+      1,
+      2,
+      3
+    ]
+  },
+  "samples": {
+    "4": {
+      "name": "Batterie",
+      "drum": 36,
+      "drum_kit": 0,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Standard, note 36 (la plus proche du son)"
+    },
+    "5": {
+      "name": "Batterie",
+      "drum": 42,
+      "drum_kit": 0,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Standard, note 42 (la plus proche du son)"
+    },
+    "6": {
+      "name": "Batterie",
+      "drum": 40,
+      "drum_kit": 0,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Standard, note 40 (la plus proche du son)"
+    },
+    "7": {
+      "name": "Batterie",
+      "drum": 35,
+      "drum_kit": 0,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Standard, note 35 (la plus proche du son)"
+    },
+    "8": {
+      "name": "Batterie",
+      "drum": 40,
+      "drum_kit": 0,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Standard, note 40 (la plus proche du son)"
+    },
+    "9": {
+      "name": "Batterie",
+      "drum": 42,
+      "drum_kit": 0,
+      "reverb": 0.08,
+      "velocity": 110,
+      "comment": "fidèle : kit GM Standard, note 42 (la plus proche du son)"
+    },
+    "1": {
+      "name": "Mélodie",
+      "program": 94,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 94 (le plus proche du sample : écart 5.8)"
+    },
+    "2": {
+      "name": "Mélodie",
+      "program": 29,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 29 (le plus proche du sample : écart 9.5)"
+    },
+    "3": {
+      "name": "Mélodie",
+      "program": 29,
+      "velocity": 100,
+      "reverb": 0.15,
+      "comment": "fidèle : instrument GM 29 (le plus proche du sample : écart 7.2)"
+    }
+  },
+  "comment": "remaster fidèle à l'esprit des instruments (scripts/style_fidele.py) : le son GM le plus proche de chaque sample, mesuré (timbre, enveloppe) ; choisi sans écoute",
+  "master": {
+    "loudness": -14,
+    "balance": "original"
+  }
+}
