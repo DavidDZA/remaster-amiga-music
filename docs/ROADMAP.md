@@ -15,7 +15,10 @@ passage de son : corrigé), écoute en boucle en temps réel fenêtre ouverte.
 
 **Premier essai** (20/11/2026, l'utilisateur n'avait pas le temps : presets choisis par Claude, sans écoute) :
 Dr Mario, lead → Surge XT « Synth Guitar », chœur → « Retrochoir » (`scripts\essai_vst.py`, fiche
-`songs\Dr Mario - essai VST 1.json`, MP3 dans `out\Retravaillées\Dr Mario\`). **À écouter par l'utilisateur.**
+`songs\Dr Mario - essai VST 1.json`, MP3 dans `out\Retravaillées\Dr Mario\`). Verdict : **« encore pire »**.
+
+Ensuite : **liste d'extraits** (`scripts\extraits.py`) : 9 sons pour le lead et 9 pour le chœur, le même passage
+de 20 s dans le mix, au même niveau ; **l'utilisateur donne un numéro** par sample, puis remaster avec ces sons.
 
 VST libres déjà là (zip, `scripts\setup_tools.py`) : Surge XT (+ Effects), Dexed, JC303, Firefly Synth 2 (+ FX),
 Dragonfly ; sfizz (lecteur SFZ) en ligne de commande. Surge XT en version **portable** : sans elle, aucun preset

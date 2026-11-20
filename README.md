@@ -198,6 +198,22 @@ mis dans l'état du VST, `remaster/vststate.py`), une fiche à part `songs\<musi
 batterie, basse et guitares rythmiques inchangées. Contrôlé : hauteur juste (note 60 → 262 Hz), notes calées comme
 l'ancien lead. Pas écouté.
 
+Verdict de l'utilisateur sur cet essai : « encore pire ». Choisir un preset sur son nom ne marche pas.
+
+**Liste d'extraits à écouter** (`scripts\extraits.py`) : pour gagner du temps à l'utilisateur, le **même passage de
+20 s, dans le mix complet**, avec à chaque fois un autre son pour un sample, mis au **niveau du son actuel** sur ce
+passage (seul le son change). Le n° 0 est toujours le son actuel. Candidats dans `songs\extraits\<musique>.json` :
+un autre ampli NAM (`"nam"`), un preset Surge XT (`"surge"`), ou n'importe quel réglage de fiche (`"remplace"`).
+Passage : les 20 s où le sample joue le plus de notes (ou `"debut"`).
+
+```sh
+.venv\Scripts\python scripts\extraits.py "in\music\Dr Mario\Dr Mario.mod"
+```
+
+→ `out\Retravaillées\Dr Mario\extraits\Lead 0 - actuel….mp3` … `Lead 8 - …`, `Chœur 0` … `Chœur 8` (20/11/2026 :
+lead = la guitare avec 3 autres amplis et 5 leads Surge XT ; chœur = 3 autres chœurs General MIDI et 5 chœurs
+Surge XT). L'utilisateur donne un numéro par sample ; on le met dans la fiche et on refait le remaster.
+
 VST à installer soi-même (gratuits, souvent avec un compte ou un e-mail) : liste dans [docs/ROADMAP.md](docs/ROADMAP.md).
 Après l'installation, `python -m remaster.vst` les essaie et les ajoute au catalogue.
 
@@ -331,7 +347,7 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
 ## Contrôles
 
 ```sh
-.venv\Scripts\python -m pytest              # 69 tests, moins d'une minute (voir ci-dessous)
+.venv\Scripts\python -m pytest              # 71 tests, moins d'une minute (voir ci-dessous)
 .venv\Scripts\python scripts\check_stems.py "in\music\Dr Mario\Dr Mario.mod"   # chaque piste comparée au sample d'origine
 ```
 

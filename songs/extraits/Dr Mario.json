@@ -1,0 +1,33 @@
+{
+  "duree": 20,
+  "samples": {
+    "5": {
+      "titre": "Lead",
+      "candidats": [
+        {"nom": "actuel (guitare, ampli 5152 Lead + TS9)"},
+        {"nom": "guitare, ampli Mesa Mark IV", "nam": "Roman A LT_MESA_MARKIV_1"},
+        {"nom": "guitare, ampli Marshall JVM", "nam": "Phillipe P JVM-OD2-RD-NoDrive-ESR0,003"},
+        {"nom": "guitare, ampli Splawn + TS9", "nam": "Tim R Splawn Pro Mod G12 Gear 3 OD2 TS9"},
+        {"nom": "Surge XT, Classic Lead 1", "surge": "Leads/Classic Lead 1"},
+        {"nom": "Surge XT, Turbo Solo", "surge": "Leads/Turbo Solo"},
+        {"nom": "Surge XT, Scream Lead", "surge": "Leads/Scream Lead"},
+        {"nom": "Surge XT, Prog Rock Octave Lead", "surge": "Rozzer/Leads/Prog Rock Octave Lead"},
+        {"nom": "Surge XT, Guitar Vibe", "surge": "Giana Brotherz/Leads/Guitar Vibe"}
+      ]
+    },
+    "10": {
+      "titre": "Chœur",
+      "candidats": [
+        {"nom": "actuel (chœur General MIDI, GeneralUser)"},
+        {"nom": "chœur General MIDI, MuseScore", "remplace": {"name": "Chœur", "program": 52, "soundfont": "MuseScore_General.sf3", "velocity": 90, "reverb": 0.3}},
+        {"nom": "voix « Ooh », General MIDI", "remplace": {"name": "Chœur", "program": 53, "velocity": 90, "reverb": 0.3}},
+        {"nom": "voix de synthé, General MIDI", "remplace": {"name": "Chœur", "program": 54, "velocity": 90, "reverb": 0.3}},
+        {"nom": "Surge XT, Choir Pad Thing", "surge": "Pads/Choir Pad Thing"},
+        {"nom": "Surge XT, Ooh", "surge": "Pads/Ooh"},
+        {"nom": "Surge XT, OAH Choir", "surge": "Giana Brotherz/Pads/OAH Choir"},
+        {"nom": "Surge XT, Deep Choir", "surge": "Giana Brotherz/Pads/Deep Choir"},
+        {"nom": "Surge XT, Digitized Choir", "surge": "Giana Brotherz/Pads/Digitized Choir"}
+      ]
+    }
+  }
+}
