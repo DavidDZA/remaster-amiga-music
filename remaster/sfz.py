@@ -2,8 +2,10 @@
 
 Gère ce dont ont besoin les banques de sfzinstruments : #include, #define, <control>/<global>/<master>/<group>/
 <region>, couches de vélocité (amp_velcurve_N), prises alternées (seq_length / seq_position, lorand / hirand),
-conditions de contrôleurs (loccN / hiccN, set_ccN), enveloppe (ampeg_*), groupes qui se coupent (group / off_by),
-note_polyphony, one_shot, volume / amplitude / pan / tune / transpose, pitch bend et expression (CC 11).
+conditions de contrôleurs (loccN / hiccN, set_ccN, set_hdccN), enveloppe (ampeg_*), groupes qui se coupent
+(group / off_by), note_polyphony, one_shot, volume / amplitude / pan / tune / transpose, pitch bend et expression
+(CC 11). Batteries multi-micros (format « ARIA » de kinwie : Muldjord, Naked Drums, Sonor…) : plusieurs #include
+sur une ligne, amplitude_onccN / volume_onccN / pan_onccN avec leurs courbes (*_curveccN), réglés par set_hdccN.
 Les échantillons sont chargés (et téléchargés au besoin, par `fetch`) seulement s'ils sont joués.
 """
 from __future__ import annotations
@@ -69,6 +71,9 @@ class Instrument:
         self.regions: list[Region] = []
         self._parse_file(root)
         self.cc = {int(k[6:]): float(v) for k, v in self.control.items() if k.startswith("set_cc")}
+        # set_hdccN : la même chose de 0 à 1
+        self.cc.update({int(k[8:]): float(v) * 127 for k, v in self.control.items()
+                        if k.startswith("set_hdcc") and k[8:].isdigit()})
         self.cc.update(cc or {})
         self.default_path = self.control.get("default_path", "")
         self._cache: dict[str, tuple[np.ndarray, int]] = {}
@@ -83,15 +88,15 @@ class Instrument:
             line = raw.split("//", 1)[0].strip()
             if not line:
                 continue
-            if line.startswith("#define"):
-                parts = line.split(None, 2)
-                if len(parts) == 3:
-                    self.defines[parts[1]] = parts[2].strip()
+            if line.startswith("#define"):  # parfois plusieurs sur une ligne : #define $a 1   #define $b 31
+                for name, val in re.findall(r"#define\s+(\S+)\s+(.*?)(?=\s+#define\s|$)", line):
+                    for prev in sorted(self.defines, key=len, reverse=True):  # une valeur peut en citer une autre
+                        val = val.replace(prev, self.defines[prev])
+                    self.defines[name] = val.strip()
                 continue
-            if line.startswith("#include"):
-                m = re.search(r'"([^"]+)"', line)
-                if m:
-                    self._parse_file(posixpath.normpath(posixpath.join(self.root_dir, m.group(1))))
+            if line.startswith("#include"):  # parfois plusieurs sur une ligne : #include "a" #include "b"
+                for inc in re.findall(r'#include\s+"([^"]+)"', line):
+                    self._parse_file(posixpath.normpath(posixpath.join(self.root_dir, inc)))
                 continue
             for name in sorted(self.defines, key=len, reverse=True):
                 line = line.replace(name, self.defines[name])
@@ -205,6 +210,32 @@ class Instrument:
                 data = resample_poly(data, sr // g, rate // g, axis=1).astype(np.float32)
             self._cache[path] = (data, sr)
         return self._cache[path][0]
+
+
+def _curve(r: Region, prefix: str, cc: int, x: float) -> float:
+    """Courbe d'un contrôleur (x de 0 à 1) : <prefix>_curveccN, courbes par défaut de sfizz / ARIA."""
+    c = int(r.num(f"{prefix}_curvecc{cc}", 0))
+    x = max(0.0, min(1.0, x))
+    return {0: x, 1: 2 * x - 1, 2: 1 - x, 3: 1 - 2 * x, 4: x * x, 5: math.sqrt(x), 6: math.sqrt(1 - x)}.get(c, x)
+
+
+def cc_mods(r: Region, cc: dict) -> tuple[float, float]:
+    """(gain, pan en %) apportés par les contrôleurs : amplitude_onccN (en %, se multiplient), volume_onccN (dB),
+    pan_onccN (%)."""
+    gain, pan = 1.0, 0.0
+    for k, val in r.items():
+        for prefix in ("amplitude_oncc", "volume_oncc", "pan_oncc"):
+            if k.startswith(prefix) and k[len(prefix):].isdigit():
+                n = int(k[len(prefix):])
+                x = _curve(r, prefix.split("_")[0], n, cc.get(n, 0) / 127)
+                v = float(val)
+                if prefix == "amplitude_oncc":
+                    gain *= x * v / 100
+                elif prefix == "volume_oncc":
+                    gain *= 10 ** (x * v / 20)
+                else:
+                    pan += x * v
+    return gain, pan
 
 
 def _vel_gain(r: Region, vel: int) -> float:
@@ -356,11 +387,10 @@ def render(inst: Instrument, events, duration: float, sr: int, bend_range: float
         rel_rel = None if release_at is None else release_at - start
         env = _env(r, 0, m, sr, rel_rel, v["fast"])
         gain = 10 ** (r.num("volume", 0) / 20) * r.num("amplitude", 100) / 100 * _vel_gain(r, v["vel"])
-        for k, val in r.items():
-            if k.startswith("amplitude_oncc") and k[14:].isdigit():
-                gain *= inst.cc.get(int(k[14:]), 0) / 127 * float(val) / 100
+        cc_gain, cc_pan = cc_mods(r, inst.cc)
+        gain *= cc_gain
         sig = seg * env * gain * expr[start:start + m]
-        pan = max(-1.0, min(1.0, r.num("pan", 0) / 100))
+        pan = max(-1.0, min(1.0, (r.num("pan", 0) + cc_pan) / 100))
         ang = (pan + 1) * math.pi / 4
         if sig.shape[0] == 1:
             out[0, start:start + m] += sig[0] * math.cos(ang) * math.sqrt(2) * 0.7071

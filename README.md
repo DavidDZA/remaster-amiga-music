@@ -201,18 +201,30 @@ l'ancien lead. Pas écouté.
 Verdict de l'utilisateur sur cet essai : « encore pire ». Choisir un preset sur son nom ne marche pas.
 
 **Liste d'extraits à écouter** (`scripts\extraits.py`) : pour gagner du temps à l'utilisateur, le **même passage de
-20 s, dans le mix complet**, avec à chaque fois un autre son pour un sample, mis au **niveau du son actuel** sur ce
-passage (seul le son change). Le n° 0 est toujours le son actuel. Candidats dans `songs\extraits\<musique>.json` :
-un autre ampli NAM (`"nam"`), un preset Surge XT (`"surge"`), ou n'importe quel réglage de fiche (`"remplace"`).
-Passage : les 20 s où le sample joue le plus de notes (ou `"debut"`).
+20 s, dans le mix complet** (version enrichie : avec le charleston et les crashs ajoutés), avec à chaque fois un autre
+son pour une **partie** (un sample, ou plusieurs ensemble : grosse caisse + caisse claire, les deux guitares
+rythmiques), mis au **niveau du son actuel** sur ce passage (seul le son change). Le n° 0 est toujours le son actuel.
+Candidats dans `songs\extraits\<musique>.json` : les réglages complets des samples de la partie (`"samples"`, et
+`"extras"` pour le charleston et les crashs d'une autre batterie), un autre ampli NAM (`"nam"`), ou un preset
+Surge XT (`"surge"`). Passage : les 20 s où la partie joue le plus de notes (ou `"debut"`). On peut ne refaire
+qu'une partie : `scripts\extraits.py <musique> Batterie`.
 
 ```sh
 .venv\Scripts\python scripts\extraits.py "in\music\Dr Mario\Dr Mario.mod"
 ```
 
-→ `out\Retravaillées\Dr Mario\extraits\Lead 0 - actuel….mp3` … `Lead 8 - …`, `Chœur 0` … `Chœur 8` (20/11/2026 :
-lead = la guitare avec 3 autres amplis et 5 leads Surge XT ; chœur = 3 autres chœurs General MIDI et 5 chœurs
-Surge XT). L'utilisateur donne un numéro par sample ; on le met dans la fiche et on refait le remaster.
+→ `out\Retravaillées\Dr Mario\extraits\<partie> <n> - <son>.mp3`. Série 1 (20/11/2026 : lead et chœur, amplis et
+presets Surge XT) : « bof, rien ne semble réaliste ». **Série 2** (même jour), d'après sa demande — batterie rock /
+métal, guitare rythmique néo-métal lourde mais nette, lead heavy métal percutant et sec, chœur naturel :
+
+| Partie | Candidats |
+|---|---|
+| Batterie (1 + 2, et charleston / crashs ajoutés) | 4 vraies batteries libres : SM Drums, Muldjord Kit, Naked Drums, Sonor ; telles quelles, puis avec un son rock (égaliseur et compression) |
+| Guitare rythmique (11 + 12) | les deux guitares (gauche / droite) dans 7 amplis métal : 5150, 6505+, Engl Savage, Engl E530, Fortin Grind… ; « son serré » : grave coupé avant l'ampli, bosse à 800 Hz (comme une overdrive devant un ampli métal), noise gate |
+| Lead (5) | sec (sans écho, peu de réverbération), même chaîne serrée, 8 amplis / guitares |
+| Chœur (10) | ce qui existe en libre sans compte (autres chœurs General MIDI, une octave plus haut ; le chœur de la banque « Discord SFZ GM » n'est qu'une sinusoïde) : un chœur naturel demande un téléchargement par l'utilisateur (voir ROADMAP) |
+
+L'utilisateur donne un numéro par partie ; on le met dans la fiche et on refait le remaster.
 
 VST à installer soi-même (gratuits, souvent avec un compte ou un e-mail) : liste dans [docs/ROADMAP.md](docs/ROADMAP.md).
 Après l'installation, `python -m remaster.vst` les essaie et les ajoute au catalogue.
@@ -379,6 +391,7 @@ rechargé, preset .fxp mis dans l'état du VST). Ceux qui demandent UADE, libxmp
 | ffmpeg (paquet `imageio-ffmpeg`) | niveau sonore, MP3 | LGPL / GPL |
 | [Dragonfly Reverb](https://github.com/michaelwillis/dragonfly-reverb) 3.2.10 | réverbération (VST3) | GPL-3.0 |
 | [Big Rusty Drums](https://github.com/sfzinstruments/karoryfer.big-rusty-drums) (Karoryfer) | batterie | CC0 |
+| [SM Drums](https://github.com/sfzinstruments/SMDrums), [Muldjord Kit](https://github.com/sfzinstruments/DrumGizmo.MuldjordKit) (DrumGizmo), [Naked Drums](https://github.com/sfzinstruments/WilkinsonAudio.NakedDrums) (Wilkinson Audio), [Sonor](https://github.com/sfzinstruments/SamsSonor) (Sam Greene) | batteries rock / métal multi-micros, en SFZ | CC-BY 4.0 (Sonor : CC-BY-SA 4.0) |
 | [Pedalboard](https://github.com/spotify/pedalboard) | réverbération, compresseur, limiteur ; hôte des VST3 (fenêtre, rendu, écoute en direct) | GPL |
 | [Surge XT](https://surge-synthesizer.github.io/), [Dexed](https://asb2m10.github.io/dexed/), [JC303](https://github.com/midilab/jc303), [Firefly Synth 2](https://github.com/sjoerdvankreel/firefly-synth-2) | instruments VST3 (`tools\vst3\`) | GPL-3.0 |
 | [sfizz](https://sfz.tools/sfizz/) 1.2.3 | lecteur SFZ complet (`tools\sfizz\`) | BSD-2 |
@@ -397,7 +410,10 @@ Suite prévue (VST à installer, choix des sons à l'oreille) : [docs/ROADMAP.md
 
 
 - Le lecteur SFZ maison couvre ce qu'utilisent ces banques, pas toute la norme SFZ (pas de filtres, de LFO, ni de
-  notes de relâchement). Les SoundFonts General MIDI restent pour les instruments sans banque SFZ (chœur).
+  notes de relâchement). Depuis le 20/11/2026, il lit aussi les batteries multi-micros au format « ARIA »
+  (plusieurs `#include` / `#define` par ligne, `set_hdcc`, `amplitude_oncc` / `volume_oncc` / `pan_oncc` et leurs
+  courbes) : Muldjord Kit, Naked Drums, Sonor. Les grosses banques peuvent être copiées en entier dans
+  `tools\library\complet\<dépôt>\` (`git clone`) : elles y sont lues sans téléchargement. Les SoundFonts General MIDI restent pour les instruments sans banque SFZ (chœur).
 - Les amplis NAM tournent en numpy, sans PyTorch : environ 1 min par piste de guitare de 6 min (les silences sont
   sautés).
 - Certaines banques sont placées une octave au-dessus du son réel : *Black and Blue Basses* (mesuré : la touche 35

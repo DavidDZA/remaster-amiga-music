@@ -18,7 +18,27 @@ Dr Mario, lead → Surge XT « Synth Guitar », chœur → « Retrochoir » (`sc
 `songs\Dr Mario - essai VST 1.json`, MP3 dans `out\Retravaillées\Dr Mario\`). Verdict : **« encore pire »**.
 
 Ensuite : **liste d'extraits** (`scripts\extraits.py`) : 9 sons pour le lead et 9 pour le chœur, le même passage
-de 20 s dans le mix, au même niveau ; **l'utilisateur donne un numéro** par sample, puis remaster avec ces sons.
+de 20 s dans le mix, au même niveau. Verdict : « bof, rien ne semble réaliste. Peut-être on est à la limite du VST
+libre ». Demande : plus de choix, des **voix plus naturelles** pour le chœur, un **lead heavy métal percutant et
+sec**, l'**autre guitare** aussi (néo-métal bien lourde, mais qui ne bave pas), une **batterie rock ou métal**.
+
+**Série 2** (20/11/2026) : 9 batteries (4 vraies batteries libres multi-micros, le lecteur SFZ les lit maintenant),
+10 guitares rythmiques, 10 leads, 4 chœurs (détail dans le README). **À écouter** ; l'utilisateur donne un numéro par
+partie.
+
+Limites, à dire franchement :
+- **Chœur naturel** : rien de libre et téléchargeable sans compte ni e-mail (les banques SFZ libres n'ont que des
+  chœurs General MIDI ; celui de « Discord SFZ GM » est une sinusoïde). Les meilleures pistes gratuites demandent une action de l'utilisateur : **Spitfire LABS
+  Choir** (compte Spitfire, VST3) ou **Dave Choir** (Decent Samples, SFZ, adresse e-mail ; une voix d'homme
+  enregistrée 16 fois, baryton, « ah » et « oh »). Une fois téléchargés, on les met dans la série suivante.
+- **Guitare métal** : pas de banque de guitare métal libre ; la voie réaliste reste une guitare enregistrée sans
+  effet (Black and Green) dans une capture d'ampli NAM. Les captures du dépôt NAM_models n'ont pas de Mesa
+  Rectifier (le son néo-métal type) ; le site ToneHunt / TONE3000 en a des milliers, souvent avec un compte.
+- **Jeu mécanique** : les notes viennent d'un module de 4 voies, vélocités fixes et rythme exact. Même avec de bons
+  sons, ça peut sonner « machine » : pistes, varier un peu la force et le moment des coups (humanisation),
+  étouffements (palm mute) de la guitare rythmique, ghost notes de caisse claire.
+- `sfizz_render.exe` (lecteur SFZ complet) n'a pas pu être lancé : refusé par le contrôle de sécurité de Claude Code
+  (programme téléchargé). Le lecteur maison a été complété à la place.
 
 VST libres déjà là (zip, `scripts\setup_tools.py`) : Surge XT (+ Effects), Dexed, JC303, Firefly Synth 2 (+ FX),
 Dragonfly ; sfizz (lecteur SFZ) en ligne de commande. Surge XT en version **portable** : sans elle, aucun preset

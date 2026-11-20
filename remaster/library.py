@@ -22,6 +22,11 @@ BANKS = {
     "shinyguitar": "sfzinstruments/karoryfer.shinyguitar",                          # guitare acoustique / électrique
     "emilyguitar": "sfzinstruments/karoryfer.emilyguitar",
     "meatbass": "sfzinstruments/karoryfer.meatbass",                                # contrebasse
+    # batteries rock / métal (20/11/2026), CC-BY 4.0 sauf mention
+    "muldjord-kit": "sfzinstruments/DrumGizmo.MuldjordKit",                         # kit rock / métal (DrumGizmo)
+    "sm-drums": "sfzinstruments/SMDrums",                                           # grand kit rock (SM Drums)
+    "naked-drums": "sfzinstruments/WilkinsonAudio.NakedDrums",                      # multi-micros, 10 prises par coup
+    "sams-sonor": "sfzinstruments/SamsSonor",                                       # Sonor Force 3001 (CC-BY-SA)
 }
 
 # Banques placées plus haut que le son réel (mesuré) : la touche 35 de Black and Blue Basses sonne si 0 (30,9 Hz),
@@ -60,6 +65,9 @@ def _safe(base: pathlib.Path, rel: str) -> pathlib.Path:
 
 def bank_file(bank: str, rel: str) -> pathlib.Path:
     repo = BANKS[bank]
+    full = _safe(LIB / "complet" / repo.split("/")[-1], rel)  # banque téléchargée en entier (git clone), si elle y est
+    if full.exists():
+        return full
     base = LIB / bank
     p = _safe(base, rel)
     if not p.exists():
