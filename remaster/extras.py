@@ -10,7 +10,7 @@ import bisect
 import mido
 from .modfile import Module
 from .player import Song
-from .midi import Instrument
+from .midi import Instrument, humanize
 
 
 def drum_rows(song: Song, drum_samples: set[int]) -> set[int]:
@@ -82,12 +82,12 @@ def extra_parts(song: Song, mod: Module, drum_samples: set[int], extras: dict) -
         c = extras["hihat"]
         inst = Instrument(name="Charleston (ajouté)", drum=c.get("note", 42), drum_kit=c.get("drum_kit", 0),
                           gain_db=c.get("gain_db", -6), pan=c.get("pan", 0.3), reverb=c.get("reverb", 0.1),
-                          sfz=c.get("sfz"), fx=c.get("fx", []))
-        parts.append(("x-charleston", inst, hihat_events(song, mod, drows, c)))
+                          sfz=c.get("sfz"), fx=c.get("fx", []), humanize=c.get("humanize"))
+        parts.append(("x-charleston", inst, humanize(hihat_events(song, mod, drows, c), c.get("humanize"), 4200)))
     if "crash" in extras:
         c = extras["crash"]
         inst = Instrument(name="Crash (ajoutée)", drum=c.get("note", 49), drum_kit=c.get("drum_kit", 0),
                           gain_db=c.get("gain_db", -6), pan=c.get("pan", -0.35), reverb=c.get("reverb", 0.25),
-                          sfz=c.get("sfz"), fx=c.get("fx", []))
-        parts.append(("x-crash", inst, crash_events(song, mod, drows, c)))
+                          sfz=c.get("sfz"), fx=c.get("fx", []), humanize=c.get("humanize"))
+        parts.append(("x-crash", inst, humanize(crash_events(song, mod, drows, c), c.get("humanize"), 4300)))
     return parts

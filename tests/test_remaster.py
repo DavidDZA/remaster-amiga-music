@@ -86,10 +86,14 @@ def test_fichier_midi_combine(song, mod):
     assert all(r[2].share == 0.5 for r in doubled)
     left = next(r for r in doubled if r[2].part == "G" and r[1] == 1)
     right = next(r for r in doubled if r[2].part == "D" and r[1] == 1)
-    assert left[2].sfz != right[2].sfz and left[2].pan == -right[2].pan
-    assert left[2].fx != right[2].fx  # un autre ampli à droite
-    delay = cfg["samples"]["12"]["double"].get("delay_ms", 12) / 1000
-    assert abs(right[3][0][0] - left[3][0][0] - delay) < 1e-9
+    assert left[2].sfz != right[2].sfz and left[2].pan == -right[2].pan  # une autre guitare à droite
+    if cfg["samples"]["12"].get("humanize"):
+        # deux prises jouées différemment, comme en studio (midi.humanize), mais les mêmes notes
+        assert [round(t, 6) for t, _ in left[3]] != [round(t, 6) for t, _ in right[3]]
+        assert sorted(m.note for _, m in left[3] if m.type == "note_on") ==             sorted(m.note for _, m in right[3] if m.type == "note_on")
+    else:
+        delay = cfg["samples"]["12"]["double"].get("delay_ms", 12) / 1000
+        assert abs(right[3][0][0] - left[3][0][0] - delay) < 1e-9
     mf = midi.combined(song, [r for r in rts if r[2].part != "D"])
     assert mf is not None
     assert abs(mf.length - (song.duration + midi.TAIL)) < 1.0
@@ -144,3 +148,35 @@ def test_soundtracker_restes_dans_l_ordre(tmp_path):
 
 def test_pas_un_module(tmp_path):
     assert not modfile.is_soundtracker(bytes(range(256)) * 20)
+
+
+def test_humanize_moves_attacks_a_little_and_strums_chords():
+    import mido
+    from remaster import midi
+    ev = []
+    for i in range(50):
+        t = i * 0.25
+        for n in (40, 47, 52):  # un power chord
+            ev.append((t, mido.Message("note_on", note=n, velocity=100)))
+        ev.append((t + 0.2, mido.Message("note_off", note=40, velocity=0)))
+    out = midi.humanize(ev, {"timing_ms": 4, "velocity": 6, "strum_ms": 4}, seed=1)
+    ons = [(t, m) for t, m in out if m.type == "note_on"]
+    assert len(ons) == len([e for e in ev if e[1].type == "note_on"])
+    firsts = sorted(t for t, m in ons if m.note == 40)
+    shifts = [a - i * 0.25 for i, a in enumerate(firsts)]
+    assert max(abs(x) for x in shifts) <= 0.010 + 1e-9 and np.std(shifts) > 0.001   # quelques ms, pas plus
+    by_t = {}
+    for t, m in ons:
+        by_t.setdefault(m.note, []).append(t)
+    assert all(abs((b - a) - 0.004) < 1e-9 for a, b in zip(by_t[40], by_t[47]))  # grave d'abord, 4 ms par corde
+    vels = [m.velocity for _, m in ons]
+    assert 80 <= min(vels) and max(vels) <= 120 and len(set(vels)) > 5
+    assert midi.humanize(ev, {"timing_ms": 4}, seed=1) == midi.humanize(ev, {"timing_ms": 4}, seed=1)  # même prise
+    assert midi.humanize(ev, None, seed=1) == ev
+
+
+def test_parallel_chains_are_added():
+    from remaster import fx
+    x = np.ones((2, 1000), np.float32) * 0.1
+    y = fx.apply(x, [{"type": "parallel", "branches": [{"fx": []}, {"fx": [{"type": "gain", "db": 6}], "gain_db": -6}]}], 48000)
+    assert np.allclose(y, 0.2, atol=1e-4)

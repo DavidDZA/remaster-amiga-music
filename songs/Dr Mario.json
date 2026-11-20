@@ -3,7 +3,7 @@
   "artist": "betrayer",
   "soundfont": "GeneralUser-GS.sf2",
   "master": {
-    "loudness": -14,
+    "loudness": -11,
     "pan_width": 0.35,
     "balance": "original",
     "fx": [
@@ -11,6 +11,11 @@
         "type": "LowShelfFilter",
         "cutoff_frequency_hz": 70,
         "gain_db": 2
+      },
+      {
+        "type": "HighShelfFilter",
+        "cutoff_frequency_hz": 8000,
+        "gain_db": 1.5
       }
     ],
     "reverb": {
@@ -29,7 +34,8 @@
         "low_cut_hz": 200,
         "low_boost": 0
       }
-    }
+    },
+    "comp_threshold": -20
   },
   "extras": {
     "hihat": {
@@ -43,8 +49,8 @@
       "gain_db": -9,
       "pan": 0,
       "sfz": {
-        "bank": "big-rusty-drums",
-        "program": "Programs/02-basic.sfz"
+        "bank": "naked-drums",
+        "program": "Wilkinson Audio/Naked Drums/User/Naked Drums GM.sfz"
       },
       "fx": [
         {
@@ -52,7 +58,11 @@
           "cutoff_frequency_hz": 250
         }
       ],
-      "reverb": 0.03
+      "reverb": 0.03,
+      "humanize": {
+        "timing_ms": 3,
+        "velocity": 10
+      }
     },
     "crash": {
       "note": 49,
@@ -61,15 +71,19 @@
       "pan": 0,
       "reverb": 0.1,
       "sfz": {
-        "bank": "big-rusty-drums",
-        "program": "Programs/02-basic.sfz"
+        "bank": "naked-drums",
+        "program": "Wilkinson Audio/Naked Drums/User/Naked Drums GM.sfz"
       },
       "fx": [
         {
           "type": "HighpassFilter",
           "cutoff_frequency_hz": 200
         }
-      ]
+      ],
+      "humanize": {
+        "timing_ms": 3,
+        "velocity": 10
+      }
     }
   },
   "samples": {
@@ -80,38 +94,97 @@
       "reverb": 0.0,
       "pan": 0,
       "sfz": {
-        "bank": "big-rusty-drums",
-        "program": "Programs/02-basic.sfz"
+        "bank": "naked-drums",
+        "program": "Wilkinson Audio/Naked Drums/User/Naked Drums GM.sfz"
       },
       "fx": [
         {
-          "type": "PeakFilter",
-          "cutoff_frequency_hz": 60,
-          "gain_db": 2,
-          "q": 1.0
-        },
-        {
-          "type": "PeakFilter",
-          "cutoff_frequency_hz": 400,
-          "gain_db": -4,
-          "q": 1.0
-        },
-        {
-          "type": "PeakFilter",
-          "cutoff_frequency_hz": 5000,
-          "gain_db": 9,
-          "q": 1.2
-        },
-        {
-          "type": "Compressor",
-          "threshold_db": -18,
-          "ratio": 4,
-          "attack_ms": 15,
-          "release_ms": 120
+          "type": "parallel",
+          "comment": "compression parallèle",
+          "branches": [
+            {
+              "fx": [
+                {
+                  "type": "HighpassFilter",
+                  "cutoff_frequency_hz": 30
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 60,
+                  "gain_db": 3,
+                  "q": 1.0
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 350,
+                  "gain_db": -5,
+                  "q": 1.0
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 4000,
+                  "gain_db": 5,
+                  "q": 1.0
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -18,
+                  "ratio": 4,
+                  "attack_ms": 10,
+                  "release_ms": 100
+                }
+              ]
+            },
+            {
+              "fx": [
+                {
+                  "type": "HighpassFilter",
+                  "cutoff_frequency_hz": 30
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 60,
+                  "gain_db": 3,
+                  "q": 1.0
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 350,
+                  "gain_db": -5,
+                  "q": 1.0
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 4000,
+                  "gain_db": 5,
+                  "q": 1.0
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -18,
+                  "ratio": 4,
+                  "attack_ms": 10,
+                  "release_ms": 100
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -32,
+                  "ratio": 10,
+                  "attack_ms": 1,
+                  "release_ms": 60
+                }
+              ],
+              "gain_db": -4
+            }
+          ]
         }
       ],
-      "comment": "Big Rusty Drums : grosse caisse plus courte, avec l'attaque de la batte (celle de Virtuosity n'en avait presque pas)",
-      "gain_db": 6
+      "gain_db": 6,
+      "comment": "choisi à l'écoute le 20/11/2026 : Batterie n° 7, Naked Drums, son rock compressé",
+      "humanize": {
+        "timing_ms": 2,
+        "velocity": 5
+      }
     },
     "2": {
       "name": "Caisse claire",
@@ -120,28 +193,84 @@
       "reverb": 0.12,
       "pan": 0,
       "sfz": {
-        "bank": "big-rusty-drums",
-        "program": "Programs/02-basic.sfz"
+        "bank": "naked-drums",
+        "program": "Wilkinson Audio/Naked Drums/User/Naked Drums GM.sfz"
       },
       "fx": [
         {
-          "type": "HighpassFilter",
-          "cutoff_frequency_hz": 90
-        },
-        {
-          "type": "PeakFilter",
-          "cutoff_frequency_hz": 200,
-          "gain_db": 2,
-          "q": 1.0
-        },
-        {
-          "type": "Compressor",
-          "threshold_db": -16,
-          "ratio": 3,
-          "attack_ms": 5,
-          "release_ms": 100
+          "type": "parallel",
+          "comment": "compression parallèle",
+          "branches": [
+            {
+              "fx": [
+                {
+                  "type": "HighpassFilter",
+                  "cutoff_frequency_hz": 80
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 200,
+                  "gain_db": 3,
+                  "q": 1.0
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 5000,
+                  "gain_db": 3,
+                  "q": 1.0
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -16,
+                  "ratio": 4,
+                  "attack_ms": 5,
+                  "release_ms": 80
+                }
+              ]
+            },
+            {
+              "fx": [
+                {
+                  "type": "HighpassFilter",
+                  "cutoff_frequency_hz": 80
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 200,
+                  "gain_db": 3,
+                  "q": 1.0
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 5000,
+                  "gain_db": 3,
+                  "q": 1.0
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -16,
+                  "ratio": 4,
+                  "attack_ms": 5,
+                  "release_ms": 80
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -32,
+                  "ratio": 10,
+                  "attack_ms": 1,
+                  "release_ms": 60
+                }
+              ],
+              "gain_db": -4
+            }
+          ]
         }
-      ]
+      ],
+      "comment": "choisi à l'écoute le 20/11/2026 : Batterie n° 7, Naked Drums, son rock compressé",
+      "humanize": {
+        "timing_ms": 2,
+        "velocity": 5
+      }
     },
     "3": {
       "name": "Basse",
@@ -155,51 +284,97 @@
       "fx": [
         {
           "type": "HighpassFilter",
-          "cutoff_frequency_hz": 30
+          "cutoff_frequency_hz": 35
         },
         {
-          "type": "LowShelfFilter",
-          "cutoff_frequency_hz": 90,
-          "gain_db": 3
+          "type": "parallel",
+          "branches": [
+            {
+              "fx": [
+                {
+                  "type": "LowpassFilter",
+                  "cutoff_frequency_hz": 200
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -20,
+                  "ratio": 4,
+                  "attack_ms": 10,
+                  "release_ms": 120
+                }
+              ]
+            },
+            {
+              "fx": [
+                {
+                  "type": "HighpassFilter",
+                  "cutoff_frequency_hz": 250
+                },
+                {
+                  "type": "Distortion",
+                  "drive_db": 28
+                },
+                {
+                  "type": "LowpassFilter",
+                  "cutoff_frequency_hz": 4500
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 1200,
+                  "gain_db": 2,
+                  "q": 1.0
+                }
+              ],
+              "gain_db": -6
+            }
+          ]
         },
         {
           "type": "Compressor",
-          "threshold_db": -20,
-          "ratio": 4,
-          "attack_ms": 10,
-          "release_ms": 150
-        },
-        {
-          "type": "Distortion",
-          "drive_db": 18,
-          "mix": 0.15
-        },
-        {
-          "type": "LowpassFilter",
-          "cutoff_frequency_hz": 5000
+          "threshold_db": -18,
+          "ratio": 3,
+          "attack_ms": 5,
+          "release_ms": 100
         }
       ],
       "comment": "vraie basse électrique (doigts) ; le sample du module est accordé en sol# (au C-2 il sonne G#1)",
-      "choke": true
+      "choke": true,
+      "humanize": {
+        "timing_ms": 3,
+        "velocity": 6
+      }
     },
     "5": {
       "name": "Lead",
       "velocity": 100,
-      "reverb": 0.15,
+      "reverb": 0.05,
       "pan": 0,
       "gain_db": 1,
       "sfz": {
         "bank": "black-and-green-guitars",
-        "program": "Programs/04-green_twang.sfz"
+        "program": "Programs/07-black_twang.sfz"
       },
       "fx": [
         {
           "type": "HighpassFilter",
-          "cutoff_frequency_hz": 100
+          "cutoff_frequency_hz": 120
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 800,
+          "gain_db": 3,
+          "q": 0.7
         },
         {
           "type": "nam",
-          "model": "Tim R 5152 Lead + TS9"
+          "model": "Tom C Engl e530 preamp & 840 power amp with Boss DS1 Overdrive"
+        },
+        {
+          "type": "NoiseGate",
+          "threshold_db": -48,
+          "ratio": 10,
+          "attack_ms": 1,
+          "release_ms": 60
         },
         {
           "type": "cab",
@@ -207,33 +382,44 @@
         },
         {
           "type": "HighpassFilter",
-          "cutoff_frequency_hz": 90
+          "cutoff_frequency_hz": 80
         },
         {
           "type": "PeakFilter",
-          "cutoff_frequency_hz": 3150,
-          "gain_db": 1.5,
-          "q": 1.2
+          "cutoff_frequency_hz": 400,
+          "gain_db": -2,
+          "q": 1.0
         },
         {
           "type": "LowpassFilter",
           "cutoff_frequency_hz": 9000
         },
         {
-          "type": "Delay",
-          "delay_seconds": 0.3,
-          "feedback": 0.2,
-          "mix": 0.12
+          "type": "Compressor",
+          "threshold_db": -14,
+          "ratio": 3,
+          "attack_ms": 12,
+          "release_ms": 80
         }
       ],
-      "comment": "guitare green en son tenu, avec les bends du module ; ampli 5152 Lead + TS9, baffle Greenback, écho léger",
-      "choke": true
+      "choke": true,
+      "comment": "choisi à l'écoute le 20/11/2026 : Lead n° 7, guitare black, Engl E530 + DS-1, sec (sans écho)",
+      "humanize": {
+        "timing_ms": 5,
+        "velocity": 8
+      }
     },
     "10": {
       "name": "Chœur",
-      "program": 52,
       "velocity": 90,
-      "reverb": 0.3
+      "reverb": 0.35,
+      "program": 52,
+      "soundfont": "MuseScore_General.sf3",
+      "comment": "choisi à l'écoute le 20/11/2026 : Chœur n° 1, chœur General MIDI, banque MuseScore",
+      "humanize": {
+        "timing_ms": 8,
+        "velocity": 6
+      }
     },
     "11": {
       "name": "Guitare étouffée",
@@ -251,11 +437,25 @@
       "fx": [
         {
           "type": "HighpassFilter",
-          "cutoff_frequency_hz": 100
+          "cutoff_frequency_hz": 120
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 800,
+          "gain_db": 3,
+          "q": 0.7
         },
         {
           "type": "nam",
-          "model": "Tom C Axe FX 2 Engl Savage"
+          "model": "Helga B 6505+ Red ch - MXR Drive V2",
+          "input_db": -6
+        },
+        {
+          "type": "NoiseGate",
+          "threshold_db": -48,
+          "ratio": 10,
+          "attack_ms": 1,
+          "release_ms": 60
         },
         {
           "type": "cab",
@@ -267,22 +467,15 @@
         },
         {
           "type": "PeakFilter",
-          "cutoff_frequency_hz": 250,
-          "gain_db": 2,
-          "q": 0.8
-        },
-        {
-          "type": "PeakFilter",
-          "cutoff_frequency_hz": 5000,
-          "gain_db": -2.5,
+          "cutoff_frequency_hz": 400,
+          "gain_db": -2,
           "q": 1.0
         },
         {
           "type": "LowpassFilter",
-          "cutoff_frequency_hz": 9500
+          "cutoff_frequency_hz": 9000
         }
       ],
-      "comment": "palm mute : staccato coupé à 0,12 s, en quinte ; mêmes guitares et amplis que la rythmique",
       "double": {
         "sfz": {
           "bank": "black-and-green-guitars",
@@ -291,11 +484,25 @@
         "fx": [
           {
             "type": "HighpassFilter",
-            "cutoff_frequency_hz": 100
+            "cutoff_frequency_hz": 120
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 800,
+            "gain_db": 3,
+            "q": 0.7
           },
           {
             "type": "nam",
-            "model": "Helga B 6505+ Red ch - MXR Drive V2"
+            "model": "Helga B 6505+ Red ch - MXR Drive V2",
+            "input_db": -6
+          },
+          {
+            "type": "NoiseGate",
+            "threshold_db": -48,
+            "ratio": 10,
+            "attack_ms": 1,
+            "release_ms": 60
           },
           {
             "type": "cab",
@@ -307,26 +514,26 @@
           },
           {
             "type": "PeakFilter",
-            "cutoff_frequency_hz": 250,
-            "gain_db": 2,
-            "q": 0.8
-          },
-          {
-            "type": "PeakFilter",
-            "cutoff_frequency_hz": 5000,
-            "gain_db": -2.5,
+            "cutoff_frequency_hz": 400,
+            "gain_db": -2,
             "q": 1.0
           },
           {
             "type": "LowpassFilter",
-            "cutoff_frequency_hz": 9500
+            "cutoff_frequency_hz": 9000
           }
         ],
         "width": 0.75,
         "delay_ms": 0
       },
       "choke": true,
-      "gain_db": -3
+      "gain_db": -3,
+      "comment": "choisi à l'écoute le 20/11/2026 : Guitare rythmique n° 7, deux guitares, 6505+ canal rouge + MXR, moins de gain, son serré",
+      "humanize": {
+        "timing_ms": 4,
+        "velocity": 6,
+        "strum_ms": 3
+      }
     },
     "12": {
       "name": "Guitare rythmique",
@@ -344,11 +551,25 @@
       "fx": [
         {
           "type": "HighpassFilter",
-          "cutoff_frequency_hz": 100
+          "cutoff_frequency_hz": 120
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 800,
+          "gain_db": 3,
+          "q": 0.7
         },
         {
           "type": "nam",
-          "model": "Tom C Axe FX 2 Engl Savage"
+          "model": "Helga B 6505+ Red ch - MXR Drive V2",
+          "input_db": -6
+        },
+        {
+          "type": "NoiseGate",
+          "threshold_db": -48,
+          "ratio": 10,
+          "attack_ms": 1,
+          "release_ms": 60
         },
         {
           "type": "cab",
@@ -360,28 +581,15 @@
         },
         {
           "type": "PeakFilter",
-          "cutoff_frequency_hz": 250,
-          "gain_db": 2,
-          "q": 0.8
-        },
-        {
-          "type": "PeakFilter",
-          "cutoff_frequency_hz": 5000,
-          "gain_db": -2.5,
+          "cutoff_frequency_hz": 400,
+          "gain_db": -2,
           "q": 1.0
         },
         {
-          "type": "PeakFilter",
-          "cutoff_frequency_hz": 3150,
-          "gain_db": 2,
-          "q": 1.2
-        },
-        {
           "type": "LowpassFilter",
-          "cutoff_frequency_hz": 9500
+          "cutoff_frequency_hz": 9000
         }
       ],
-      "comment": "power chords (3 cordes) ; gauche : guitare black → Engl Savage ; droite : guitare green → 6505+ MXR ; baffle 4×12 Greenback (choisis par comparaison à une courbe type)",
       "double": {
         "sfz": {
           "bank": "black-and-green-guitars",
@@ -390,11 +598,25 @@
         "fx": [
           {
             "type": "HighpassFilter",
-            "cutoff_frequency_hz": 100
+            "cutoff_frequency_hz": 120
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 800,
+            "gain_db": 3,
+            "q": 0.7
           },
           {
             "type": "nam",
-            "model": "Helga B 6505+ Red ch - MXR Drive V2"
+            "model": "Helga B 6505+ Red ch - MXR Drive V2",
+            "input_db": -6
+          },
+          {
+            "type": "NoiseGate",
+            "threshold_db": -48,
+            "ratio": 10,
+            "attack_ms": 1,
+            "release_ms": 60
           },
           {
             "type": "cab",
@@ -406,31 +628,25 @@
           },
           {
             "type": "PeakFilter",
-            "cutoff_frequency_hz": 250,
-            "gain_db": 2,
-            "q": 0.8
-          },
-          {
-            "type": "PeakFilter",
-            "cutoff_frequency_hz": 5000,
-            "gain_db": -2.5,
+            "cutoff_frequency_hz": 400,
+            "gain_db": -2,
             "q": 1.0
           },
           {
-            "type": "PeakFilter",
-            "cutoff_frequency_hz": 3150,
-            "gain_db": 2,
-            "q": 1.2
-          },
-          {
             "type": "LowpassFilter",
-            "cutoff_frequency_hz": 9500
+            "cutoff_frequency_hz": 9000
           }
         ],
         "width": 0.85,
         "delay_ms": 0
       },
-      "choke": true
+      "choke": true,
+      "comment": "choisi à l'écoute le 20/11/2026 : Guitare rythmique n° 7, deux guitares, 6505+ canal rouge + MXR, moins de gain, son serré",
+      "humanize": {
+        "timing_ms": 4,
+        "velocity": 6,
+        "strum_ms": 3
+      }
     }
   },
   "partitions": {

@@ -6,6 +6,7 @@ les changements de volume du CC 11 (expression).
 from __future__ import annotations
 from dataclasses import dataclass, field
 import math
+import random
 import mido
 from .modfile import period_to_semitones
 from .player import Song
@@ -44,6 +45,40 @@ class Instrument:
     share: float = 1.0           # part du sample d'origine que joue cette piste (0,5 pour une partie doublée)
     choke: bool = False          # un nouveau coup coupe le précédent (guitares, basse)
     dedupe: bool = True          # ignore une note déjà jouée au même instant, même hauteur, sur une autre voie
+    humanize: dict | None = None  # jeu moins mécanique : {"timing_ms": 4, "velocity": 6, "strum_ms": 4} (humanize())
+
+
+def humanize(events, h: dict | None, seed: int) -> list[tuple[float, mido.Message]]:
+    """Un jeu moins mécanique, comme un musicien : chaque attaque bouge un peu dans le temps (écart type
+    `timing_ms`, borné à 2,5 fois), sa force varie (`velocity` : écart type en %), et les notes d'un accord partent
+    l'une après l'autre (`strum_ms` entre deux cordes, de la plus grave à la plus aiguë, comme un coup de médiator
+    vers le bas). Tout ce qui se passe au même instant (fin de la note d'avant, bend, volume) bouge avec l'attaque :
+    le legato reste legato. Même `seed` = même interprétation (le cache des pistes reste bon) ; une partie doublée
+    reçoit deux interprétations différentes, comme deux prises en studio."""
+    if not h:
+        return list(events)
+    rng = random.Random(seed)
+    sd = float(h.get("timing_ms", 0)) / 1000
+    vel_sd = float(h.get("velocity", 0)) / 100
+    strum = float(h.get("strum_ms", 0)) / 1000
+    groups: dict[float, list] = {}
+    for t, m in events:
+        groups.setdefault(round(t, 6), []).append(m)
+    out = []
+    for t in sorted(groups):
+        msgs = groups[t]
+        ons = sorted((m for m in msgs if m.type == "note_on" and m.velocity > 0), key=lambda m: m.note)
+        dt = max(-2.5 * sd, min(2.5 * sd, rng.gauss(0, sd))) if ons and sd else 0.0
+        t0 = max(0.0, t + dt)
+        for m in msgs:
+            if not (m.type == "note_on" and m.velocity > 0):
+                out.append((t0, m))
+        for i, m in enumerate(ons):
+            v = m.velocity
+            if vel_sd:
+                v = max(1, min(127, round(v * (1 + max(-2.5 * vel_sd, min(2.5 * vel_sd, rng.gauss(0, vel_sd)))))))
+            out.append((t0 + i * strum, m.copy(velocity=v)))
+    return out
 
 
 def _seconds_to_ticks(t: float) -> int:

@@ -75,6 +75,7 @@ def routes(song: player.Song, mod: modfile.Module, cfg: dict):
         ev = midi.route_events(song, sample, ch, inst, skip=duplicates(song, sample, ch) if inst.dedupe else None)
         if not any(m.type == "note_on" for _, m in ev):
             continue
+        seed = sample * 100 + ch
         if inst.double:
             d = inst.double
             w = d.get("width", 0.85)
@@ -82,10 +83,12 @@ def routes(song: player.Song, mod: modfile.Module, cfg: dict):
             right = dataclasses.replace(inst, pan=w, part="D", share=0.5, double=None,
                                         sfz=d.get("sfz", inst.sfz), fx=d.get("fx", inst.fx))
             delay = d.get("delay_ms", 12) / 1000
-            out.append((sample, ch, left, ev))
-            out.append((sample, ch, right, [(t + delay, m) for t, m in ev]))
+            out.append((sample, ch, left, midi.humanize(ev, inst.humanize, seed)))
+            # la prise de droite : une autre interprétation (humanisée), sinon le même jeu décalé de delay_ms
+            right_ev = midi.humanize(ev, inst.humanize, seed + 50) if inst.humanize else ev
+            out.append((sample, ch, right, [(t + delay, m) for t, m in right_ev]))
         else:
-            out.append((sample, ch, inst, ev))
+            out.append((sample, ch, inst, midi.humanize(ev, inst.humanize, seed)))
     return out
 
 
@@ -115,8 +118,9 @@ def _part_key(name, ev, inst: midi.Instrument, duration: float, seed: int, defau
     for k in ("name", "gain_db", "pan", "reverb", "share", "part", "fx", "by_channel", "double"):
         sound.pop(k, None)  # réglages de mixage : n'obligent pas à refaire le son
     sound["heavy_fx"] = split_fx(inst.fx)[0]
-    if sound.get("vsti") is None:
-        sound.pop("vsti", None)  # pas de VST : même clé qu'avant leur arrivée (le cache des pistes reste bon)
+    for k in ("vsti", "humanize"):
+        if sound.get(k) is None:
+            sound.pop(k, None)  # réglage absent : même clé qu'avant son arrivée (le cache des pistes reste bon)
     states = [vst.state_hash(inst.vsti)] + [vst.state_hash(f) for f in sound["heavy_fx"] if f.get("type") == "vst"]
     if any(states):
         sound["vst_states"] = states  # un autre preset choisi = une piste à refaire
@@ -153,8 +157,9 @@ def render_part(name: str, ev, inst: midi.Instrument, duration: float, stem_dir:
         if offset:
             ev = [(t, m.copy(note=min(127, max(0, m.note + offset))) if m.type in ("note_on", "note_off") else m)
                   for t, m in ev]
+        strum = float((inst.humanize or {}).get("strum_ms", 0))
         audio = sfz.render(_SFZ_CACHE[ck], ev, duration + midi.TAIL, SR, bend_range=midi.BEND_RANGE, seed=seed,
-                           choke=inst.choke)
+                           choke=inst.choke, chord_ms=strum * (len(inst.chord) - 1) + 5 if strum else 0.0)
     else:
         mid = stem_dir / f"{name}.mid"
         midi.midi_file([midi.track(ev, inst, name, duration)]).save(mid)

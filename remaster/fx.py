@@ -4,6 +4,8 @@ Chaque effet est un objet {"type": ..., paramètres..., "mix": 0..1 (facultatif,
 - "nam"  : ampli capturé (Neural Amp Modeler), {"model": nom, "input_db": 0} ; le son entre normalisé (crête à −6 dB) ;
 - "cab"  : baffle (réponse impulsionnelle), {"ir": nom} ;
 - "gain" : {"db": x} ;
+- "parallel" : plusieurs chaînes sur le même son, additionnées : {"branches": [{"fx": [...], "gain_db": 0}, …]}
+  (basse métal : graves propres + copie saturée dans les médiums ; compression parallèle d'une batterie) ;
 - "vst"  : un effet VST3 (tools/vst3, tools/dragonfly ou C:\Program Files\Common Files\VST3, voir vst.py),
            {"plugin": "DragonflyRoomReverb", "params": {nom: valeur}, "state": "vst/<musique>/fx.bin"} ;
 - tout effet de Pedalboard par son nom : "HighpassFilter", "LowpassFilter", "PeakFilter", "LowShelfFilter",
@@ -46,6 +48,13 @@ def _apply_one(x: np.ndarray, spec: dict, sr: int) -> np.ndarray:
         return plug(x, sr)
     if kind == "gain":
         return x * 10 ** (spec.get("db", 0) / 20)
+    if kind == "parallel":
+        outs = [apply(x.copy(), b.get("fx"), sr) * 10 ** (b.get("gain_db", 0) / 20) for b in spec["branches"]]
+        n = max(o.shape[1] for o in outs)
+        y = np.zeros((2, n), np.float32)
+        for o in outs:
+            y[:, :o.shape[1]] += o
+        return y
     cls = getattr(pb, kind, None)
     if cls is None:
         raise ValueError(f"effet inconnu : {kind}")

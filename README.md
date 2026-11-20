@@ -105,6 +105,7 @@ Pour chaque sample (`"1"` à `"31"`) :
 | `by_channel` | réglages propres à une voie du module : `{"2": {...}}` |
 | `choke` | un nouveau coup coupe le précédent (guitares, basse) |
 | `dedupe` | `false` pour garder les notes que le module double sur plusieurs voies (par défaut : jouées une fois) |
+| `humanize` | jeu moins mécanique : `{"timing_ms": 4, "velocity": 6, "strum_ms": 3}` (attaques qui bougent de quelques ms, force qui varie, accords grattés corde par corde ; une partie doublée reçoit deux prises différentes) |
 | `program` | sinon, instrument General MIDI joué par FluidSynth (0 piano, 30 guitare saturée, 33/34 basse, 52 chœur…) |
 | `drum` | ou bien un son de batterie (note GM : 36 grosse caisse, 38 caisse claire, 42 charleston, 49 crash) |
 | `drum_kit` | kit de batterie (0 Standard, 16 Power, 25 TR-808…) |
@@ -127,16 +128,21 @@ un instrument plus présent, utiliser `gain_db`.
 Les noms des samples sont des messages (« composed by betrayer », « greets to tokyo kid »…) : les instruments ont
 été reconnus à l'analyse du son et de leur rôle dans les patterns.
 
+Choisis **à l'écoute par l'utilisateur** le 20/11/2026 (série 2 d'extraits : batterie 7, guitare rythmique 7,
+lead 7, chœur 1), puis production métal (`scripts\production_metal.py`, voir plus bas) :
+
 | Sample | Ce que c'est | Remplacé par |
 |---|---|---|
-| 1, 2 | grosse caisse, caisse claire | *Big Rusty Drums* (kick court avec l'attaque de la batte, renforcé vers 5 kHz) |
-| 3 | basse (accordée en sol#) | *Black and Blue Basses* (basse « darkblack » aux doigts), compresseur, un peu de saturation |
-| 5 | lead avec bends | guitare *green* (son tenu) → ampli 5152 Lead + TS9 (NAM) → baffle Greenback → écho léger |
-| 10 | chœur | Choir Aahs (GeneralUser GS, FluidSynth) |
-| 11 | guitare étouffée (très courte) | staccato coupé à 0,12 s, en quinte ; mêmes guitares et amplis que la rythmique |
-| 12 | guitare en power chord (la quinte est dans le spectre) | power chords (3 cordes) : à gauche guitare *black* → Engl Savage, à droite guitare *green* → 6505+ MXR ; baffle 4×12 Greenback |
+| 1, 2 | grosse caisse, caisse claire | *Naked Drums* (Wilkinson Audio, multi-micros), son rock : égaliseur (grave, médiums creusés, attaque à 4–5 kHz), compression, compression parallèle |
+| 3 | basse (accordée en sol#) | *Black and Blue Basses* (« darkblack » aux doigts) : graves propres sous 200 Hz + copie saturée dans les médiums |
+| 5 | lead avec bends | guitare *black* → ampli Engl E530 + Boss DS-1 (NAM) → baffle 4×12, sec (sans écho) |
+| 10 | chœur | Choir Aahs (MuseScore General, FluidSynth) |
+| 11 | guitare étouffée (très courte) | staccato coupé à 0,12 s, en quinte ; mêmes guitares et ampli que la rythmique |
+| 12 | guitare en power chord | power chords (3 cordes) grattés ; guitare *black* à gauche, *green* à droite, deux prises différentes, toutes deux dans un 6505+ canal rouge + MXR, gain réduit, « son serré » (grave coupé avant l'ampli, bosse à 800 Hz, noise gate) |
 | 4 | vide | (sert à couper une voie) |
-| ajouts | charleston, crashs (version enrichie) | *Big Rusty Drums* |
+| ajouts | charleston, crashs (version enrichie) | *Naked Drums* |
+
+Les versions d'avant sont dans `out\Retravaillées\Dr Mario\anciennes versions\`.
 
 ## VST : choisir le son à l'oreille
 
@@ -228,6 +234,27 @@ L'utilisateur donne un numéro par partie ; on le met dans la fiche et on refait
 
 VST à installer soi-même (gratuits, souvent avec un compte ou un e-mail) : liste dans [docs/ROADMAP.md](docs/ROADMAP.md).
 Après l'installation, `python -m remaster.vst` les essaie et les ajoute au catalogue.
+
+### Appliquer les choix, puis la production métal
+
+```sh
+.venv\Scripts\python scripts\appliquer_choix.py "in\music\Dr Mario\Dr Mario.mod" Batterie=7 "Guitare rythmique=7" Lead=7 Chœur=1
+.venv\Scripts\python scripts\production_metal.py "in\music\Dr Mario\Dr Mario.mod" batterie=1,2 basse=3 rythmique=11,12 lead=5 autres=10
+.venv\Scripts\python -m remaster "in\music\Dr Mario\Dr Mario.mod" --no-original
+```
+
+`appliquer_choix.py` met dans la fiche les candidats choisis (n° des extraits). `production_metal.py` (le
+20/11/2026, à la demande « fais sonner ça métal comme tu peux », l'utilisateur trouvant que rien ne ressemblait à de
+vrais sons de studio) applique des **recettes de mixage métal connues**, pas des réglages faits à l'oreille :
+- **jeu humanisé** (`midi.humanize`) : la partition d'un module est parfaitement exacte (chaque note pile sur la
+  grille, même force), ce qui sonne « machine ». Chaque attaque bouge de quelques ms (batterie ±2, basse ±3,
+  guitares ±4, lead ±5), la force varie de 5 à 8 %, un accord est gratté de la corde grave à l'aiguë (3 ms par
+  corde), et les deux guitares doublées jouent **deux prises différentes** (avant : la même, décalée de quelques
+  ms, ce qui sonne comme une seule guitare élargie) ;
+- **batterie** : compression parallèle (`"type": "parallel"` dans `fx`) ; charleston et crashs ajoutés moins
+  réguliers ;
+- **basse** : graves propres sous 200 Hz + copie saturée dans les médiums, comme en métal ;
+- **mix** : compression plus marquée, un peu d'air au-dessus de 8 kHz, −11 LUFS.
 
 ## Récupérer la musique des archives de jeux (.lha)
 
@@ -359,7 +386,7 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
 ## Contrôles
 
 ```sh
-.venv\Scripts\python -m pytest              # 71 tests, moins d'une minute (voir ci-dessous)
+.venv\Scripts\python -m pytest              # 79 tests, environ une minute (voir ci-dessous)
 .venv\Scripts\python scripts\check_stems.py "in\music\Dr Mario\Dr Mario.mod"   # chaque piste comparée au sample d'origine
 ```
 

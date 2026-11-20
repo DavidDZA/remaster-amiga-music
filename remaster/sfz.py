@@ -280,11 +280,12 @@ def _env(r: Region, n_on: int, n_total: int, sr: int, release_from: int | None, 
 
 
 def render(inst: Instrument, events, duration: float, sr: int, bend_range: float = 24.0,
-           seed: int = 0, smooth_ms: float = 8.0, choke: bool = False) -> np.ndarray:
+           seed: int = 0, smooth_ms: float = 8.0, choke: bool = False, chord_ms: float = 0.0) -> np.ndarray:
     """events : [(temps en s, message mido)] d'un seul canal. Renvoie (2, n) en float32.
 
     choke : chaque nouvelle attaque coupe les notes précédentes (en 15 ms), comme un nouveau coup de médiator
-    étouffe les cordes qui sonnaient ; les notes d'un même accord (même instant) sonnent ensemble.
+    étouffe les cordes qui sonnaient ; les notes d'un même accord (même instant, ou à moins de `chord_ms` pour un
+    accord gratté, voir midi.humanize) sonnent ensemble.
     """
     n = int((duration + 4) * sr)
     out = np.zeros((2, n), np.float32)
@@ -323,7 +324,7 @@ def render(inst: Instrument, events, duration: float, sr: int, bend_range: float
     for nt in notes:
         if choke:
             for v in voices:
-                if v["start"] < nt["start"] and (v["cut"] is None or v["cut"] > nt["start"]):
+                if v["start"] < nt["start"] - int(chord_ms / 1000 * sr) and (v["cut"] is None or v["cut"] > nt["start"]):
                     v["cut"] = nt["start"]
                     v["fast"] = True
         for r, shift, k in nt["regions"]:

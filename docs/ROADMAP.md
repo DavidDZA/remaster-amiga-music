@@ -26,6 +26,13 @@ sec**, l'**autre guitare** aussi (néo-métal bien lourde, mais qui ne bave pas)
 10 guitares rythmiques, 10 leads, 4 chœurs (détail dans le README). **À écouter** ; l'utilisateur donne un numéro par
 partie.
 
+**Choix de l'utilisateur** (série 2) : batterie 7 (Naked Drums, son rock compressé), guitare rythmique 7 (6505+
+canal rouge + MXR, moins de gain, serré), lead 7 (guitare black, Engl E530 + DS-1, sec), chœur 1 (MuseScore). Mis
+dans la fiche (`scripts\appliquer_choix.py`). Son avis sur le résultat d'ensemble : « toujours pas fou, ça ne
+ressemble pas du tout à des vrais sons de studio ; essaie de faire sonner ça métal comme tu peux ». D'où la
+**production métal** (`scripts\production_metal.py` : jeu humanisé, deux vraies prises de guitare, basse en
+parallèle, compression parallèle de la batterie, mix plus dense) : **à écouter**.
+
 Limites, à dire franchement :
 - **Chœur naturel** : rien de libre et téléchargeable sans compte ni e-mail (les banques SFZ libres n'ont que des
   chœurs General MIDI ; celui de « Discord SFZ GM » est une sinusoïde). Les meilleures pistes gratuites demandent une action de l'utilisateur : **Spitfire LABS
@@ -34,9 +41,10 @@ Limites, à dire franchement :
 - **Guitare métal** : pas de banque de guitare métal libre ; la voie réaliste reste une guitare enregistrée sans
   effet (Black and Green) dans une capture d'ampli NAM. Les captures du dépôt NAM_models n'ont pas de Mesa
   Rectifier (le son néo-métal type) ; le site ToneHunt / TONE3000 en a des milliers, souvent avec un compte.
-- **Jeu mécanique** : les notes viennent d'un module de 4 voies, vélocités fixes et rythme exact. Même avec de bons
-  sons, ça peut sonner « machine » : pistes, varier un peu la force et le moment des coups (humanisation),
-  étouffements (palm mute) de la guitare rythmique, ghost notes de caisse claire.
+- **Jeu mécanique** : les notes viennent d'un module de 4 voies, vélocités fixes et rythme exact. Humanisation
+  faite le 20/11/2026 (`midi.humanize`) ; restent : de vrais étouffements (palm mute) de la guitare rythmique (la
+  banque Black and Green n'en a pas : staccato coupé), ghost notes et roulements de caisse claire, toms, ride,
+  doubles pédales — une batterie écrite pour du métal, pas seulement grosse caisse / caisse claire du module.
 - `sfizz_render.exe` (lecteur SFZ complet) n'a pas pu être lancé : refusé par le contrôle de sécurité de Claude Code
   (programme téléchargé). Le lecteur maison a été complété à la place.
 

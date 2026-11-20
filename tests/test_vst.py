@@ -92,7 +92,7 @@ def test_no_vst_keeps_previous_cache_keys():
     inst = midi.Instrument(sfz={"bank": "b", "program": "p"})
     import dataclasses, hashlib  # noqa: E401
     sound = dataclasses.asdict(inst)
-    for k in ("name", "gain_db", "pan", "reverb", "share", "part", "fx", "by_channel", "double", "vsti"):
+    for k in ("name", "gain_db", "pan", "reverb", "share", "part", "fx", "by_channel", "double", "vsti", "humanize"):
         sound.pop(k, None)
     sound["heavy_fx"] = []
     h = hashlib.sha1(json.dumps([render.ENGINE_VERSION, "p", sound, 1.0, 0, "x.sf2", render.SR],
