@@ -2,45 +2,7 @@
   "title": "Great Giana Sisters - ingame (1)",
   "artist": "",
   "soundfont": "GeneralUser-GS.sf2",
-  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
-  "samples": {
-    "1": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (193 notes, 11 hauteurs, médiane C#4, voies [1], bruit 0.36)"
-    },
-    "2": {
-      "name": "Basse",
-      "comment": "rôle deviné : basse (284 notes, 23 hauteurs, médiane F2, voies [1, 2], bruit 0.20)"
-    },
-    "3": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (8 notes, 3 hauteurs, médiane F#1, voies [1], bruit 0.54)",
-      "drum": 38
-    },
-    "4": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (78 notes, 14 hauteurs, médiane B4, voies [2, 3], bruit 0.33)"
-    },
-    "5": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (16 notes, 4 hauteurs, médiane A4, voies [2], bruit 0.17)"
-    },
-    "6": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (197 notes, 2 hauteurs, médiane B1, voies [3, 4], bruit 0.63)",
-      "drum": 38
-    },
-    "7": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (60 notes, 2 hauteurs, médiane F#2, voies [3, 4], bruit 0.75)",
-      "drum": 38
-    },
-    "8": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (8 notes, 1 hauteurs, médiane G#0, voies [4], bruit 0.54)",
-      "drum": 38
-    }
-  },
+  "comment": "remaster électro (scripts/style_electro.py) : instruments choisis par Claude, sans écoute",
   "partitions": {
     "Mélodie": {
       "instrument": "guitare",
@@ -65,5 +27,120 @@
       4,
       5
     ]
+  },
+  "tuning_cents": 43,
+  "comment_accord": "tuning_cents mesuré le 21/11/2026 (analyze.tuning_offset sur les samples mélodiques et la basse) : la musique est accordée +43 cents ; sans ça, la mélodie du sample 4 tombait un demi-ton au-dessus de la basse dans le piano",
+  "samples": {
+    "1": {
+      "name": "Lead",
+      "reverb": 0.18,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Great Giana Sisters - ingame (1)/s01.bin",
+        "bend_range": 12,
+        "preset": "Leads/Moogy Saw"
+      },
+      "comment": "électro : lead, Surge XT « Moogy saw »"
+    },
+    "2": {
+      "name": "Basse",
+      "reverb": 0.0,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Great Giana Sisters - ingame (1)/s02.bin",
+        "bend_range": 12,
+        "preset": "Basses/Bass 3",
+        "transpose": 12
+      },
+      "comment": "électro : basse, Surge XT « Bass three »"
+    },
+    "3": {
+      "name": "Grosse caisse",
+      "drum": 36,
+      "drum_kit": 25,
+      "reverb": 0.0,
+      "velocity": 110,
+      "comment": "électro : grosse caisse, kit 808/909"
+    },
+    "4": {
+      "name": "Lead",
+      "reverb": 0.18,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Great Giana Sisters - ingame (1)/s04.bin",
+        "bend_range": 12,
+        "preset": "Leads/Classic Lead 1"
+      },
+      "comment": "électro : lead, Surge XT « Classic lead 1 »"
+    },
+    "5": {
+      "name": "Nappe",
+      "reverb": 0.35,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Great Giana Sisters - ingame (1)/s05.bin",
+        "bend_range": 12,
+        "preset": "Pads/Sawteeth"
+      },
+      "comment": "électro : nappe, Surge XT « Sawteeth »"
+    },
+    "6": {
+      "name": "Grosse caisse",
+      "drum": 36,
+      "drum_kit": 25,
+      "reverb": 0.0,
+      "velocity": 110,
+      "comment": "électro : grosse caisse, kit 808/909"
+    },
+    "7": {
+      "name": "Caisse claire",
+      "drum": 38,
+      "drum_kit": 25,
+      "reverb": 0.1,
+      "velocity": 110,
+      "comment": "électro : caisse claire, kit 808/909"
+    },
+    "8": {
+      "name": "Grosse caisse",
+      "drum": 36,
+      "drum_kit": 25,
+      "reverb": 0.0,
+      "velocity": 110,
+      "comment": "électro : grosse caisse, kit 808/909"
+    }
+  },
+  "master": {
+    "loudness": -12,
+    "pan_width": 0.35,
+    "balance": "original",
+    "comp_threshold": -18,
+    "fx": [
+      {
+        "type": "HighShelfFilter",
+        "cutoff_frequency_hz": 9000,
+        "gain_db": 1
+      }
+    ],
+    "reverb": {
+      "plugin": "DragonflyRoomReverb",
+      "tail_s": 3,
+      "params": {
+        "dry_level": 0,
+        "early_level": 20,
+        "early_send": 20,
+        "late_level": 60,
+        "size_m": 24,
+        "decay_s": 1.6,
+        "predelay_ms": 20,
+        "high_cut_hz": 9000,
+        "late_damp_hz": 6000,
+        "low_cut_hz": 200,
+        "low_boost": 0
+      }
+    }
   }
 }

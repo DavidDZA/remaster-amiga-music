@@ -1,0 +1,86 @@
+{
+  "title": "Jim Power - ingame_1",
+  "artist": "",
+  "soundfont": "GeneralUser-GS.sf2",
+  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
+  "samples": {
+    "1": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (462 notes, 2 hauteurs, médiane E1, voies [1], bruit 0.50)",
+      "drum": 38
+    },
+    "2": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (195 notes, 1 hauteurs, médiane A#3, voies [1, 4], bruit 0.74)",
+      "drum": 38
+    },
+    "3": {
+      "name": "Basse",
+      "comment": "rôle deviné : basse (400 notes, 11 hauteurs, médiane D2, voies [1], bruit 0.31)"
+    },
+    "4": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (16 notes, 2 hauteurs, médiane B1, voies [1], bruit 0.31)",
+      "drum": 38
+    },
+    "5": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (193 notes, 1 hauteurs, médiane E5, voies [1, 2], bruit 0.73)",
+      "drum": 38
+    },
+    "6": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (438 notes, 14 hauteurs, médiane A4, voies [2, 3, 4], bruit 0.00)"
+    },
+    "7": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (145 notes, 8 hauteurs, médiane G4, voies [2, 3, 4], bruit 0.37)"
+    },
+    "8": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (128 notes, 5 hauteurs, médiane G4, voies [2, 4], bruit 0.27)"
+    },
+    "9": {
+      "name": "Ignoré",
+      "comment": "rôle deviné : ignoré (3 notes, 3 hauteurs, médiane C5, voies [3], bruit 0.45)",
+      "mute": true
+    },
+    "10": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (332 notes, 7 hauteurs, médiane G4, voies [3, 4], bruit 0.19)"
+    },
+    "11": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (264 notes, 11 hauteurs, médiane G4, voies [3, 4], bruit 0.38)"
+    }
+  },
+  "partitions": {
+    "Mélodie": {
+      "instrument": "guitare",
+      "samples": [
+        6,
+        7,
+        8,
+        10,
+        11
+      ],
+      "lead": true
+    }
+  },
+  "piano": {
+    "melody": "Mélodie",
+    "chords": [],
+    "riff": [],
+    "bass": [
+      3
+    ],
+    "harmony": [
+      3,
+      6,
+      7,
+      8,
+      10,
+      11
+    ]
+  }
+}

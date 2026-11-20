@@ -37,3 +37,23 @@ def game_dir(music: pathlib.Path) -> pathlib.Path:
 def work_dir(music: pathlib.Path, name: str | None = None) -> pathlib.Path:
     """out\\Retravaillées\\<musique>\\ : ce qu'on fabrique en retravaillant une musique."""
     return WORK / (name or pathlib.Path(music).stem)
+
+
+def glob_escape(name: str) -> str:
+    """Un nom de fichier avec [ ] (« Strider [Custom Version] ») pris tel quel par glob."""
+    return "".join(f"[{c}]" if c in "[]*?" else c for c in name)
+
+
+def copy_original(work: pathlib.Path) -> pathlib.Path | None:
+    """Met dans le dossier d'une musique retravaillée le MP3 de son original (demande de l'utilisateur, 20/11/2026 :
+    « mets toujours le .mp3 original avec »), copié depuis out\\Originaux\\<Jeu>\\."""
+    import shutil
+    name = f"{work.name} (original).mp3"
+    src = next(iter(sorted(ORIGINALS.glob(f"*/{glob_escape(name)}"))), None)
+    if src is None:
+        return None
+    dest = work / name
+    if not dest.exists() or dest.stat().st_mtime < src.stat().st_mtime:
+        work.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dest)
+    return dest

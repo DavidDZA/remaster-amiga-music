@@ -2,36 +2,7 @@
   "title": "Shadow of the Beast - title_and_the_plains (4)",
   "artist": "",
   "soundfont": "GeneralUser-GS.sf2",
-  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
-  "samples": {
-    "1": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (736 notes, 13 hauteurs, médiane G4, voies [1, 3], bruit 0.49)"
-    },
-    "2": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (161 notes, 12 hauteurs, médiane G#4, voies [1, 3], bruit 0.24)"
-    },
-    "3": {
-      "name": "Basse",
-      "comment": "rôle deviné : basse (30 notes, 6 hauteurs, médiane F2, voies [2], bruit 0.10)"
-    },
-    "4": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (167 notes, 1 hauteurs, médiane A#1, voies [4], bruit 0.42)",
-      "drum": 38
-    },
-    "5": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (378 notes, 1 hauteurs, médiane C#7, voies [4], bruit 0.58)",
-      "drum": 38
-    },
-    "6": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (104 notes, 4 hauteurs, médiane G2, voies [4], bruit 0.52)",
-      "drum": 38
-    }
-  },
+  "comment": "remaster électro (scripts/style_electro.py) : instruments choisis par Claude, sans écoute",
   "partitions": {
     "Mélodie": {
       "instrument": "guitare",
@@ -54,5 +25,99 @@
       2,
       3
     ]
+  },
+  "samples": {
+    "1": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Shadow of the Beast - title_and_the_plains (4)/s01.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Trancy"
+      },
+      "comment": "électro : arpège, Surge XT « Trancy »"
+    },
+    "2": {
+      "name": "Lead",
+      "reverb": 0.18,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Shadow of the Beast - title_and_the_plains (4)/s02.bin",
+        "bend_range": 12,
+        "preset": "Leads/Moogy Saw",
+        "transpose": -12
+      },
+      "comment": "électro : lead, Surge XT « Moogy saw »"
+    },
+    "3": {
+      "name": "Basse",
+      "reverb": 0.0,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Shadow of the Beast - title_and_the_plains (4)/s03.bin",
+        "bend_range": 12,
+        "preset": "Basses/Bass 3",
+        "transpose": 12
+      },
+      "comment": "électro : basse, Surge XT « Bass three »"
+    },
+    "4": {
+      "name": "Grosse caisse",
+      "drum": 36,
+      "drum_kit": 25,
+      "reverb": 0.0,
+      "velocity": 110,
+      "comment": "électro : grosse caisse, kit 808/909"
+    },
+    "5": {
+      "name": "Charleston",
+      "drum": 42,
+      "drum_kit": 25,
+      "reverb": 0.05,
+      "velocity": 110,
+      "comment": "électro : charleston, kit 808/909"
+    },
+    "6": {
+      "name": "Caisse claire",
+      "drum": 38,
+      "drum_kit": 25,
+      "reverb": 0.1,
+      "velocity": 110,
+      "comment": "électro : caisse claire, kit 808/909"
+    }
+  },
+  "master": {
+    "loudness": -12,
+    "pan_width": 0.35,
+    "balance": "original",
+    "comp_threshold": -18,
+    "fx": [
+      {
+        "type": "HighShelfFilter",
+        "cutoff_frequency_hz": 9000,
+        "gain_db": 1
+      }
+    ],
+    "reverb": {
+      "plugin": "DragonflyRoomReverb",
+      "tail_s": 3,
+      "params": {
+        "dry_level": 0,
+        "early_level": 20,
+        "early_send": 20,
+        "late_level": 60,
+        "size_m": 24,
+        "decay_s": 1.6,
+        "predelay_ms": 20,
+        "high_cut_hz": 9000,
+        "late_damp_hz": 6000,
+        "low_cut_hz": 200,
+        "low_boost": 0
+      }
+    }
   }
 }

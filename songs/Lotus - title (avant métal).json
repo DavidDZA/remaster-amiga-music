@@ -1,0 +1,58 @@
+{
+  "title": "Lotus - title",
+  "artist": "",
+  "soundfont": "GeneralUser-GS.sf2",
+  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
+  "samples": {
+    "2": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (506 notes, 21 hauteurs, médiane C4, voies [3, 4], bruit 0.55)"
+    },
+    "7": {
+      "name": "Ignoré",
+      "comment": "rôle deviné : ignoré (2 notes, 1 hauteurs, médiane D#0, voies [2, 4], bruit 0.51)",
+      "mute": true
+    },
+    "11": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (245 notes, 1 hauteurs, médiane D#1, voies [1, 2], bruit 0.48)",
+      "drum": 38
+    },
+    "12": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (181 notes, 1 hauteurs, médiane E3, voies [2], bruit 0.74)",
+      "drum": 38
+    },
+    "13": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (220 notes, 7 hauteurs, médiane C2, voies [1], bruit 0.19)"
+    },
+    "14": {
+      "name": "Basse",
+      "comment": "rôle deviné : basse (63 notes, 11 hauteurs, médiane F#1, voies [3, 4], bruit 0.46)"
+    }
+  },
+  "partitions": {
+    "Mélodie": {
+      "instrument": "guitare",
+      "samples": [
+        2,
+        13
+      ],
+      "lead": true
+    }
+  },
+  "piano": {
+    "melody": "Mélodie",
+    "chords": [],
+    "riff": [],
+    "bass": [
+      14
+    ],
+    "harmony": [
+      2,
+      13,
+      14
+    ]
+  }
+}

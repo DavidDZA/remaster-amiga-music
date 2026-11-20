@@ -35,6 +35,30 @@ def root_midi(sample: Sample) -> float | None:
     return 69 + 12 * np.log2(f0 / 440.0)
 
 
+def tuning_offset(mod, song, samples=None) -> float:
+    """Accord général d'une musique, en cents (−50 à +50) : de combien ses notes tombent à côté des demi-tons
+    (moyenne circulaire, chaque note comptée). Beaucoup de modules sont accordés « entre deux notes » (samples
+    enregistrés sans référence) : arrondies chacune de son côté, les notes de deux samples se retrouvent alors à un
+    demi-ton l'une de l'autre (Great Giana Sisters : la mélodie un demi-ton au-dessus de la basse). À mettre dans la
+    fiche (« tuning_cents ») : les notes sont arrondies par rapport à cet accord, et le remaster joue juste (la 440)."""
+    from .modfile import period_to_semitones
+    angles = []
+    roots = {}
+    for ch in song.ticks:
+        for t in ch:
+            if not (t.trigger and t.sample and t.note_period) or (samples and t.sample not in samples):
+                continue
+            if t.sample not in roots:
+                roots[t.sample] = root_midi(mod.samples[t.sample - 1])
+            r = roots[t.sample]
+            if r is not None:
+                angles.append(2 * np.pi * ((r + period_to_semitones(t.note_period)) % 1))
+    if not angles:
+        return 0.0
+    a = np.angle(np.mean(np.exp(1j * np.array(angles))))
+    return float(a / (2 * np.pi) * 100)
+
+
 def describe(sample: Sample) -> dict:
     s = sample.as_float()
     sr = playback_rate(C2_PERIOD)

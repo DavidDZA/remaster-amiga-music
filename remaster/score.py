@@ -164,7 +164,10 @@ def sections(song: Song, mod: Module, bar_list) -> dict[int, tuple[str, float]]:
 # --- répartition des attaques entre les musiciens -------------------------------------------------------------
 
 def assign(all_hits: list[Hit], parts: dict, bar_list) -> dict[str, list[Hit]]:
-    """parts : {nom: {"samples": [...], "lead": bool, "extras": bool}} dans l'ordre de priorité."""
+    """parts : {nom: {"samples": [...], "lead": bool, "prefer": [...], "extras": bool}} dans l'ordre de priorité.
+
+    lead : à chaque mesure, la voie qui joue le plus haut ; prefer : sauf si un de ces samples (la vraie mélodie)
+    joue dans la mesure : c'est alors lui (un arpège d'accompagnement passe souvent au-dessus de la mélodie)."""
     bar_of = _bar_index(bar_list)
     out: dict[str, list[Hit]] = {name: [] for name in parts}
     taken: set[int] = set()
@@ -175,7 +178,18 @@ def assign(all_hits: list[Hit], parts: dict, bar_list) -> dict[str, list[Hit]]:
         mine = [h for h in all_hits if h.sample in samples and id(h) not in taken]
         if p.get("lead"):
             top = _top_channel(mine, bar_of)
-            mine = [h for h in mine if top.get(bar_of[h.row]) == h.channel]
+            prefer = set(p.get("prefer", []))
+            if prefer:  # dans une mesure où un sample préféré joue (la vraie mélodie), c'est lui, pas le plus aigu
+                top_pref = _top_channel([h for h in mine if h.sample in prefer], bar_of)
+
+                def keep(h):
+                    b = bar_of[h.row]
+                    if b in top_pref:
+                        return h.sample in prefer and top_pref[b] == h.channel
+                    return top.get(b) == h.channel
+                mine = [h for h in mine if keep(h)]
+            else:
+                mine = [h for h in mine if top.get(bar_of[h.row]) == h.channel]
         for h in mine:
             taken.add(id(h))
         out[name] = mine

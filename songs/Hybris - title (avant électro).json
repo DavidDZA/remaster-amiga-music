@@ -1,0 +1,147 @@
+{
+  "title": "Hybris - title",
+  "artist": "",
+  "soundfont": "GeneralUser-GS.sf2",
+  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
+  "samples": {
+    "1": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (28 notes, 3 hauteurs, médiane F4, voies [1], bruit 0.00)"
+    },
+    "2": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (146 notes, 3 hauteurs, médiane F5, voies [1], bruit 0.00)"
+    },
+    "3": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (57 notes, 2 hauteurs, médiane F4, voies [1], bruit 0.00)"
+    },
+    "4": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (92 notes, 2 hauteurs, médiane F4, voies [1], bruit 0.00)"
+    },
+    "5": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (107 notes, 2 hauteurs, médiane F4, voies [1], bruit 0.00)"
+    },
+    "6": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (62 notes, 1 hauteurs, médiane F4, voies [1], bruit 0.00)"
+    },
+    "7": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (85 notes, 1 hauteurs, médiane F4, voies [1], bruit 0.00)"
+    },
+    "8": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (320 notes, 3 hauteurs, médiane C4, voies [1], bruit 0.01)"
+    },
+    "9": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (26 notes, 8 hauteurs, médiane F#5, voies [2], bruit 0.00)"
+    },
+    "10": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (130 notes, 18 hauteurs, médiane G4, voies [2], bruit 0.00)"
+    },
+    "11": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (247 notes, 6 hauteurs, médiane D4, voies [2, 3], bruit 0.00)"
+    },
+    "12": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (130 notes, 7 hauteurs, médiane C4, voies [2, 3], bruit 0.00)"
+    },
+    "13": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (123 notes, 6 hauteurs, médiane C4, voies [2, 3], bruit 0.00)"
+    },
+    "14": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (208 notes, 6 hauteurs, médiane D4, voies [2], bruit 0.17)"
+    },
+    "15": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (376 notes, 12 hauteurs, médiane F4, voies [2], bruit 0.00)"
+    },
+    "16": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (566 notes, 1 hauteurs, médiane B1, voies [3], bruit 0.33)",
+      "drum": 38
+    },
+    "17": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (609 notes, 1 hauteurs, médiane A3, voies [3], bruit 0.77)",
+      "drum": 38
+    },
+    "18": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (443 notes, 1 hauteurs, médiane B1, voies [3], bruit 0.81)",
+      "drum": 38
+    },
+    "19": {
+      "name": "Batterie",
+      "comment": "rôle deviné : batterie (77 notes, 2 hauteurs, médiane C#3, voies [3], bruit 0.81)",
+      "drum": 38
+    },
+    "20": {
+      "name": "Basse",
+      "comment": "rôle deviné : basse (44 notes, 12 hauteurs, médiane C2, voies [4], bruit 0.62)"
+    },
+    "21": {
+      "name": "Mélodie",
+      "comment": "rôle deviné : mélodie (532 notes, 6 hauteurs, médiane E2, voies [4], bruit 0.19)"
+    }
+  },
+  "partitions": {
+    "Mélodie": {
+      "instrument": "guitare",
+      "samples": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        21
+      ],
+      "lead": true
+    }
+  },
+  "piano": {
+    "melody": "Mélodie",
+    "chords": [],
+    "riff": [],
+    "bass": [
+      20
+    ],
+    "harmony": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      20,
+      21
+    ]
+  }
+}

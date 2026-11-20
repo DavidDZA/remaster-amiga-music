@@ -2,31 +2,7 @@
   "title": "Batman - chem (1)",
   "artist": "",
   "soundfont": "GeneralUser-GS.sf2",
-  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
-  "samples": {
-    "1": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (400 notes, 24 hauteurs, médiane F#3, voies [1, 2], bruit 0.18)"
-    },
-    "2": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (125 notes, 10 hauteurs, médiane D5, voies [1, 2], bruit 0.17)"
-    },
-    "3": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (24 notes, 1 hauteurs, médiane A1, voies [1, 2], bruit 0.72)",
-      "drum": 38
-    },
-    "4": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (50 notes, 1 hauteurs, médiane A#0, voies [1, 2], bruit 0.28)",
-      "drum": 38
-    },
-    "5": {
-      "name": "Basse",
-      "comment": "rôle deviné : basse (328 notes, 11 hauteurs, médiane F#2, voies [3], bruit 0.13)"
-    }
-  },
+  "comment": "remaster électro (scripts/style_electro.py) : instruments choisis par Claude, sans écoute",
   "partitions": {
     "Mélodie": {
       "instrument": "guitare",
@@ -49,5 +25,92 @@
       2,
       5
     ]
+  },
+  "samples": {
+    "1": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Batman - chem (1)/s01.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Simple PW",
+        "transpose": 12
+      },
+      "comment": "électro : arpège, Surge XT « Simple PW »"
+    },
+    "2": {
+      "name": "Lead",
+      "reverb": 0.18,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Batman - chem (1)/s02.bin",
+        "bend_range": 12,
+        "preset": "Leads/Crisp PWM",
+        "transpose": 12
+      },
+      "comment": "électro : lead, Surge XT « Crisp PWM »"
+    },
+    "3": {
+      "name": "Caisse claire",
+      "drum": 38,
+      "drum_kit": 25,
+      "reverb": 0.1,
+      "velocity": 110,
+      "comment": "électro : caisse claire, kit 808/909"
+    },
+    "4": {
+      "name": "Caisse claire",
+      "drum": 38,
+      "drum_kit": 25,
+      "reverb": 0.1,
+      "velocity": 110,
+      "comment": "électro : caisse claire, kit 808/909"
+    },
+    "5": {
+      "name": "Basse",
+      "reverb": 0.0,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Batman - chem (1)/s05.bin",
+        "bend_range": 12,
+        "preset": "Basses/Wide Bassline",
+        "transpose": 24
+      },
+      "comment": "électro : basse, Surge XT « Bassline (wide) »"
+    }
+  },
+  "master": {
+    "loudness": -12,
+    "pan_width": 0.35,
+    "balance": "original",
+    "comp_threshold": -18,
+    "fx": [
+      {
+        "type": "HighShelfFilter",
+        "cutoff_frequency_hz": 9000,
+        "gain_db": 1
+      }
+    ],
+    "reverb": {
+      "plugin": "DragonflyRoomReverb",
+      "tail_s": 3,
+      "params": {
+        "dry_level": 0,
+        "early_level": 20,
+        "early_send": 20,
+        "late_level": 60,
+        "size_m": 24,
+        "decay_s": 1.6,
+        "predelay_ms": 20,
+        "high_cut_hz": 9000,
+        "late_damp_hz": 6000,
+        "low_cut_hz": 200,
+        "low_boost": 0
+      }
+    }
   }
 }

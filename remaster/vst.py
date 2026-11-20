@@ -167,6 +167,7 @@ def to_messages(events, spec: dict, source_bend_range: float, start: float = 0.0
     """
     target = float(spec.get("bend_range", 2))
     mode = spec.get("expression", "velocity")
+    shift = int(spec.get("transpose", 0))  # preset réglé une octave à côté (octave_offset) : ne touche que le VST
     expr = 127
     out = []
     for t, m in sorted(events, key=lambda e: (e[0], 0 if e[1].type == "note_off" else 1)):
@@ -183,6 +184,8 @@ def to_messages(events, spec: dict, source_bend_range: float, start: float = 0.0
                 continue
         elif m.type == "note_on" and m.velocity > 0 and mode != "cc11":
             m = m.copy(velocity=max(1, min(127, round(m.velocity * expr / 127))))
+        if shift and m.type in ("note_on", "note_off"):
+            m = m.copy(note=max(0, min(127, m.note + shift)))
         out.append(m.copy(time=float(t - start)))
     return out
 
@@ -193,6 +196,34 @@ def render(spec: dict, events, duration: float, sr: int, source_bend_range: floa
     msgs = to_messages(events, spec, source_bend_range)
     audio = plug(msgs, duration=duration, sample_rate=sr, num_channels=2, buffer_size=512, reset=True)
     return np.asarray(audio, np.float32)
+
+
+def fundamental(x: np.ndarray, sr: int, lo: float = 25.0, hi: float = 2000.0) -> float:
+    """Fréquence fondamentale d'un son (produit spectral harmonique : les harmoniques 1 à 5 s'alignent dessus)."""
+    x = x - x.mean()
+    n = 1 << 18
+    sp = np.abs(np.fft.rfft(x * np.hanning(len(x)), n))
+    fr = np.fft.rfftfreq(n, 1 / sr)
+    h = sp.copy()
+    for k in (2, 3, 4, 5):
+        d = sp[::k]
+        h[:len(d)] *= d
+    band = (fr > lo) & (fr < hi)
+    return float(fr[band][np.argmax(h[band])])
+
+
+def octave_offset(spec: dict, note: int = 60) -> int:
+    """De combien d'octaves (en demi-tons : −12, 0, +12…) un preset sonne à côté de la note jouée. Beaucoup de
+    presets de basse ou de pluck sont réglés une octave plus bas (Surge XT « Sub Square », « Squarepop ») : pour
+    rester dans le registre de la musique, on transpose d'autant (clé « transpose » de la fiche)."""
+    sr = 48000
+    a = render(spec, [(0.0, mido.Message("note_on", note=note, velocity=100)),
+                      (0.8, mido.Message("note_off", note=note))], 1.2, sr, source_bend_range=24)
+    x = a.mean(axis=0)[int(0.05 * sr):int(0.7 * sr)]
+    if np.abs(x).max() < 1e-4:
+        return 0
+    semis = 12 * np.log2(fundamental(x, sr) / (440 * 2 ** ((note - 69) / 12)))
+    return int(round(semis / 12)) * 12
 
 
 # ---------------------------------------------------------------- écoute en direct

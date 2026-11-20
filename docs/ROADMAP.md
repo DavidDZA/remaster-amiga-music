@@ -33,6 +33,10 @@ ressemble pas du tout à des vrais sons de studio ; essaie de faire sonner ça m
 **production métal** (`scripts\production_metal.py` : jeu humanisé, deux vraies prises de guitare, basse en
 parallèle, compression parallèle de la batterie, mix plus dense) : **à écouter**.
 
+Verdict sur Dr Mario métal (21/11/2026) : **« une catastrophe le son »**. L'utilisateur passe à des musiques plus
+électro (`scripts\style_electro.py`, 10 musiques, instruments choisis par Claude) : **à écouter**. Lotus title :
+partitions et version métal faites (même recette que Dr Mario), à écouter et relire.
+
 Limites, à dire franchement :
 - **Chœur naturel** : rien de libre et téléchargeable sans compte ni e-mail (les banques SFZ libres n'ont que des
   chœurs General MIDI ; celui de « Discord SFZ GM » est une sinusoïde). Les meilleures pistes gratuites demandent une action de l'utilisateur : **Spitfire LABS
@@ -114,6 +118,10 @@ l'utilisateur** : son retour dira ce qu'il faut corriger (rôles mal devinés, g
 
 ## À faire
 
+- **Piano : accord général** (`tuning_cents`) à mesurer et mettre dans toutes les fiches : l'utilisateur signale
+  « énormément de problèmes sur les partitions piano » ; Giana en était un (mélodie un demi-ton au-dessus de la
+  basse). Mesurer chaque piano avec `scripts\compare_chroma.py` (avec l'accord de l'original) pour trouver les
+  passages faux, puis corriger rôle par rôle (mélodie préférée, `"prefer"`).
 - **Retour d'écoute** sur les 16 pianos ; corriger les fiches (`songs\*.json`) et les règles de `roles.py` en
   conséquence.
 - **Hybris** (lecteur de synthé) : grille irrégulière, partition peu lisible ; chercher un pas qui varie, ou des

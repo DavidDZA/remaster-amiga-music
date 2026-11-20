@@ -2,57 +2,630 @@
   "title": "Lotus - title",
   "artist": "",
   "soundfont": "GeneralUser-GS.sf2",
-  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
+  "comment": "rôles corrigés le 21/11/2026 (Claude, d'après le son des samples) ; sons de Dr Mario choisis à l'écoute par l'utilisateur, puis production métal",
   "samples": {
     "2": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (506 notes, 21 hauteurs, médiane C4, voies [3, 4], bruit 0.55)"
+      "name": "Guitare 1 (power chords)",
+      "chord": [
+        0,
+        7,
+        12
+      ],
+      "velocity": 100,
+      "reverb": 0.0,
+      "sfz": {
+        "bank": "black-and-green-guitars",
+        "program": "Programs/07-black_twang.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 120
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 800,
+          "gain_db": 3,
+          "q": 0.7
+        },
+        {
+          "type": "nam",
+          "model": "Helga B 6505+ Red ch - MXR Drive V2",
+          "input_db": -6
+        },
+        {
+          "type": "NoiseGate",
+          "threshold_db": -48,
+          "ratio": 10,
+          "attack_ms": 1,
+          "release_ms": 60
+        },
+        {
+          "type": "cab",
+          "ir": "16-nacho-guacamole"
+        },
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 80
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 400,
+          "gain_db": -2,
+          "q": 1.0
+        },
+        {
+          "type": "LowpassFilter",
+          "cutoff_frequency_hz": 9000
+        }
+      ],
+      "double": {
+        "sfz": {
+          "bank": "black-and-green-guitars",
+          "program": "Programs/04-green_twang.sfz"
+        },
+        "fx": [
+          {
+            "type": "HighpassFilter",
+            "cutoff_frequency_hz": 120
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 800,
+            "gain_db": 3,
+            "q": 0.7
+          },
+          {
+            "type": "nam",
+            "model": "Helga B 6505+ Red ch - MXR Drive V2",
+            "input_db": -6
+          },
+          {
+            "type": "NoiseGate",
+            "threshold_db": -48,
+            "ratio": 10,
+            "attack_ms": 1,
+            "release_ms": 60
+          },
+          {
+            "type": "cab",
+            "ir": "16-nacho-guacamole"
+          },
+          {
+            "type": "HighpassFilter",
+            "cutoff_frequency_hz": 80
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 400,
+            "gain_db": -2,
+            "q": 1.0
+          },
+          {
+            "type": "LowpassFilter",
+            "cutoff_frequency_hz": 9000
+          }
+        ],
+        "width": 0.85,
+        "delay_ms": 0
+      },
+      "choke": true,
+      "comment": "sample 2 : la quinte est dans le son (power chord) ; mélodie en power chords, guitares et ampli de la rythmique de Dr Mario",
+      "humanize": {
+        "timing_ms": 4,
+        "velocity": 6,
+        "strum_ms": 3
+      }
+    },
+    "11": {
+      "name": "Grosse caisse",
+      "drum": 36,
+      "velocity": 118,
+      "reverb": 0.0,
+      "pan": 0,
+      "sfz": {
+        "bank": "naked-drums",
+        "program": "Wilkinson Audio/Naked Drums/User/Naked Drums GM.sfz"
+      },
+      "fx": [
+        {
+          "type": "parallel",
+          "comment": "compression parallèle",
+          "branches": [
+            {
+              "fx": [
+                {
+                  "type": "HighpassFilter",
+                  "cutoff_frequency_hz": 30
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 60,
+                  "gain_db": 3,
+                  "q": 1.0
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 350,
+                  "gain_db": -5,
+                  "q": 1.0
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 4000,
+                  "gain_db": 5,
+                  "q": 1.0
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -18,
+                  "ratio": 4,
+                  "attack_ms": 10,
+                  "release_ms": 100
+                }
+              ]
+            },
+            {
+              "fx": [
+                {
+                  "type": "HighpassFilter",
+                  "cutoff_frequency_hz": 30
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 60,
+                  "gain_db": 3,
+                  "q": 1.0
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 350,
+                  "gain_db": -5,
+                  "q": 1.0
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 4000,
+                  "gain_db": 5,
+                  "q": 1.0
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -18,
+                  "ratio": 4,
+                  "attack_ms": 10,
+                  "release_ms": 100
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -32,
+                  "ratio": 10,
+                  "attack_ms": 1,
+                  "release_ms": 60
+                }
+              ],
+              "gain_db": -4
+            }
+          ]
+        }
+      ],
+      "gain_db": 6,
+      "comment": "son de Dr Mario choisi à l'écoute : Naked Drums, son rock compressé",
+      "humanize": {
+        "timing_ms": 2,
+        "velocity": 5
+      }
+    },
+    "12": {
+      "name": "Caisse claire",
+      "drum": 38,
+      "velocity": 112,
+      "reverb": 0.12,
+      "pan": 0,
+      "sfz": {
+        "bank": "naked-drums",
+        "program": "Wilkinson Audio/Naked Drums/User/Naked Drums GM.sfz"
+      },
+      "fx": [
+        {
+          "type": "parallel",
+          "comment": "compression parallèle",
+          "branches": [
+            {
+              "fx": [
+                {
+                  "type": "HighpassFilter",
+                  "cutoff_frequency_hz": 80
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 200,
+                  "gain_db": 3,
+                  "q": 1.0
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 5000,
+                  "gain_db": 3,
+                  "q": 1.0
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -16,
+                  "ratio": 4,
+                  "attack_ms": 5,
+                  "release_ms": 80
+                }
+              ]
+            },
+            {
+              "fx": [
+                {
+                  "type": "HighpassFilter",
+                  "cutoff_frequency_hz": 80
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 200,
+                  "gain_db": 3,
+                  "q": 1.0
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 5000,
+                  "gain_db": 3,
+                  "q": 1.0
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -16,
+                  "ratio": 4,
+                  "attack_ms": 5,
+                  "release_ms": 80
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -32,
+                  "ratio": 10,
+                  "attack_ms": 1,
+                  "release_ms": 60
+                }
+              ],
+              "gain_db": -4
+            }
+          ]
+        }
+      ],
+      "comment": "son de Dr Mario choisi à l'écoute : Naked Drums, son rock compressé",
+      "humanize": {
+        "timing_ms": 2,
+        "velocity": 5
+      }
+    },
+    "13": {
+      "name": "Basse",
+      "velocity": 100,
+      "reverb": 0.0,
+      "pan": 0,
+      "sfz": {
+        "bank": "black-and-blue-basses",
+        "program": "Programs/05-darkblack_pluck.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 35
+        },
+        {
+          "type": "parallel",
+          "branches": [
+            {
+              "fx": [
+                {
+                  "type": "LowpassFilter",
+                  "cutoff_frequency_hz": 200
+                },
+                {
+                  "type": "Compressor",
+                  "threshold_db": -20,
+                  "ratio": 4,
+                  "attack_ms": 10,
+                  "release_ms": 120
+                }
+              ]
+            },
+            {
+              "fx": [
+                {
+                  "type": "HighpassFilter",
+                  "cutoff_frequency_hz": 250
+                },
+                {
+                  "type": "Distortion",
+                  "drive_db": 28
+                },
+                {
+                  "type": "LowpassFilter",
+                  "cutoff_frequency_hz": 4500
+                },
+                {
+                  "type": "PeakFilter",
+                  "cutoff_frequency_hz": 1200,
+                  "gain_db": 2,
+                  "q": 1.0
+                }
+              ],
+              "gain_db": -6
+            }
+          ]
+        },
+        {
+          "type": "Compressor",
+          "threshold_db": -18,
+          "ratio": 3,
+          "attack_ms": 5,
+          "release_ms": 100
+        }
+      ],
+      "comment": "sample 13 : la basse (la fiche automatique l'avait prise pour la mélodie)",
+      "choke": true,
+      "humanize": {
+        "timing_ms": 3,
+        "velocity": 6
+      }
+    },
+    "14": {
+      "name": "Guitare 2 (étouffée)",
+      "chord": [
+        0,
+        7
+      ],
+      "velocity": 100,
+      "max_length": 0.12,
+      "reverb": 0.0,
+      "sfz": {
+        "bank": "black-and-green-guitars",
+        "program": "Programs/08-black_staccato.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 120
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 800,
+          "gain_db": 3,
+          "q": 0.7
+        },
+        {
+          "type": "nam",
+          "model": "Helga B 6505+ Red ch - MXR Drive V2",
+          "input_db": -6
+        },
+        {
+          "type": "NoiseGate",
+          "threshold_db": -48,
+          "ratio": 10,
+          "attack_ms": 1,
+          "release_ms": 60
+        },
+        {
+          "type": "cab",
+          "ir": "16-nacho-guacamole"
+        },
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 80
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 400,
+          "gain_db": -2,
+          "q": 1.0
+        },
+        {
+          "type": "LowpassFilter",
+          "cutoff_frequency_hz": 9000
+        }
+      ],
+      "double": {
+        "sfz": {
+          "bank": "black-and-green-guitars",
+          "program": "Programs/05-green_staccato.sfz"
+        },
+        "fx": [
+          {
+            "type": "HighpassFilter",
+            "cutoff_frequency_hz": 120
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 800,
+            "gain_db": 3,
+            "q": 0.7
+          },
+          {
+            "type": "nam",
+            "model": "Helga B 6505+ Red ch - MXR Drive V2",
+            "input_db": -6
+          },
+          {
+            "type": "NoiseGate",
+            "threshold_db": -48,
+            "ratio": 10,
+            "attack_ms": 1,
+            "release_ms": 60
+          },
+          {
+            "type": "cab",
+            "ir": "16-nacho-guacamole"
+          },
+          {
+            "type": "HighpassFilter",
+            "cutoff_frequency_hz": 80
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 400,
+            "gain_db": -2,
+            "q": 1.0
+          },
+          {
+            "type": "LowpassFilter",
+            "cutoff_frequency_hz": 9000
+          }
+        ],
+        "width": 0.75,
+        "delay_ms": 0
+      },
+      "choke": true,
+      "gain_db": -3,
+      "comment": "sample 14 : power chord grave et court (étouffé) ; la détection prenait la fondamentale manquante, une octave trop bas : root corrigée ; la voie 4 joue la même chose un demi-ton plus bas (épaississement du son Amiga) : coupée, sinon deux power chords à un demi-ton",
+      "root": 35.13,
+      "humanize": {
+        "timing_ms": 4,
+        "velocity": 6,
+        "strum_ms": 3
+      },
+      "by_channel": {
+        "4": {
+          "mute": true
+        }
+      }
     },
     "7": {
       "name": "Ignoré",
-      "comment": "rôle deviné : ignoré (2 notes, 1 hauteurs, médiane D#0, voies [2, 4], bruit 0.51)",
-      "mute": true
-    },
-    "11": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (245 notes, 1 hauteurs, médiane D#1, voies [1, 2], bruit 0.48)",
-      "drum": 38
-    },
-    "12": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (181 notes, 1 hauteurs, médiane E3, voies [2], bruit 0.74)",
-      "drum": 38
-    },
-    "13": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (220 notes, 7 hauteurs, médiane C2, voies [1], bruit 0.19)"
-    },
-    "14": {
-      "name": "Basse",
-      "comment": "rôle deviné : basse (63 notes, 11 hauteurs, médiane F#1, voies [3, 4], bruit 0.46)"
+      "mute": true,
+      "comment": "2 notes seulement"
     }
   },
   "partitions": {
-    "Mélodie": {
+    "Guitare 1 (power chords)": {
       "instrument": "guitare",
       "samples": [
-        2,
-        13
+        2
       ],
-      "lead": true
+      "lead": true,
+      "comment": "la mélodie en power chords (sample 2)"
+    },
+    "Guitare 2 (étouffée)": {
+      "instrument": "guitare",
+      "samples": [
+        14
+      ],
+      "comment": "power chords graves étouffés"
+    },
+    "Basse": {
+      "instrument": "basse",
+      "samples": [
+        13
+      ]
+    },
+    "Batterie (version enrichie)": {
+      "instrument": "batterie",
+      "samples": [
+        11,
+        12
+      ],
+      "extras": true
     }
   },
   "piano": {
-    "melody": "Mélodie",
+    "melody": "Guitare 1 (power chords)",
     "chords": [],
     "riff": [],
     "bass": [
-      14
+      13
     ],
     "harmony": [
       2,
       13,
       14
     ]
+  },
+  "extras": {
+    "hihat": {
+      "note": 42,
+      "every_rows": 2,
+      "beat_rows": 4,
+      "velocity": [
+        90,
+        65
+      ],
+      "gain_db": -9,
+      "pan": 0,
+      "sfz": {
+        "bank": "naked-drums",
+        "program": "Wilkinson Audio/Naked Drums/User/Naked Drums GM.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 250
+        }
+      ],
+      "reverb": 0.03,
+      "humanize": {
+        "timing_ms": 3,
+        "velocity": 10
+      }
+    },
+    "crash": {
+      "note": 49,
+      "velocity": 105,
+      "gain_db": -2,
+      "pan": 0,
+      "reverb": 0.1,
+      "sfz": {
+        "bank": "naked-drums",
+        "program": "Wilkinson Audio/Naked Drums/User/Naked Drums GM.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 200
+        }
+      ],
+      "humanize": {
+        "timing_ms": 3,
+        "velocity": 10
+      }
+    }
+  },
+  "master": {
+    "loudness": -11,
+    "pan_width": 0.35,
+    "balance": "original",
+    "fx": [
+      {
+        "type": "LowShelfFilter",
+        "cutoff_frequency_hz": 70,
+        "gain_db": 2
+      },
+      {
+        "type": "HighShelfFilter",
+        "cutoff_frequency_hz": 8000,
+        "gain_db": 1.5
+      }
+    ],
+    "reverb": {
+      "plugin": "DragonflyRoomReverb",
+      "tail_s": 2,
+      "params": {
+        "dry_level": 0,
+        "early_level": 25,
+        "early_send": 20,
+        "late_level": 55,
+        "size_m": 14,
+        "decay_s": 0.9,
+        "predelay_ms": 12,
+        "high_cut_hz": 8000,
+        "late_damp_hz": 6000,
+        "low_cut_hz": 200,
+        "low_boost": 0
+      }
+    },
+    "comp_threshold": -20
   }
 }

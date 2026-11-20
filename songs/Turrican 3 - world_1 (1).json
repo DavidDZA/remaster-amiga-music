@@ -2,51 +2,7 @@
   "title": "Turrican 3 - world_1 (1)",
   "artist": "",
   "soundfont": "GeneralUser-GS.sf2",
-  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
-  "samples": {
-    "1": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (1643 notes, 39 hauteurs, médiane D#4, voies [1, 2, 3, 4], bruit 0.28)"
-    },
-    "2": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (38 notes, 11 hauteurs, médiane G#4, voies [1, 3], bruit 0.29)"
-    },
-    "3": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (40 notes, 6 hauteurs, médiane G#4, voies [1, 3], bruit 0.28)"
-    },
-    "4": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (102 notes, 1 hauteurs, médiane G#2, voies [1, 2], bruit 0.60)",
-      "drum": 38
-    },
-    "5": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (662 notes, 1 hauteurs, médiane D#4, voies [1, 2], bruit 0.79)",
-      "drum": 38
-    },
-    "6": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (158 notes, 1 hauteurs, médiane A1, voies [1, 2], bruit 0.73)",
-      "drum": 38
-    },
-    "7": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (199 notes, 1 hauteurs, médiane G#2, voies [1, 2], bruit 0.67)",
-      "drum": 38
-    },
-    "8": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (129 notes, 1 hauteurs, médiane D2, voies [1, 4], bruit 0.75)",
-      "drum": 38
-    },
-    "9": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (11 notes, 1 hauteurs, médiane F6, voies [4], bruit 0.59)",
-      "drum": 38
-    }
-  },
+  "comment": "remaster électro (scripts/style_electro.py) : instruments choisis par Claude, sans écoute",
   "partitions": {
     "Mélodie": {
       "instrument": "guitare",
@@ -68,5 +24,121 @@
       2,
       3
     ]
+  },
+  "samples": {
+    "1": {
+      "name": "Lead",
+      "reverb": 0.18,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Turrican 3 - world_1 (1)/s01.bin",
+        "bend_range": 12,
+        "preset": "Leads/Moogy Saw"
+      },
+      "comment": "électro : lead, Surge XT « Moogy saw »"
+    },
+    "2": {
+      "name": "Lead",
+      "reverb": 0.18,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Turrican 3 - world_1 (1)/s02.bin",
+        "bend_range": 12,
+        "preset": "Leads/Classic Lead 2"
+      },
+      "comment": "électro : lead, Surge XT « Classic lead 2 »"
+    },
+    "3": {
+      "name": "Lead",
+      "reverb": 0.18,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Turrican 3 - world_1 (1)/s03.bin",
+        "bend_range": 12,
+        "preset": "Leads/Sine Lead"
+      },
+      "comment": "électro : lead, Surge XT « Sinlead »"
+    },
+    "4": {
+      "name": "Grosse caisse",
+      "drum": 36,
+      "drum_kit": 25,
+      "reverb": 0.0,
+      "velocity": 110,
+      "comment": "électro : grosse caisse, kit 808/909"
+    },
+    "5": {
+      "name": "Charleston",
+      "drum": 42,
+      "drum_kit": 25,
+      "reverb": 0.05,
+      "velocity": 110,
+      "comment": "électro : charleston, kit 808/909"
+    },
+    "6": {
+      "name": "Caisse claire",
+      "drum": 38,
+      "drum_kit": 25,
+      "reverb": 0.1,
+      "velocity": 110,
+      "comment": "électro : caisse claire, kit 808/909"
+    },
+    "7": {
+      "name": "Grosse caisse",
+      "drum": 36,
+      "drum_kit": 25,
+      "reverb": 0.0,
+      "velocity": 110,
+      "comment": "électro : grosse caisse, kit 808/909"
+    },
+    "8": {
+      "name": "Caisse claire",
+      "drum": 38,
+      "drum_kit": 25,
+      "reverb": 0.1,
+      "velocity": 110,
+      "comment": "électro : caisse claire, kit 808/909"
+    },
+    "9": {
+      "name": "Charleston",
+      "drum": 42,
+      "drum_kit": 25,
+      "reverb": 0.05,
+      "velocity": 110,
+      "comment": "électro : charleston, kit 808/909"
+    }
+  },
+  "master": {
+    "loudness": -12,
+    "pan_width": 0.35,
+    "balance": "original",
+    "comp_threshold": -18,
+    "fx": [
+      {
+        "type": "HighShelfFilter",
+        "cutoff_frequency_hz": 9000,
+        "gain_db": 1
+      }
+    ],
+    "reverb": {
+      "plugin": "DragonflyRoomReverb",
+      "tail_s": 3,
+      "params": {
+        "dry_level": 0,
+        "early_level": 20,
+        "early_send": 20,
+        "late_level": 60,
+        "size_m": 24,
+        "decay_s": 1.6,
+        "predelay_ms": 20,
+        "high_cut_hz": 9000,
+        "late_damp_hz": 6000,
+        "low_cut_hz": 200,
+        "low_boost": 0
+      }
+    }
   }
 }

@@ -2,97 +2,7 @@
   "title": "Hybris - title",
   "artist": "",
   "soundfont": "GeneralUser-GS.sf2",
-  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
-  "samples": {
-    "1": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (28 notes, 3 hauteurs, médiane F4, voies [1], bruit 0.00)"
-    },
-    "2": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (146 notes, 3 hauteurs, médiane F5, voies [1], bruit 0.00)"
-    },
-    "3": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (57 notes, 2 hauteurs, médiane F4, voies [1], bruit 0.00)"
-    },
-    "4": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (92 notes, 2 hauteurs, médiane F4, voies [1], bruit 0.00)"
-    },
-    "5": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (107 notes, 2 hauteurs, médiane F4, voies [1], bruit 0.00)"
-    },
-    "6": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (62 notes, 1 hauteurs, médiane F4, voies [1], bruit 0.00)"
-    },
-    "7": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (85 notes, 1 hauteurs, médiane F4, voies [1], bruit 0.00)"
-    },
-    "8": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (320 notes, 3 hauteurs, médiane C4, voies [1], bruit 0.01)"
-    },
-    "9": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (26 notes, 8 hauteurs, médiane F#5, voies [2], bruit 0.00)"
-    },
-    "10": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (130 notes, 18 hauteurs, médiane G4, voies [2], bruit 0.00)"
-    },
-    "11": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (247 notes, 6 hauteurs, médiane D4, voies [2, 3], bruit 0.00)"
-    },
-    "12": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (130 notes, 7 hauteurs, médiane C4, voies [2, 3], bruit 0.00)"
-    },
-    "13": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (123 notes, 6 hauteurs, médiane C4, voies [2, 3], bruit 0.00)"
-    },
-    "14": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (208 notes, 6 hauteurs, médiane D4, voies [2], bruit 0.17)"
-    },
-    "15": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (376 notes, 12 hauteurs, médiane F4, voies [2], bruit 0.00)"
-    },
-    "16": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (566 notes, 1 hauteurs, médiane B1, voies [3], bruit 0.33)",
-      "drum": 38
-    },
-    "17": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (609 notes, 1 hauteurs, médiane A3, voies [3], bruit 0.77)",
-      "drum": 38
-    },
-    "18": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (443 notes, 1 hauteurs, médiane B1, voies [3], bruit 0.81)",
-      "drum": 38
-    },
-    "19": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (77 notes, 2 hauteurs, médiane C#3, voies [3], bruit 0.81)",
-      "drum": 38
-    },
-    "20": {
-      "name": "Basse",
-      "comment": "rôle deviné : basse (44 notes, 12 hauteurs, médiane C2, voies [4], bruit 0.62)"
-    },
-    "21": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (532 notes, 6 hauteurs, médiane E2, voies [4], bruit 0.19)"
-    }
-  },
+  "comment": "remaster électro (scripts/style_electro.py) : instruments choisis par Claude, sans écoute",
   "partitions": {
     "Mélodie": {
       "instrument": "guitare",
@@ -143,5 +53,277 @@
       20,
       21
     ]
+  },
+  "samples": {
+    "1": {
+      "name": "Nappe",
+      "reverb": 0.35,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s01.bin",
+        "bend_range": 12,
+        "preset": "Pads/Sawteeth"
+      },
+      "comment": "électro : nappe, Surge XT « Sawteeth »"
+    },
+    "2": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s02.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Trancy"
+      },
+      "comment": "électro : arpège, Surge XT « Trancy »"
+    },
+    "3": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s03.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Nice Pluck 3"
+      },
+      "comment": "électro : arpège, Surge XT « Nice pluck 3 »"
+    },
+    "4": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s04.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Retrofit"
+      },
+      "comment": "électro : arpège, Surge XT « Retrofit »"
+    },
+    "5": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s05.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Sync Pluck",
+        "transpose": 12
+      },
+      "comment": "électro : arpège, Surge XT « Sync pluck »"
+    },
+    "6": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s06.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Nice Pluck 1"
+      },
+      "comment": "électro : arpège, Surge XT « Nice pluck 1 »"
+    },
+    "7": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s07.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Saw Pluck"
+      },
+      "comment": "électro : arpège, Surge XT « Saw pluck »"
+    },
+    "8": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s08.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Square Pop",
+        "transpose": 12
+      },
+      "comment": "électro : arpège, Surge XT « Squarepop »"
+    },
+    "9": {
+      "name": "Nappe",
+      "reverb": 0.35,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s09.bin",
+        "bend_range": 12,
+        "preset": "Pads/Bright"
+      },
+      "comment": "électro : nappe, Surge XT « Bright »"
+    },
+    "10": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s10.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Trancy"
+      },
+      "comment": "électro : arpège, Surge XT « Trancy »"
+    },
+    "11": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s11.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Nice Pluck 3"
+      },
+      "comment": "électro : arpège, Surge XT « Nice pluck 3 »"
+    },
+    "12": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s12.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Retrofit"
+      },
+      "comment": "électro : arpège, Surge XT « Retrofit »"
+    },
+    "13": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s13.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Sync Pluck",
+        "transpose": 12
+      },
+      "comment": "électro : arpège, Surge XT « Sync pluck »"
+    },
+    "14": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s14.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Nice Pluck 1"
+      },
+      "comment": "électro : arpège, Surge XT « Nice pluck 1 »"
+    },
+    "15": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s15.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Saw Pluck"
+      },
+      "comment": "électro : arpège, Surge XT « Saw pluck »"
+    },
+    "16": {
+      "name": "Grosse caisse",
+      "drum": 36,
+      "drum_kit": 25,
+      "reverb": 0.0,
+      "velocity": 110,
+      "comment": "électro : grosse caisse, kit 808/909"
+    },
+    "17": {
+      "name": "Charleston",
+      "drum": 42,
+      "drum_kit": 25,
+      "reverb": 0.05,
+      "velocity": 110,
+      "comment": "électro : charleston, kit 808/909"
+    },
+    "18": {
+      "name": "Caisse claire",
+      "drum": 38,
+      "drum_kit": 25,
+      "reverb": 0.1,
+      "velocity": 110,
+      "comment": "électro : caisse claire, kit 808/909"
+    },
+    "19": {
+      "name": "Charleston",
+      "drum": 42,
+      "drum_kit": 25,
+      "reverb": 0.05,
+      "velocity": 110,
+      "comment": "électro : charleston, kit 808/909"
+    },
+    "20": {
+      "name": "Basse",
+      "reverb": 0.0,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s20.bin",
+        "bend_range": 12,
+        "preset": "Basses/Bass 3",
+        "transpose": 12
+      },
+      "comment": "électro : basse, Surge XT « Bass three »"
+    },
+    "21": {
+      "name": "Lead",
+      "reverb": 0.18,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Hybris - title/s21.bin",
+        "bend_range": 12,
+        "preset": "Leads/Sine Lead"
+      },
+      "comment": "électro : lead, Surge XT « Sinlead »"
+    }
+  },
+  "master": {
+    "loudness": -12,
+    "pan_width": 0.35,
+    "balance": "original",
+    "comp_threshold": -18,
+    "fx": [
+      {
+        "type": "HighShelfFilter",
+        "cutoff_frequency_hz": 9000,
+        "gain_db": 1
+      }
+    ],
+    "reverb": {
+      "plugin": "DragonflyRoomReverb",
+      "tail_s": 3,
+      "params": {
+        "dry_level": 0,
+        "early_level": 20,
+        "early_send": 20,
+        "late_level": 60,
+        "size_m": 24,
+        "decay_s": 1.6,
+        "predelay_ms": 20,
+        "high_cut_hz": 9000,
+        "late_damp_hz": 6000,
+        "low_cut_hz": 200,
+        "low_boost": 0
+      }
+    }
   }
 }

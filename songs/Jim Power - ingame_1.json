@@ -2,58 +2,7 @@
   "title": "Jim Power - ingame_1",
   "artist": "",
   "soundfont": "GeneralUser-GS.sf2",
-  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
-  "samples": {
-    "1": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (462 notes, 2 hauteurs, médiane E1, voies [1], bruit 0.50)",
-      "drum": 38
-    },
-    "2": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (195 notes, 1 hauteurs, médiane A#3, voies [1, 4], bruit 0.74)",
-      "drum": 38
-    },
-    "3": {
-      "name": "Basse",
-      "comment": "rôle deviné : basse (400 notes, 11 hauteurs, médiane D2, voies [1], bruit 0.31)"
-    },
-    "4": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (16 notes, 2 hauteurs, médiane B1, voies [1], bruit 0.31)",
-      "drum": 38
-    },
-    "5": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (193 notes, 1 hauteurs, médiane E5, voies [1, 2], bruit 0.73)",
-      "drum": 38
-    },
-    "6": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (438 notes, 14 hauteurs, médiane A4, voies [2, 3, 4], bruit 0.00)"
-    },
-    "7": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (145 notes, 8 hauteurs, médiane G4, voies [2, 3, 4], bruit 0.37)"
-    },
-    "8": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (128 notes, 5 hauteurs, médiane G4, voies [2, 4], bruit 0.27)"
-    },
-    "9": {
-      "name": "Ignoré",
-      "comment": "rôle deviné : ignoré (3 notes, 3 hauteurs, médiane C5, voies [3], bruit 0.45)",
-      "mute": true
-    },
-    "10": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (332 notes, 7 hauteurs, médiane G4, voies [3, 4], bruit 0.19)"
-    },
-    "11": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (264 notes, 11 hauteurs, médiane G4, voies [3, 4], bruit 0.38)"
-    }
-  },
+  "comment": "remaster électro (scripts/style_electro.py) : instruments choisis par Claude, sans écoute",
   "partitions": {
     "Mélodie": {
       "instrument": "guitare",
@@ -82,5 +31,149 @@
       10,
       11
     ]
+  },
+  "samples": {
+    "1": {
+      "name": "Grosse caisse",
+      "drum": 36,
+      "drum_kit": 25,
+      "reverb": 0.0,
+      "velocity": 110,
+      "comment": "électro : grosse caisse, kit 808/909"
+    },
+    "2": {
+      "name": "Caisse claire",
+      "drum": 38,
+      "drum_kit": 25,
+      "reverb": 0.1,
+      "velocity": 110,
+      "comment": "électro : caisse claire, kit 808/909"
+    },
+    "3": {
+      "name": "Basse",
+      "reverb": 0.0,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Jim Power - ingame_1/s03.bin",
+        "bend_range": 12,
+        "preset": "Basses/Bass 1",
+        "transpose": 12
+      },
+      "comment": "électro : basse, Surge XT « Bass one »"
+    },
+    "4": {
+      "name": "Grosse caisse",
+      "drum": 36,
+      "drum_kit": 25,
+      "reverb": 0.0,
+      "velocity": 110,
+      "comment": "électro : grosse caisse, kit 808/909"
+    },
+    "5": {
+      "name": "Charleston",
+      "drum": 42,
+      "drum_kit": 25,
+      "reverb": 0.05,
+      "velocity": 110,
+      "comment": "électro : charleston, kit 808/909"
+    },
+    "6": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Jim Power - ingame_1/s06.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Simple PW",
+        "transpose": 12
+      },
+      "comment": "électro : arpège, Surge XT « Simple PW »"
+    },
+    "7": {
+      "name": "Lead",
+      "reverb": 0.18,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Jim Power - ingame_1/s07.bin",
+        "bend_range": 12,
+        "preset": "Leads/Crisp PWM",
+        "transpose": 12
+      },
+      "comment": "électro : lead, Surge XT « Crisp PWM »"
+    },
+    "8": {
+      "name": "Lead",
+      "reverb": 0.18,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Jim Power - ingame_1/s08.bin",
+        "bend_range": 12,
+        "preset": "Leads/Moogy Saw"
+      },
+      "comment": "électro : lead, Surge XT « Moogy saw »"
+    },
+    "9": {
+      "name": "Ignoré",
+      "mute": true
+    },
+    "10": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Jim Power - ingame_1/s10.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Sync Pluck",
+        "transpose": 12
+      },
+      "comment": "électro : arpège, Surge XT « Sync pluck »"
+    },
+    "11": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Jim Power - ingame_1/s11.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Nice Pluck 1"
+      },
+      "comment": "électro : arpège, Surge XT « Nice pluck 1 »"
+    }
+  },
+  "master": {
+    "loudness": -12,
+    "pan_width": 0.35,
+    "balance": "original",
+    "comp_threshold": -18,
+    "fx": [
+      {
+        "type": "HighShelfFilter",
+        "cutoff_frequency_hz": 9000,
+        "gain_db": 1
+      }
+    ],
+    "reverb": {
+      "plugin": "DragonflyRoomReverb",
+      "tail_s": 3,
+      "params": {
+        "dry_level": 0,
+        "early_level": 20,
+        "early_send": 20,
+        "late_level": 60,
+        "size_m": 24,
+        "decay_s": 1.6,
+        "predelay_ms": 20,
+        "high_cut_hz": 9000,
+        "late_damp_hz": 6000,
+        "low_cut_hz": 200,
+        "low_boost": 0
+      }
+    }
   }
 }

@@ -2,26 +2,7 @@
   "title": "Strider - Strider (1)",
   "artist": "",
   "soundfont": "GeneralUser-GS.sf2",
-  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
-  "samples": {
-    "1": {
-      "name": "Basse",
-      "comment": "rôle deviné : basse (260 notes, 10 hauteurs, médiane F#2, voies [1], bruit 0.21)"
-    },
-    "2": {
-      "name": "Ignoré",
-      "comment": "rôle deviné : ignoré (14 notes, 1 hauteurs, médiane ?, voies [1, 2], bruit 0.00)",
-      "mute": true
-    },
-    "3": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (156 notes, 14 hauteurs, médiane A3, voies [2], bruit 0.15)"
-    },
-    "4": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (85 notes, 11 hauteurs, médiane E3, voies [3], bruit 0.28)"
-    }
-  },
+  "comment": "remaster électro (scripts/style_electro.py) : instruments choisis par Claude, sans écoute",
   "partitions": {
     "Mélodie": {
       "instrument": "guitare",
@@ -44,5 +25,78 @@
       3,
       4
     ]
+  },
+  "samples": {
+    "1": {
+      "name": "Basse",
+      "reverb": 0.0,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Strider - Strider (1)/s01.bin",
+        "bend_range": 12,
+        "preset": "Basses/Square Bass",
+        "transpose": 36
+      },
+      "comment": "électro : basse, Surge XT « Square Bass »"
+    },
+    "2": {
+      "name": "Ignoré",
+      "mute": true
+    },
+    "3": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Strider - Strider (1)/s03.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Retrofit"
+      },
+      "comment": "électro : arpège, Surge XT « Retrofit »"
+    },
+    "4": {
+      "name": "Lead",
+      "reverb": 0.18,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Strider - Strider (1)/s04.bin",
+        "bend_range": 12,
+        "preset": "Leads/Sine Lead"
+      },
+      "comment": "électro : lead, Surge XT « Sinlead »"
+    }
+  },
+  "master": {
+    "loudness": -12,
+    "pan_width": 0.35,
+    "balance": "original",
+    "comp_threshold": -18,
+    "fx": [
+      {
+        "type": "HighShelfFilter",
+        "cutoff_frequency_hz": 9000,
+        "gain_db": 1
+      }
+    ],
+    "reverb": {
+      "plugin": "DragonflyRoomReverb",
+      "tail_s": 3,
+      "params": {
+        "dry_level": 0,
+        "early_level": 20,
+        "early_send": 20,
+        "late_level": 60,
+        "size_m": 24,
+        "decay_s": 1.6,
+        "predelay_ms": 20,
+        "high_cut_hz": 9000,
+        "late_damp_hz": 6000,
+        "low_cut_hz": 200,
+        "low_boost": 0
+      }
+    }
   }
 }

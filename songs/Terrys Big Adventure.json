@@ -2,36 +2,7 @@
   "title": "Terrys Big Adventure",
   "artist": "",
   "soundfont": "GeneralUser-GS.sf2",
-  "comment": "fiche automatique (remaster/roles.py) : à vérifier et corriger à l'oreille",
-  "samples": {
-    "1": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (159 notes, 3 hauteurs, médiane D#2, voies [1, 2], bruit 0.77)",
-      "drum": 38
-    },
-    "3": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (208 notes, 1 hauteurs, médiane F#7, voies [2], bruit 0.44)",
-      "drum": 38
-    },
-    "4": {
-      "name": "Batterie",
-      "comment": "rôle deviné : batterie (182 notes, 1 hauteurs, médiane D#1, voies [2], bruit 0.34)",
-      "drum": 38
-    },
-    "5": {
-      "name": "Basse",
-      "comment": "rôle deviné : basse (503 notes, 9 hauteurs, médiane D#2, voies [1], bruit 0.20)"
-    },
-    "6": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (1146 notes, 14 hauteurs, médiane C4, voies [2, 3, 4], bruit 0.15)"
-    },
-    "7": {
-      "name": "Mélodie",
-      "comment": "rôle deviné : mélodie (192 notes, 8 hauteurs, médiane A4, voies [3], bruit 0.28)"
-    }
-  },
+  "comment": "remaster électro (scripts/style_electro.py) : instruments choisis par Claude, sans écoute",
   "partitions": {
     "Mélodie": {
       "instrument": "guitare",
@@ -39,7 +10,11 @@
         6,
         7
       ],
-      "lead": true
+      "lead": true,
+      "prefer": [
+        7
+      ],
+      "comment": "21/11/2026 : la mélodie est le sample 7 ; le sample 6 (arpège d’accompagnement, souvent plus aigu) seulement quand le 7 se tait"
     }
   },
   "piano": {
@@ -54,5 +29,99 @@
       6,
       7
     ]
+  },
+  "samples": {
+    "1": {
+      "name": "Caisse claire",
+      "drum": 38,
+      "drum_kit": 25,
+      "reverb": 0.1,
+      "velocity": 110,
+      "comment": "électro : caisse claire, kit 808/909"
+    },
+    "3": {
+      "name": "Charleston",
+      "drum": 42,
+      "drum_kit": 25,
+      "reverb": 0.05,
+      "velocity": 110,
+      "comment": "électro : charleston, kit 808/909"
+    },
+    "4": {
+      "name": "Grosse caisse",
+      "drum": 36,
+      "drum_kit": 25,
+      "reverb": 0.0,
+      "velocity": 110,
+      "comment": "électro : grosse caisse, kit 808/909"
+    },
+    "5": {
+      "name": "Basse",
+      "reverb": 0.0,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Terrys Big Adventure/s05.bin",
+        "bend_range": 12,
+        "preset": "Basses/Sub Square",
+        "transpose": 12
+      },
+      "comment": "électro : basse, Surge XT « Sub Square 1 »"
+    },
+    "6": {
+      "name": "Arpège",
+      "reverb": 0.25,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Terrys Big Adventure/s06.bin",
+        "bend_range": 12,
+        "preset": "Plucks/Square Pop",
+        "transpose": 12
+      },
+      "comment": "électro : arpège, Surge XT « Squarepop »"
+    },
+    "7": {
+      "name": "Lead",
+      "reverb": 0.18,
+      "velocity": 100,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Terrys Big Adventure/s07.bin",
+        "bend_range": 12,
+        "preset": "Leads/Saw Octaves"
+      },
+      "comment": "électro : lead, Surge XT « Saw octaves »"
+    }
+  },
+  "master": {
+    "loudness": -12,
+    "pan_width": 0.35,
+    "balance": "original",
+    "comp_threshold": -18,
+    "fx": [
+      {
+        "type": "HighShelfFilter",
+        "cutoff_frequency_hz": 9000,
+        "gain_db": 1
+      }
+    ],
+    "reverb": {
+      "plugin": "DragonflyRoomReverb",
+      "tail_s": 3,
+      "params": {
+        "dry_level": 0,
+        "early_level": 20,
+        "early_send": 20,
+        "late_level": 60,
+        "size_m": 24,
+        "decay_s": 1.6,
+        "predelay_ms": 20,
+        "high_cut_hz": 9000,
+        "late_damp_hz": 6000,
+        "low_cut_hz": 200,
+        "low_boost": 0
+      }
+    }
   }
 }

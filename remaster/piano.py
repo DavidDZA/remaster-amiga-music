@@ -405,6 +405,11 @@ def render_mp3(ctx: Context, arr: Arrangement, p: dict, out_dir: pathlib.Path, m
         if t1 < x.shape[1]:
             x[:, t1:] = 0
         x[:, t0:t1] *= np.linspace(1.0, 0.0, t1 - t0, dtype=np.float32)
+    # musique lue par UADE : la partition commence par un silence pour que la première note tombe sur un temps
+    # (decalage_s) ; le MP3, lui, commence comme l'original, pour pouvoir les comparer (Giana Sisters : 1,9 s)
+    lead_in = int(getattr(ctx, "lead_in", 0.0) * sr)
+    if lead_in:
+        x = x[:, lead_in:]
     if p.get("reverb"):
         x = fx.apply(x, [{"type": "vst", **p["reverb"]}], sr)
     loud = np.where(np.max(np.abs(x), axis=0) > 1e-4)[0]
@@ -496,6 +501,8 @@ def make(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, log=print, au
     p = settings(cfg)
     ctx = ctx or Context(mod_path, cfg)
     out_dir.mkdir(parents=True, exist_ok=True)
+    from .paths import copy_original
+    copy_original(out_dir)
     arr = arrange(ctx, cfg)
     log(f"  piano : mélodie {len(arr.melody)} notes, accords {len(arr.chords)}, main gauche {len(arr.left)}")
     sheet_dir = out_dir / "partitions"
@@ -560,6 +567,7 @@ def main():
         ctx.repeat_bars = round(info["mesures_par_tour"])
         ctx.repeat_from = info["reprise_debut"]
     ctx.fade = info["fondu"]
+    ctx.lead_in = info["decalage_s"]
     make(a.mod, cfg, a.out or work_dir(a.mod, name), audio=not a.sans_mp3, ctx=ctx)
 
 

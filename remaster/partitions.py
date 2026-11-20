@@ -230,6 +230,8 @@ def make(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, log=print) ->
         raise SystemExit("La fiche du morceau n'a pas de section « partitions » (voir remaster/partitions.py).")
     ctx = Context(mod_path, cfg)
     out_dir.mkdir(parents=True, exist_ok=True)
+    from .paths import copy_original
+    copy_original(out_dir.parent if out_dir.name == "partitions" else out_dir)
     assigned = score.assign(ctx.hits + ctx.extras, parts, ctx.bars)
     made = []
     for name, p in parts.items():

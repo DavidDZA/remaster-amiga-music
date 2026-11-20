@@ -60,7 +60,9 @@ d'instruments d'une musique est `songs\<musique>.json`. Les résultats aussi son
 
 - `out\Originaux\<Jeu>\` : **toutes les musiques du jeu à plat**, en MP3 de l'original
   (`scripts\render_originals.py`) ;
-- `out\Retravaillées\<musique>\` : un dossier pour chaque musique qu'on **retravaille** (remasters, piano,
+- `out\Retravaillées\<musique>\` : un dossier pour chaque musique qu'on **retravaille**, avec toujours une copie du
+  MP3 de l'original (`<musique> (original).mp3`, pour comparer ; `paths.copy_original`, à chaque remaster, piano ou
+  partition) et les versions remplacées dans `anciennes versions\` (remasters, piano,
   partitions, pistes séparées). Le chemin se déduit de celui de la musique (`remaster/paths.py`). Le nom d'une
   musique contient son jeu (« Turrican 3 - world_1 (1) ») : ces dossiers sont à plat. Rangement demandé le
   20/11/2026 (avant, les musiques retravaillées étaient mêlées aux 78 dossiers de jeux).
@@ -118,6 +120,12 @@ Pour chaque sample (`"1"` à `"31"`) :
 | `mute` | ne pas jouer ce sample |
 
 `master` : `loudness`, `fx` (égaliseur du mix), `reverb` (VST3 Dragonfly et ses réglages), `balance`.
+
+`tuning_cents` (en haut de la fiche) : l'**accord général** de la musique, mesuré par `analyze.tuning_offset`
+(moyenne circulaire de l'écart de chaque note au demi-ton). Beaucoup de modules sont accordés « entre deux notes » :
+arrondies chacune de leur côté, les notes de deux samples se retrouvent à un demi-ton l'une de l'autre dans le piano
+et les partitions (*Great Giana Sisters* : +43 cents, sa mélodie tombait un demi-ton au-dessus de la basse). Avec
+`tuning_cents`, la hauteur des samples est prise par rapport à cet accord (et le remaster joue au la 440).
 Attention : l'équilibrage sur l'original (`"balance": "original"`) compense le volume des égaliseurs ; pour rendre
 un instrument plus présent, utiliser `gain_db`.
 
@@ -256,6 +264,44 @@ vrais sons de studio) applique des **recettes de mixage métal connues**, pas de
 - **basse** : graves propres sous 200 Hz + copie saturée dans les médiums, comme en métal ;
 - **mix** : compression plus marquée, un peu d'air au-dessus de 8 kHz, −11 LUFS.
 
+## Remaster « électro » (21/11/2026)
+
+Après Dr Mario métal (« une catastrophe le son »), l'utilisateur a demandé d'essayer des musiques plus électro, en
+laissant Claude choisir les instruments :
+
+```sh
+.venv\Scripts\python scripts\style_electro.py "Jim Power - ingame_1" "Terrys Big Adventure" …
+```
+
+Le nom est celui du dossier `out\Retravaillées\<musique>\` (fichier et n° de morceau retrouvés). Pour chaque sample :
+- **batterie** (rôle deviné par `roles.py`), puis le genre d'après le son joué à sa hauteur : grosse caisse (grave),
+  caisse claire, charleston fermé / ouvert, cymbale (aigu, court ou long), tom ; kit « 808/909 » de GeneralUser GS ;
+- **basse** : un preset de basse Surge XT ; les autres : **nappe** (notes de plus de 0,6 s), **arpège / pluck**
+  (moins de 0,18 s), sinon **lead** ; un preset Surge XT de la famille, différent d'une musique à l'autre ;
+- **octave du preset** : beaucoup de presets sonnent une octave plus bas (« Sub Square », « Squarepop » : mesuré
+  sur une note seule, `vst.octave_offset`) ; la correction va dans le réglage du VST (`"vsti": {"transpose": 12}`),
+  pas dans celui du sample : la partition et le piano gardent les vraies notes ;
+- jeu exact (pas d'humanisation : c'est la norme en électro), réverbération Dragonfly plus grande, −12 LUFS.
+
+L'ancienne fiche est gardée (`songs\<musique> (avant électro).json`). Faits le 21/11/2026, **à écouter** :
+`<musique> (remaster électro).mp3` pour Hybris title, Terrys Big Adventure, Lotus 2 bootup, Great Giana Sisters
+ingame (1), Jim Power ingame_1 et ingame_3, Shadow of the Beast title_and_the_plains (4), Strider (1), Turrican 3
+world_1 (1), Batman chem (1). Contrôlé : durée de l'original (plus la queue de réverbération), niveau ; pas écouté.
+
+## Lotus - title : partitions et version métal (21/11/2026)
+
+La fiche automatique s'était trompée de rôles ; d'après le son des samples :
+- sample **2** : la quinte est dans le son (**power chord**) : la mélodie jouée en power chords → *Guitare 1* ;
+- sample **14** : power chord grave et court (**étouffé**) → *Guitare 2* ; sa hauteur était détectée une octave trop
+  bas (les deux notes de l'accord donnent une « fondamentale manquante ») : `root` corrigée ; la voie 4 rejoue la
+  même chose **un demi-ton plus bas** (épaississement du son Amiga) : coupée (`by_channel`), sinon deux power chords
+  à un demi-ton ;
+- sample **13** : la **basse** (prise pour la mélodie) ; **11, 12** : grosse caisse, caisse claire.
+
+Sons : ceux de Dr Mario choisis à l'écoute (Naked Drums, 6505+ serré, basse métal), puis `production_metal.py`.
+Résultat dans `out\Retravaillées\Lotus - title\` : `(remaster fidèle)`, `(remaster enrichi)` et `partitions\`
+(Guitare 1, Guitare 2, Basse, Batterie). Ancienne fiche : `songs\Lotus - title (avant métal).json`.
+
 ## Récupérer la musique des archives de jeux (.lha)
 
 Les archives de musiques de jeux Amiga (`in\lha\*.lha`, format « UnExoticA ») contiennent chacune les musiques
@@ -378,6 +424,16 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
     quand la boucle y est jouée deux fois, la partition l'écrit une fois avec une **reprise** (levée à part).
   - Pas de vérification à l'oreille : la fiche automatique se trompe parfois (un lead saturé pris pour de la
     batterie…) ; on la corrige puis on relance.
+  - **Corrigés le 21/11/2026** (anciennes versions dans `anciennes versions\`), sur les erreurs signalées par
+    l'utilisateur : *Terrys Big Adventure* (la partie mélodie prenait l'arpège d'accompagnement, souvent plus aigu,
+    à la place de la vraie mélodie : option `"prefer"` des parties, le sample préféré passe avant le plus aigu) et
+    *Great Giana Sisters ingame (1)* (accord général +43 cents : mélodie un demi-ton au-dessus de la basse ; et le
+    MP3 commençait 1,9 s après l'original). Vérifié sans écouter avec `scripts\compare_chroma.py` (les notes
+    présentes, fenêtre par fenêtre, dans l'original et le piano) : Giana passe de 0,54 à 0,71 de ressemblance
+    (passages faux : 26 % → 13 %, le reste sur la pause presque vide du morceau), Terrys de 0,71 à 0,72 (passages
+    faux : 12 % → 6 %).
+  - Le MP3 du piano d'une musique UADE commence comme l'original (le silence ajouté en tête de partition pour que
+    la première note tombe sur un temps n'est plus dans le MP3).
   - Faits le 19/11/2026, à écouter : Strider (Custom Version 5 : fiche faite à la main ; Strider 1), Lotus 2
     bootup, Lotus title, Jim Power ingame_1 et ingame_3, Shadow of the Beast title_and_the_plains (2) et (4),
     Turrican 3 intro_and_title (1) et world_1 (1), Disposable Hero title, Great Giana Sisters ingame (1), Terry's
@@ -386,7 +442,7 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
 ## Contrôles
 
 ```sh
-.venv\Scripts\python -m pytest              # 79 tests, environ une minute (voir ci-dessous)
+.venv\Scripts\python -m pytest              # 84 tests, environ une minute (voir ci-dessous)
 .venv\Scripts\python scripts\check_stems.py "in\music\Dr Mario\Dr Mario.mod"   # chaque piste comparée au sample d'origine
 ```
 
@@ -397,7 +453,11 @@ ProTracker sur *Dr Mario*), boucles (trouvées, notes au hasard tolérées, faus
 fois la boucle ; grille et premier temps ; tablatures (manche, durées, mesures complètes) ; piano (arrangement,
 tierces, reprise, clavier) ; rôles des samples ; VST (recherche des plugins, catalogue qui écarte ceux qui
 plantent, bends et volume envoyés au synthé, extrait en boucle, cache des pistes, rendu avec Surge XT et son état
-rechargé, preset .fxp mis dans l'état du VST). Ceux qui demandent UADE, libxmp, LilyPond ou Surge XT sont sautés s'ils manquent.
+rechargé, preset .fxp mis dans l'état du VST) ; batteries multi-micros ; humanisation et chaînes en parallèle ;
+accord général d'une musique, mélodie préférée, octave d'un preset compensée dans le VST, original copié. Ceux qui demandent UADE, libxmp, LilyPond ou Surge XT sont sautés s'ils manquent.
+
+`compare_chroma.py original.mp3 autre.mp3 [fenêtre] [accord en cents]` : les notes présentes (chroma) fenêtre par
+fenêtre ; signale les passages où un arrangement ne joue pas les mêmes notes que l'original.
 
 `check_stems.py` (option : un autre dossier de pistes et un préfixe, ex. `"…\essai VST 1\stems" s05`) rejoue chaque sample d'origine comme l'Amiga et le compare à son remplaçant : décalage de hauteur
 (0 attendu ; il se trompe parfois sur les sons saturés) et calage dans le temps (0 ms attendu).

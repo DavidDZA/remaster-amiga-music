@@ -47,7 +47,9 @@ def instrument(cfg: dict, mod: modfile.Module, sample: int, ch: int | None = Non
         raw.update(raw.get("by_channel", {}).get(str(ch + 1), {}))
     inst = midi.Instrument(**raw)
     if inst.root is None and inst.drum is None:
-        inst.root = analyze.root_midi(mod.samples[sample - 1])
+        # accord général de la musique (« tuning_cents », voir analyze.tuning_offset) : une musique accordée un
+        # quart de ton trop haut fait tomber ses notes d'un côté ou de l'autre de l'arrondi selon le sample
+        inst.root = analyze.root_midi(mod.samples[sample - 1]) - cfg.get("tuning_cents", 0) / 100
     return inst
 
 
@@ -317,6 +319,7 @@ def remaster(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, original:
         to_mp3(original_wav, original_dir / f"{stem} (original).mp3",
                {**tags, "title": f"{title} (original Amiga)"})
     export_samples(mod, out_dir)
+    paths.copy_original(out_dir)
     for m in made:
         log(f"→ {m}")
     return made
