@@ -267,7 +267,9 @@ vrais sons de studio) applique des **recettes de mixage métal connues**, pas de
 ## Remaster « électro » (21/11/2026)
 
 Après Dr Mario métal (« une catastrophe le son »), l'utilisateur a demandé d'essayer des musiques plus électro, en
-laissant Claude choisir les instruments :
+laissant Claude choisir les instruments. **Malentendu** (21/11/2026) : il voulait dire « des musiques qui sont
+déjà plutôt électro », pas « un style électro plaqué dessus ». Ces versions restent telles quelles (ne pas y
+toucher) ; la suite est un remaster **fidèle à l'esprit des instruments** (voir ROADMAP). Ce qui a été fait :
 
 ```sh
 .venv\Scripts\python scripts\style_electro.py "Jim Power - ingame_1" "Terrys Big Adventure" …

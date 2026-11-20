@@ -1,5 +1,21 @@
 # Roadmap
 
+## En cours (21/11/2026) : remaster « fidèle à l'esprit des instruments » des 10 musiques électro
+
+Les remasters électro (`scripts\style_electro.py`) étaient un **malentendu** : l'utilisateur voulait que ces
+musiques, déjà plutôt électro, soient remasterisées **en restant fidèles à l'esprit de chaque instrument** (un
+piano reste un piano, une basse synthé reste une basse synthé, une batterie garde son genre), pas un style électro
+plaqué. **Ne pas toucher** aux versions électro ni aux anciennes versions.
+
+Liste : Hybris title, Terrys Big Adventure, Lotus 2 bootup, Great Giana Sisters ingame (1), Jim Power ingame_1 et
+ingame_3, Shadow of the Beast title_and_the_plains (4), Strider (1), Turrican 3 world_1 (1), Batman chem (1).
+
+Méthode prévue (sans oreilles) : pour chaque sample, le son moderne **le plus proche du sample d'origine**, comparé
+note pour note (spectre et enveloppe : attaque, déclin, tenue) parmi les 128 instruments General MIDI de
+GeneralUser GS (rendus sur la même note) ; pour la batterie, la pièce la plus proche dans les kits GM (un kit par
+musique). Résultat prévu : `<musique> (remaster fidèle).mp3` dans le dossier de la musique, fiche à part
+`songs\<musique> (fidèle).json` (la fiche électro reste).
+
 ## Fait le 20/11/2026 : les VST, choisis à l'oreille (« option 1 »)
 
 Décidé le 17/11/2026 (le rendu fait sans oreilles sonnait amateur : guitares nasillardes, kick inaudible, écho, flou).
