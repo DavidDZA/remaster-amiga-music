@@ -10,11 +10,14 @@ plaqué. **Ne pas toucher** aux versions électro ni aux anciennes versions.
 Liste : Hybris title, Terrys Big Adventure, Lotus 2 bootup, Great Giana Sisters ingame (1), Jim Power ingame_1 et
 ingame_3, Shadow of the Beast title_and_the_plains (4), Strider (1), Turrican 3 world_1 (1), Batman chem (1).
 
-Méthode prévue (sans oreilles) : pour chaque sample, le son moderne **le plus proche du sample d'origine**, comparé
-note pour note (spectre et enveloppe : attaque, déclin, tenue) parmi les 128 instruments General MIDI de
-GeneralUser GS (rendus sur la même note) ; pour la batterie, la pièce la plus proche dans les kits GM (un kit par
-musique). Résultat prévu : `<musique> (remaster fidèle).mp3` dans le dossier de la musique, fiche à part
-`songs\<musique> (fidèle).json` (la fiche électro reste).
+Fait le 21/11/2026 (`scripts\style_fidele.py`, sans oreilles) : pour chaque sample, le son **le plus proche du
+sample d'origine**, comparé sur la même note (timbre en 24 bandes, enveloppe en 12 points), parmi les instruments
+General MIDI de GeneralUser GS, **dans le genre du sample** (garde-fous ajoutés après un premier essai où la
+grosse caisse devenait un tom, la caisse claire une ride et la basse une nappe de cordes) : basse → basses GM ;
+grosse caisse, caisse claire, charleston, cymbale, tom → la même famille dans le kit GM le plus proche (un kit
+par musique) ; le reste → tout sauf basses et effets. Résultat : `<musique> (remaster fidèle).mp3` dans le dossier
+de la musique (rendu dans `fidèle\`), fiche `songs\<musique> (fidèle).json`. **À écouter.** Pistes si ce n'est pas
+assez réaliste : mêmes garde-fous mais candidats plus riches (banques SFZ, presets Surge XT pour les sons de synthé).
 
 ## Fait le 20/11/2026 : les VST, choisis à l'oreille (« option 1 »)
 
