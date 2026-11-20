@@ -1,4 +1,5 @@
-"""Enregistre en MP3 l'original de toutes les musiques, rangées par jeu : out\\<Jeu>\\<musique> (original).mp3.
+"""Enregistre en MP3 l'original de toutes les musiques, rangées par jeu :
+out\\Originaux\\<Jeu>\\<musique> (original).mp3.
 
     .venv\\Scripts\\python scripts\\render_originals.py                 # tous les jeux de in\\music\\
     .venv\\Scripts\\python scripts\\render_originals.py "Turrican 3"    # un jeu
@@ -11,8 +12,8 @@
   une musique qui boucle sans fin (beaucoup) est jouée une fois, ou deux si un tour fait moins de 2 min, avec un
   fondu de 4 s (boucle trouvée dans le journal de la puce son : remaster/paula.py, find_loop). Les morceaux de moins de 15 s (jingles, bruitages) ne sont pas gardés (--min).
 
-Toutes les musiques d'un jeu sont à plat dans out\\<Jeu>\\ ; une musique qu'on retravaille a en plus son sous-dossier
-out\\<Jeu>\\<musique>\\ (remasters, piano, partitions). Compte rendu : in\\music\\ECOUTE.md.
+Toutes les musiques d'un jeu sont à plat dans out\\Originaux\\<Jeu>\\ ; une musique qu'on retravaille a son dossier
+à part, out\\Retravaillées\\<musique>\\ (remasters, piano, partitions). Compte rendu : in\\music\\ECOUTE.md.
 """
 from __future__ import annotations
 import argparse
@@ -190,7 +191,7 @@ def main():
     ap = argparse.ArgumentParser(description="MP3 des originaux de toutes les musiques, rangés par jeu.")
     ap.add_argument("jeux", nargs="*", help="noms de dossiers de in\\music (tous par défaut)")
     ap.add_argument("--music", type=pathlib.Path, default=ROOT / "in" / "music")
-    ap.add_argument("--out", type=pathlib.Path, default=ROOT / "out")
+    ap.add_argument("--out", type=pathlib.Path, default=ROOT / "out" / "Originaux")
     ap.add_argument("--max", type=int, default=1200,
                     help="enregistrement maximal d'un morceau lu par UADE, pour trouver sa boucle (secondes)")
     ap.add_argument("--boucles", action="store_true",
@@ -229,7 +230,7 @@ def main():
     print(f"{made} MP3 enregistrés, {kept} déjà là")
     if not a.jeux:
         lines = ["# Les musiques en MP3", "",
-                 "Fait par `scripts/render_originals.py`. Toutes les musiques d'un jeu sont dans `out\\<Jeu>\\`.", "",
+                 "Fait par `scripts/render_originals.py`. Toutes les musiques d'un jeu sont dans `out\\Originaux\\<Jeu>\\`.", "",
                  "| Jeu | Musique | Lu par | Remarque |", "|---|---|---|---|"]
         for g in sorted(report):
             for name, state, how in sorted(report[g]):

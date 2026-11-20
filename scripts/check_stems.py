@@ -2,7 +2,8 @@
 
 - hauteur : décalage (en demi-tons) qui fait le mieux coïncider les spectres moyens ; 0 attendu, ±12 = mauvaise octave ;
 - calage : décalage (ms) entre les attaques de l'original et du remaster ; 0 attendu.
-Usage : python scripts/check_stems.py "in/music/Dr Mario/Dr Mario.mod"
+Usage : python scripts/check_stems.py "in/music/Dr Mario/Dr Mario.mod" [dossier des pistes] [préfixe]
+(par défaut les pistes du remaster, out/Retravaillées/<musique>/stems ; préfixe : « s05 » pour un seul sample)
 """
 import math
 import sys
@@ -60,8 +61,9 @@ def main():
     mod = modfile.load(mod_path)
     song = player.play(mod)
     from remaster.paths import work_dir
-    stems = work_dir(mod_path) / "stems"
-    for wav in sorted(stems.glob("s*.flac")):
+    stems = pathlib.Path(sys.argv[2]) if len(sys.argv) > 2 else work_dir(mod_path) / "stems"
+    prefix = sys.argv[3] if len(sys.argv) > 3 else "s"
+    for wav in sorted(stems.glob(f"{prefix}*.flac")):
         sample, ch = int(wav.stem[1:3]), int(wav.stem.split("-v")[1][0]) - 1
         new, rate = sf.read(wav, dtype="float32", always_2d=True)
         g = math.gcd(rate, SR)

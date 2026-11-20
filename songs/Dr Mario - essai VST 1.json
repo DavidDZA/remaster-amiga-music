@@ -1,0 +1,457 @@
+{
+  "title": "Dr Mario (remaster)",
+  "artist": "betrayer",
+  "soundfont": "GeneralUser-GS.sf2",
+  "master": {
+    "loudness": -14,
+    "pan_width": 0.35,
+    "balance": "original",
+    "fx": [
+      {
+        "type": "LowShelfFilter",
+        "cutoff_frequency_hz": 70,
+        "gain_db": 2
+      }
+    ],
+    "reverb": {
+      "plugin": "DragonflyRoomReverb",
+      "tail_s": 2,
+      "params": {
+        "dry_level": 0,
+        "early_level": 25,
+        "early_send": 20,
+        "late_level": 55,
+        "size_m": 14,
+        "decay_s": 0.9,
+        "predelay_ms": 12,
+        "high_cut_hz": 8000,
+        "late_damp_hz": 6000,
+        "low_cut_hz": 200,
+        "low_boost": 0
+      }
+    }
+  },
+  "extras": {
+    "hihat": {
+      "note": 42,
+      "every_rows": 2,
+      "beat_rows": 4,
+      "velocity": [
+        90,
+        65
+      ],
+      "gain_db": -9,
+      "pan": 0,
+      "sfz": {
+        "bank": "big-rusty-drums",
+        "program": "Programs/02-basic.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 250
+        }
+      ],
+      "reverb": 0.03
+    },
+    "crash": {
+      "note": 49,
+      "velocity": 105,
+      "gain_db": -2,
+      "pan": 0,
+      "reverb": 0.1,
+      "sfz": {
+        "bank": "big-rusty-drums",
+        "program": "Programs/02-basic.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 200
+        }
+      ]
+    }
+  },
+  "samples": {
+    "1": {
+      "name": "Grosse caisse",
+      "drum": 36,
+      "velocity": 118,
+      "reverb": 0.0,
+      "pan": 0,
+      "sfz": {
+        "bank": "big-rusty-drums",
+        "program": "Programs/02-basic.sfz"
+      },
+      "fx": [
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 60,
+          "gain_db": 2,
+          "q": 1.0
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 400,
+          "gain_db": -4,
+          "q": 1.0
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 5000,
+          "gain_db": 9,
+          "q": 1.2
+        },
+        {
+          "type": "Compressor",
+          "threshold_db": -18,
+          "ratio": 4,
+          "attack_ms": 15,
+          "release_ms": 120
+        }
+      ],
+      "comment": "Big Rusty Drums : grosse caisse plus courte, avec l'attaque de la batte (celle de Virtuosity n'en avait presque pas)",
+      "gain_db": 6
+    },
+    "2": {
+      "name": "Caisse claire",
+      "drum": 38,
+      "velocity": 112,
+      "reverb": 0.12,
+      "pan": 0,
+      "sfz": {
+        "bank": "big-rusty-drums",
+        "program": "Programs/02-basic.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 90
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 200,
+          "gain_db": 2,
+          "q": 1.0
+        },
+        {
+          "type": "Compressor",
+          "threshold_db": -16,
+          "ratio": 3,
+          "attack_ms": 5,
+          "release_ms": 100
+        }
+      ]
+    },
+    "3": {
+      "name": "Basse",
+      "velocity": 100,
+      "reverb": 0.0,
+      "pan": 0,
+      "sfz": {
+        "bank": "black-and-blue-basses",
+        "program": "Programs/05-darkblack_pluck.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 30
+        },
+        {
+          "type": "LowShelfFilter",
+          "cutoff_frequency_hz": 90,
+          "gain_db": 3
+        },
+        {
+          "type": "Compressor",
+          "threshold_db": -20,
+          "ratio": 4,
+          "attack_ms": 10,
+          "release_ms": 150
+        },
+        {
+          "type": "Distortion",
+          "drive_db": 18,
+          "mix": 0.15
+        },
+        {
+          "type": "LowpassFilter",
+          "cutoff_frequency_hz": 5000
+        }
+      ],
+      "comment": "vraie basse électrique (doigts) ; le sample du module est accordé en sol# (au C-2 il sonne G#1)",
+      "choke": true
+    },
+    "5": {
+      "name": "Lead",
+      "velocity": 100,
+      "reverb": 0.15,
+      "pan": 0,
+      "gain_db": 1,
+      "choke": true,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Dr Mario - essai VST 1/s05.bin",
+        "bend_range": 12,
+        "preset": "Leads/Synth Guitar 1"
+      },
+      "comment": "Surge XT, preset « Synth Guitar » (essai de Claude, sans écoute)"
+    },
+    "10": {
+      "name": "Chœur",
+      "velocity": 90,
+      "reverb": 0.3,
+      "vsti": {
+        "plugin": "Surge XT",
+        "state": "vst/Dr Mario - essai VST 1/s10.bin",
+        "bend_range": 12,
+        "preset": "Pads/Retro Choir"
+      },
+      "comment": "Surge XT, preset « Retrochoir » (essai de Claude, sans écoute)"
+    },
+    "11": {
+      "name": "Guitare étouffée",
+      "chord": [
+        0,
+        7
+      ],
+      "velocity": 100,
+      "max_length": 0.12,
+      "reverb": 0.0,
+      "sfz": {
+        "bank": "black-and-green-guitars",
+        "program": "Programs/08-black_staccato.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 100
+        },
+        {
+          "type": "nam",
+          "model": "Tom C Axe FX 2 Engl Savage"
+        },
+        {
+          "type": "cab",
+          "ir": "16-nacho-guacamole"
+        },
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 80
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 250,
+          "gain_db": 2,
+          "q": 0.8
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 5000,
+          "gain_db": -2.5,
+          "q": 1.0
+        },
+        {
+          "type": "LowpassFilter",
+          "cutoff_frequency_hz": 9500
+        }
+      ],
+      "comment": "palm mute : staccato coupé à 0,12 s, en quinte ; mêmes guitares et amplis que la rythmique",
+      "double": {
+        "sfz": {
+          "bank": "black-and-green-guitars",
+          "program": "Programs/05-green_staccato.sfz"
+        },
+        "fx": [
+          {
+            "type": "HighpassFilter",
+            "cutoff_frequency_hz": 100
+          },
+          {
+            "type": "nam",
+            "model": "Helga B 6505+ Red ch - MXR Drive V2"
+          },
+          {
+            "type": "cab",
+            "ir": "16-nacho-guacamole"
+          },
+          {
+            "type": "HighpassFilter",
+            "cutoff_frequency_hz": 80
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 250,
+            "gain_db": 2,
+            "q": 0.8
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 5000,
+            "gain_db": -2.5,
+            "q": 1.0
+          },
+          {
+            "type": "LowpassFilter",
+            "cutoff_frequency_hz": 9500
+          }
+        ],
+        "width": 0.75,
+        "delay_ms": 0
+      },
+      "choke": true,
+      "gain_db": -3
+    },
+    "12": {
+      "name": "Guitare rythmique",
+      "chord": [
+        0,
+        7,
+        12
+      ],
+      "velocity": 100,
+      "reverb": 0.0,
+      "sfz": {
+        "bank": "black-and-green-guitars",
+        "program": "Programs/07-black_twang.sfz"
+      },
+      "fx": [
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 100
+        },
+        {
+          "type": "nam",
+          "model": "Tom C Axe FX 2 Engl Savage"
+        },
+        {
+          "type": "cab",
+          "ir": "16-nacho-guacamole"
+        },
+        {
+          "type": "HighpassFilter",
+          "cutoff_frequency_hz": 80
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 250,
+          "gain_db": 2,
+          "q": 0.8
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 5000,
+          "gain_db": -2.5,
+          "q": 1.0
+        },
+        {
+          "type": "PeakFilter",
+          "cutoff_frequency_hz": 3150,
+          "gain_db": 2,
+          "q": 1.2
+        },
+        {
+          "type": "LowpassFilter",
+          "cutoff_frequency_hz": 9500
+        }
+      ],
+      "comment": "power chords (3 cordes) ; gauche : guitare black → Engl Savage ; droite : guitare green → 6505+ MXR ; baffle 4×12 Greenback (choisis par comparaison à une courbe type)",
+      "double": {
+        "sfz": {
+          "bank": "black-and-green-guitars",
+          "program": "Programs/04-green_twang.sfz"
+        },
+        "fx": [
+          {
+            "type": "HighpassFilter",
+            "cutoff_frequency_hz": 100
+          },
+          {
+            "type": "nam",
+            "model": "Helga B 6505+ Red ch - MXR Drive V2"
+          },
+          {
+            "type": "cab",
+            "ir": "16-nacho-guacamole"
+          },
+          {
+            "type": "HighpassFilter",
+            "cutoff_frequency_hz": 80
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 250,
+            "gain_db": 2,
+            "q": 0.8
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 5000,
+            "gain_db": -2.5,
+            "q": 1.0
+          },
+          {
+            "type": "PeakFilter",
+            "cutoff_frequency_hz": 3150,
+            "gain_db": 2,
+            "q": 1.2
+          },
+          {
+            "type": "LowpassFilter",
+            "cutoff_frequency_hz": 9500
+          }
+        ],
+        "width": 0.85,
+        "delay_ms": 0
+      },
+      "choke": true
+    }
+  },
+  "partitions": {
+    "Guitare 1 (lead)": {
+      "instrument": "guitare",
+      "samples": [
+        5
+      ],
+      "lead": true,
+      "comment": "la ligne de lead la plus haute à chaque mesure (sample 5)"
+    },
+    "Guitare 2 (rythmique)": {
+      "instrument": "guitare",
+      "samples": [
+        5,
+        11,
+        12
+      ],
+      "comment": "power chords et quintes étouffées, plus les autres lignes de lead"
+    },
+    "Basse": {
+      "instrument": "basse",
+      "samples": [
+        3
+      ]
+    },
+    "Batterie (version enrichie)": {
+      "instrument": "batterie",
+      "samples": [
+        1,
+        2
+      ],
+      "extras": true
+    }
+  },
+  "piano": {
+    "melody": "Guitare 1 (lead)",
+    "chords": [
+      12,
+      10
+    ],
+    "riff": [
+      11
+    ],
+    "bass": [
+      3
+    ],
+    "comment": "harmonie : power chords (12) puis chœur (10) ; riff : guitare étouffée (11) ; basse (3)"
+  }
+}

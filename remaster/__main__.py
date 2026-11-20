@@ -1,8 +1,8 @@
-"""python -m remaster <musique> [--sous-morceau N] [--config songs/<nom>.json] [--out out/<jeu>/<nom>]
+"""python -m remaster <musique> [--sous-morceau N] [--config songs/<nom>.json] [--out out/Retravaillées/<nom>]
 
 <musique> : un .mod (ProTracker, Soundtracker), ou n'importe quel autre format Amiga (TFMX, David Whittaker,
 lecteur propre au jeu…) : ses notes sont alors lues par UADE dans ce que le lecteur envoie à la puce son
-(remaster/paula.py). Pour ceux-là, --sous-morceau choisit le morceau (1, 2… comme dans le nom des MP3 de out\\<Jeu>\\).
+(remaster/paula.py). Pour ceux-là, --sous-morceau choisit le morceau (1, 2… comme dans le nom des MP3 de out\\Originaux\\<Jeu>\\).
 """
 from __future__ import annotations
 import argparse
@@ -92,7 +92,7 @@ def main():
     ap.add_argument("--sous-morceau", type=int, help="pour un format autre que .mod : n° du morceau (1, 2…)")
     ap.add_argument("--max", type=int, default=300, help="durée maximale (secondes) pour un format autre que .mod")
     ap.add_argument("--config", type=pathlib.Path, help="fiche des instruments (JSON) ; par défaut songs/<nom>.json")
-    ap.add_argument("--out", type=pathlib.Path, help="dossier de travail ; par défaut out/<jeu>/<nom>")
+    ap.add_argument("--out", type=pathlib.Path, help="dossier de travail ; par défaut out/Retravaillées/<nom>")
     ap.add_argument("--no-original", action="store_true", help="ne pas refaire le MP3 de l'original")
     a = ap.parse_args()
     m = open_music(a.mod, a.sous_morceau, a.max, a.out, a.config)

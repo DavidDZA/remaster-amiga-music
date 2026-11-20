@@ -1,16 +1,21 @@
-"""Où vont les fichiers produits.
+"""Où vont les fichiers produits : deux dossiers dans out\\ (demande de l'utilisateur, 20/11/2026 : « je m'y perds »).
 
-    out\\<Jeu>\\<musique> (original).mp3      toutes les musiques du jeu, à plat (scripts/render_originals.py)
-    out\\<Jeu>\\<musique>\\                    seulement pour une musique qu'on retravaille : remasters, piano,
-                                             partitions, pistes séparées (stems), samples
+    out\\Originaux\\<Jeu>\\<musique> (original).mp3   toutes les musiques de chaque jeu, telles quelles
+                                                    (scripts/render_originals.py)
+    out\\Retravaillées\\<musique>\\                   une musique sur laquelle on travaille : remasters, piano,
+                                                    partitions, pistes séparées (stems), samples
 
-Le jeu se déduit du chemin de la musique : in\\music\\<Jeu>\\<musique>.mod ou in\\music\\<Jeu>\\originaux\\<fichier>.
+Le nom d'une musique contient déjà son jeu (« Dr Mario », « Turrican 3 - world_1 (1) ») : les musiques
+retravaillées sont à plat. Le jeu se déduit du chemin de la musique : in\\music\\<Jeu>\\<musique>.mod ou
+in\\music\\<Jeu>\\originaux\\<fichier>.
 """
 from __future__ import annotations
 import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "out"
+ORIGINALS = OUT / "Originaux"
+WORK = OUT / "Retravaillées"
 
 
 def game_of(music: pathlib.Path) -> str:
@@ -25,10 +30,10 @@ def game_of(music: pathlib.Path) -> str:
 
 
 def game_dir(music: pathlib.Path) -> pathlib.Path:
-    """out\\<Jeu>\\ : les MP3 des originaux de toutes les musiques du jeu."""
-    return OUT / game_of(music)
+    """out\\Originaux\\<Jeu>\\ : les MP3 des originaux de toutes les musiques du jeu."""
+    return ORIGINALS / game_of(music)
 
 
 def work_dir(music: pathlib.Path, name: str | None = None) -> pathlib.Path:
-    """out\\<Jeu>\\<musique>\\ : ce qu'on fabrique en retravaillant une musique."""
-    return game_dir(music) / (name or pathlib.Path(music).stem)
+    """out\\Retravaillées\\<musique>\\ : ce qu'on fabrique en retravaillant une musique."""
+    return WORK / (name or pathlib.Path(music).stem)

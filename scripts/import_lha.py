@@ -12,7 +12,7 @@ Pour chaque jeu, dans in\\music\\<Jeu>\\ :
 - **les musiques en .mod**, que lit Remaster AMIGA Music : le fichier d'origine s'il est déjà en ProTracker ou
   Soundtracker, sinon **converti** avec libxmp (remaster/xmpconv.py) quand libxmp sait le lire. Chaque .mod est
   vérifié : il se joue avec le lecteur du projet et dure comme chez libxmp (à 10 % près) ;
-  nom : <Jeu>.mod s'il n'y a qu'une musique, sinon <Jeu> - <titre>.mod (unique : il sert pour songs\\ et out\\<Jeu>\\) ;
+  nom : <Jeu>.mod s'il n'y a qu'une musique, sinon <Jeu> - <titre>.mod (unique : il sert pour songs\\ et out\\) ;
 - **originaux\\** : tous les fichiers de l'archive, tels quels, quel que soit le format (rien n'est perdu ;
   les formats pas encore lus pourront l'être plus tard) ;
 et in\\music\\INVENTAIRE.md : ce qui est lisible, converti, pas encore lu, abîmé.

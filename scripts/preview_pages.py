@@ -1,6 +1,6 @@
 """Grave les partitions en images (PNG) pour les relire page par page avant de les donner.
 
-    .venv\\Scripts\\python scripts\\preview_pages.py "out\\Dr Mario\\Dr Mario\\partitions"
+    .venv\\Scripts\\python scripts\\preview_pages.py "out\\Retravaillées\\Dr Mario\\partitions"
 
 Les images vont dans <dossier>\\apercu\\ (une par page). C'est ainsi que Claude vérifie la gravure : il ne peut pas
 ouvrir un PDF page par page, mais il peut regarder une image.

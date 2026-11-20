@@ -256,8 +256,8 @@ def export_samples(mod: modfile.Module, out_dir: pathlib.Path):
 
 def remaster(mod_path: pathlib.Path, cfg: dict, out_dir: pathlib.Path, original: bool = True, log=print,
              source=None, name: str | None = None, original_dir: pathlib.Path | None = None):
-    """out_dir : le dossier de travail de la musique (out\\<Jeu>\\<musique>\\) ; le MP3 de l'original va avec les
-    autres musiques du jeu (original_dir, par défaut out\\<Jeu>\\).
+    """out_dir : le dossier de travail de la musique (out\\Retravaillées\\<musique>\\) ; le MP3 de l'original va
+    avec les autres musiques du jeu (original_dir, par défaut out\\Originaux\\<Jeu>\\).
     source : (Module, Song, WAV d'origine) déjà prêts, pour une musique qui n'est pas un .mod (remaster/paula.py).
     name : nom des fichiers produits (par défaut celui du fichier de musique)."""
     out_dir.mkdir(parents=True, exist_ok=True)

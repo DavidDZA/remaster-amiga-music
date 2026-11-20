@@ -42,8 +42,8 @@ def test_rangement_par_jeu():
     dm = ROOT / "in" / "music" / "Dr Mario" / "Dr Mario.mod"
     assert paths.game_of(dm) == "Dr Mario"
     assert paths.game_of(ROOT / "in" / "music" / "Turrican 3" / "originaux" / "mdat.world_1") == "Turrican 3"
-    assert paths.game_dir(dm) == ROOT / "out" / "Dr Mario"
-    assert paths.work_dir(dm) == ROOT / "out" / "Dr Mario" / "Dr Mario"
+    assert paths.game_dir(dm) == ROOT / "out" / "Originaux" / "Dr Mario"
+    assert paths.work_dir(dm) == ROOT / "out" / "Retravaillées" / "Dr Mario"
     assert paths.work_dir(dm, "Turrican 3 - world_1 (2)").name == "Turrican 3 - world_1 (2)"
 
 
@@ -52,4 +52,4 @@ def test_jeu_d_un_fichier_en_sous_dossier():
     f = ROOT / "in" / "music" / "Strider" / "originaux" / "Custom_Version" / "cust.Strider"
     assert paths.game_of(f) == "Strider"
     assert paths.work_dir(f, "Strider - Strider [Custom Version] (5)") == \
-        ROOT / "out" / "Strider" / "Strider - Strider [Custom Version] (5)"
+        ROOT / "out" / "Retravaillées" / "Strider - Strider [Custom Version] (5)"

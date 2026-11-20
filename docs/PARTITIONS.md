@@ -43,7 +43,7 @@ Les tablatures et la batterie demandent un module à lignes et mesures (ProTrack
 déduite des notes (voir « Piano d'une musique sans fiche, ou lue par UADE » plus bas, et la ROADMAP).
 
 Le module vient souvent d'une archive de jeu : `scripts\import_lha.py` range dans `in\music\<Jeu>\` toutes les
-musiques des archives de `in\lha\` (converties en .mod si besoin) (voir le README). Les résultats d'une musique qu'on retravaille vont dans `out\<Jeu>\<nom>\`.
+musiques des archives de `in\lha\` (converties en .mod si besoin) (voir le README). Les résultats d'une musique qu'on retravaille vont dans `out\Retravaillées\<nom>\`.
 
 `scripts/dump_patterns.py "in\music\morceau\morceau.mod"` affiche les samples (durée, note au C-2) et, pour chaque pattern, quels
 samples jouent sur quelles voies et quels effets. Avec des numéros de patterns, il affiche le détail comme un tracker.
@@ -169,7 +169,7 @@ rencontrés le 19/11/2026 :
 
 - **Messages de la commande** : notes remontées, notes enlevées. Beaucoup d'enlevées = revoir la répartition des
   samples dans `partitions`.
-- **Les pages** : `scripts/preview_pages.py` → `out\<Jeu>\<nom>\partitions\apercu\*.png`. Claude les regarde une par une
+- **Les pages** : `scripts/preview_pages.py` → `out\Retravaillées\<nom>\partitions\apercu\*.png`. Claude les regarde une par une
   (il ne lit pas un PDF page à page). À regarder : doigtés (cordes voisines, pas de saut de 10 cases), pauses
   regroupées, P.M., accords sous la mélodie, pas de note piquée liée.
 - **Le MP3 du piano** : durée = celle du module + 3 s de réverbération ; niveau −16 LUFS ; crête −1,5 dB ; aucun

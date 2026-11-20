@@ -116,3 +116,34 @@ def test_surge_renders_a_track_and_its_state_round_trips(tmp_path, monkeypatch):
     (tmp_path / "s.bin").write_bytes(plug.raw_state)
     b = vst.render({"plugin": "Surge XT", "state": "s.bin"}, ev, 2.0, 48000, source_bend_range=midi.BEND_RANGE)
     assert b.shape == a.shape and np.abs(b[:, :24000]).max() > 1e-3  # muet sans le passage à vide de prepare()
+
+
+def test_juce_base64_round_trip():
+    from remaster import vststate
+    for data in (b"", b"a", b"sub3\x00\xff" * 37, bytes(range(256))):
+        assert vststate.juce_b64decode(vststate.juce_b64encode(data)) == data
+    assert vststate.juce_b64encode(b"\x01").startswith("1.")
+
+
+def test_component_swapped_in_vst3_state():
+    import struct
+    from remaster import vststate
+    xml = (f"<VST3PluginState><IComponent>{vststate.juce_b64encode(b'old patch')}</IComponent>"
+           "<IEditController>3.AAA</IEditController></VST3PluginState>").encode()
+    raw = b"VC2!" + struct.pack("<I", len(xml)) + xml + b"\0"
+    assert vststate.split(raw)[0] == b"old patch"
+    assert vststate.with_component(raw, b"old patch") == raw  # aller-retour à l'octet près
+    new = vststate.with_component(raw, b"a new, longer patch")
+    assert vststate.split(new)[0] == b"a new, longer patch" and b"<IEditController>3.AAA" in new
+
+
+def test_fxp_chunk():
+    import struct
+    from remaster import vststate
+    data = b"sub3" + b"\x07" * 20
+    head = b"CcnK" + struct.pack(">I", 52 + len(data)) + b"FPCh" + struct.pack(">III", 1, 0x636A7333, 1) + \
+        struct.pack(">I", 1) + b"Preset".ljust(28, b"\0") + struct.pack(">I", len(data))
+    assert len(head) == 60
+    assert vststate.fxp_chunk(head + data) == data
+    with pytest.raises(ValueError):
+        vststate.fxp_chunk(b"RIFF" + bytes(60))

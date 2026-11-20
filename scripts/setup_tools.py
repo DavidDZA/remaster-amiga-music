@@ -19,8 +19,8 @@ DOWNLOADS = [
     ("lilypond", "lilypond.zip",  # gravure des partitions et tablatures (GPL)
      "https://gitlab.com/lilypond/lilypond/-/releases/v2.24.4/downloads/lilypond-2.24.4-mingw-x86_64.zip"),
     # VST3 libres, en zip (sans installeur) : rangés dans tools/vst3/, essayés par  python -m remaster.vst
-    ("vst3/surge", "surge.zip",  # Surge XT : synthé hybride, ≈ 2 000 presets (GPL-3.0)
-     "https://github.com/surge-synthesizer/releases-xt/releases/download/1.3.4/surge-xt-win64-1.3.4-pluginsonly.zip"),
+    ("vst3/surge", "surge.zip",  # Surge XT portable : synthé hybride avec ses ≈ 3 000 presets (GPL-3.0, 500 Mo)
+     "https://github.com/surge-synthesizer/releases-xt/releases/download/1.3.4/surge-xt-win64-1.3.4-portable-install.zip"),
     ("vst3/dexed", "dexed.zip",  # Dexed : synthé FM façon Yamaha DX7, cartouches de sons (GPL-3.0)
      "https://github.com/asb2m10/dexed/releases/download/v1.1.0/Dexed-1.1.0-win.zip"),
     ("vst3/jc303", "jc303.zip",  # JC303 : basse acide façon TB-303 (GPL-3.0)

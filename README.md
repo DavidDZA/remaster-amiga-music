@@ -8,7 +8,7 @@ Prototype en ligne de commande (17/11/2026), avant une éventuelle vraie appli P
 Où en est le projet (20/11/2026) :
 - **Toutes les musiques Amiga** d'archives de jeux (`in\lha\`) sont récupérées et rangées par jeu
   (`in\music\<Jeu>\`) : en .mod (d'origine ou converties avec libxmp) ou, pour les formats à lecteur intégré
-  (TFMX, David Whittaker…), jouées par UADE. 631 originaux en MP3 dans `out\<Jeu>\`.
+  (TFMX, David Whittaker…), jouées par UADE. 631 originaux en MP3 dans `out\Originaux\<Jeu>\`.
 - **Remaster** (nouveaux instruments, MP3) : pour un .mod, et pour tout autre format (notes lues par UADE).
 - **Tablatures** (guitares, basse) et **partition de batterie** : pour un .mod (*Dr Mario*).
 - **Arrangement pour piano seul** (MP3 + partition) : pour n'importe quelle musique, avec une fiche automatique.
@@ -58,9 +58,12 @@ On peut donc garder la partition et **changer les instruments** :
 Les musiques sont rangées par jeu dans `in\music\<Jeu>\` (ex. `in\music\Dr Mario\Dr Mario.mod`) ; la fiche
 d'instruments d'une musique est `songs\<musique>.json`. Les résultats aussi sont rangés par jeu :
 
-- `out\<Jeu>\` : **toutes les musiques du jeu à plat**, en MP3 de l'original (`scripts\render_originals.py`) ;
-- `out\<Jeu>\<musique>\` : un sous-dossier seulement pour une musique qu'on **retravaille** (remasters, piano,
-  partitions, pistes séparées). Le chemin se déduit de celui de la musique (`remaster/paths.py`).
+- `out\Originaux\<Jeu>\` : **toutes les musiques du jeu à plat**, en MP3 de l'original
+  (`scripts\render_originals.py`) ;
+- `out\Retravaillées\<musique>\` : un dossier pour chaque musique qu'on **retravaille** (remasters, piano,
+  partitions, pistes séparées). Le chemin se déduit de celui de la musique (`remaster/paths.py`). Le nom d'une
+  musique contient son jeu (« Turrican 3 - world_1 (1) ») : ces dossiers sont à plat. Rangement demandé le
+  20/11/2026 (avant, les musiques retravaillées étaient mêlées aux 78 dossiers de jeux).
 
 ```sh
 python -m venv .venv
@@ -69,8 +72,8 @@ python -m venv .venv
 .venv\Scripts\python -m remaster "in\music\Dr Mario\Dr Mario.mod"
 ```
 
-Dans `out\Dr Mario\` : `Dr Mario (original).mp3`, le module tel quel (rendu OpenMPT), pour comparer ; et dans
-`out\Dr Mario\Dr Mario\`, le travail :
+Dans `out\Originaux\Dr Mario\` : `Dr Mario (original).mp3`, le module tel quel (rendu OpenMPT), pour comparer ;
+et dans `out\Retravaillées\Dr Mario\`, le travail :
 
 | Fichier | Contenu |
 |---|---|
@@ -175,12 +178,25 @@ VST libres téléchargés par `scripts\setup_tools.py` (vérifiés le 20/11/2026
 
 | VST | Type | Pour quoi |
 |---|---|---|
-| [Surge XT](https://surge-synthesizer.github.io/) 1.3.4 (+ Surge XT Effects) | synthé hybride, ≈ 2 000 presets | leads, nappes, basses synthé, cloches, sons « Amiga » modernisés |
+| [Surge XT](https://surge-synthesizer.github.io/) 1.3.4 (+ Surge XT Effects), version portable | synthé hybride, ≈ 3 000 presets (637 d'usine + 2 371 d'autres auteurs) | leads, nappes, basses synthé, cloches, sons « Amiga » modernisés |
 | [Dexed](https://asb2m10.github.io/dexed/) 1.1.0 | synthé FM façon DX7 | pianos électriques, cloches, basses FM, cuivres synthé |
 | [JC303](https://github.com/midilab/jc303) 0.14.0 | basse acide façon TB-303 | basses techno / acid |
 | [Firefly Synth 2](https://github.com/sjoerdvankreel/firefly-synth-2) 2.1.7 (+ FX) | synthé soustractif / FM | leads, nappes, effets |
 | Dragonfly (Room, Hall, Plate, Early Reflections) | réverbérations | déjà utilisées au mixage |
 | [sfizz](https://sfz.tools/sfizz/) 1.2.3 (`tools\sfizz\`, `sfizz_render.exe`) | lecteur SFZ complet | pas encore branché (voir ROADMAP) |
+
+**Essai sans fenêtre** (`scripts\essai_vst.py`) : des presets de Surge XT nommés d'avance (le fichier `.fxp` est
+mis dans l'état du VST, `remaster/vststate.py`), une fiche à part `songs\<musique> - <essai>.json`, et les MP3 posés
+à côté du remaster pour comparer. Premier essai, choisi par Claude sans écouter (20/11/2026) :
+
+```sh
+.venv\Scripts\python scripts\essai_vst.py "in\music\Dr Mario\Dr Mario.mod" "essai VST 1" "5=Surge XT:Leads/Synth Guitar 1" "10=Surge XT:Pads/Retro Choir"
+```
+
+→ `out\Retravaillées\Dr Mario\Dr Mario - essai VST 1 (remaster fidèle).mp3` et `(remaster enrichi).mp3` : le lead
+(guitare avec bends) joué par le synthé « Synth Guitar » (bends à ±12 demi-tons), le chœur par « Retrochoir » ;
+batterie, basse et guitares rythmiques inchangées. Contrôlé : hauteur juste (note 60 → 262 Hz), notes calées comme
+l'ancien lead. Pas écouté.
 
 VST à installer soi-même (gratuits, souvent avec un compte ou un e-mail) : liste dans [docs/ROADMAP.md](docs/ROADMAP.md).
 Après l'installation, `python -m remaster.vst` les essaie et les ajoute au catalogue.
@@ -200,8 +216,8 @@ Joseph, `cust.` lecteur propre au jeu… (`smp.`, `smpl.` : les samples qui vont
 
 Pour chaque jeu, `in\music\<Jeu>\` contient :
 - **les musiques en .mod** (ce que lit le projet) : `<Jeu>.mod` s'il n'y en a qu'une, sinon `<Jeu> - <titre>.mod`
-  (le nom sert aussi pour la fiche `songs\<nom>.json`, le MP3 `out\<Jeu>\<nom> (original).mp3` et le dossier de
-  travail `out\<Jeu>\<nom>\`).
+  (le nom sert aussi pour la fiche `songs\<nom>.json`, le MP3 `out\Originaux\<Jeu>\<nom> (original).mp3` et le
+  dossier de travail `out\Retravaillées\<nom>\`).
   Un fichier déjà en ProTracker ou en **Soundtracker 15 samples** est gardé tel quel ; un autre format est
   **converti** avec [libxmp](https://github.com/libxmp/libxmp) (`remaster/xmpconv.py`) ;
 - **`originaux\`** : tous les fichiers de l'archive, tels quels, quel que soit le format ;
@@ -238,7 +254,7 @@ vrai lecteur. Il est construit dans `tools\uade\` (il faut la partie POSIX de MS
 ```
 
 - **Écouter** (`scripts/render_originals.py`, qui fait aussi les .mod avec OpenMPT) : chaque sous-morceau devient
-  `out\<Jeu>\<Jeu> - <titre> (n) (original).mp3`. Une autre version du même morceau (sous-dossier de l'archive :
+  `out\Originaux\<Jeu>\<Jeu> - <titre> (n) (original).mp3`. Une autre version du même morceau (sous-dossier de l'archive :
   `Custom_Versions`…) porte son nom entre crochets : « Batman - cave [Custom Versions] ». Fin : quand le lecteur
   l'annonce ou après 5 s de silence. **Une musique qui boucle sans fin est jouée une fois** (de son début à la fin
   du premier tour de boucle), **ou deux fois si un tour fait moins de 2 minutes** (et tant pis si c'est encore
@@ -274,7 +290,7 @@ double croche près. Une ligne de pattern = une double croche, 16 lignes = une m
 vitesse du module (*Dr Mario* : ♩ = 150, 125 et 107). Chaque partie commence par une lettre encadrée avec le temps
 dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond** (`remaster/lily.py`).
 
-| Fichier (`out\Dr Mario\Dr Mario\partitions\`) | Contenu |
+| Fichier (`out\Retravaillées\Dr Mario\partitions\`) | Contenu |
 |---|---|
 | `Guitare 1 (lead).pdf` | portée + tablature : la ligne de lead la plus haute à chaque mesure, bends (b. ½, b. 1, lâcher), glissandos, vibrato |
 | `Guitare 2 (rythmique).pdf` | power chords et quintes étouffées (P.M. - - -, accords ouverts accentués), plus les autres lignes de lead |
@@ -297,7 +313,7 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
   Le MP3 garde le tempo du module : il se cale sur l'original et les remasters.
 - **Piano pour n'importe quelle musique** (19/11/2026) : `python -m remaster.piano <fichier> [--sous-morceau N]`,
   ou une liste avec `scripts\piano_batch.py liste.txt` (lignes « fichier | n° »). Résultat dans
-  `out\<Jeu>\<musique>\` : `(piano).mp3`, `.mid` et `partitions\… - Piano.pdf`.
+  `out\Retravaillées\<musique>\` : `(piano).mp3`, `.mid` et `partitions\… - Piano.pdf`.
   - Sans fiche, une **fiche automatique** est écrite (`remaster/roles.py`, à corriger à la main) : batterie (un
     ou deux sons fixes, ou un bruit à peu de hauteurs), basse (la ligne la plus grave), mélodie (le reste ; à chaque
     mesure, la voie la plus haute). Sans basse dans une mesure, la main gauche suit la note la plus grave qui sonne.
@@ -315,7 +331,7 @@ dans le MP3 (A 0:00, B 0:06…), pour suivre en écoutant. Gravure : **LilyPond*
 ## Contrôles
 
 ```sh
-.venv\Scripts\python -m pytest              # 66 tests, moins d'une minute (voir ci-dessous)
+.venv\Scripts\python -m pytest              # 69 tests, moins d'une minute (voir ci-dessous)
 .venv\Scripts\python scripts\check_stems.py "in\music\Dr Mario\Dr Mario.mod"   # chaque piste comparée au sample d'origine
 ```
 
@@ -326,9 +342,9 @@ ProTracker sur *Dr Mario*), boucles (trouvées, notes au hasard tolérées, faus
 fois la boucle ; grille et premier temps ; tablatures (manche, durées, mesures complètes) ; piano (arrangement,
 tierces, reprise, clavier) ; rôles des samples ; VST (recherche des plugins, catalogue qui écarte ceux qui
 plantent, bends et volume envoyés au synthé, extrait en boucle, cache des pistes, rendu avec Surge XT et son état
-rechargé). Ceux qui demandent UADE, libxmp, LilyPond ou Surge XT sont sautés s'ils manquent.
+rechargé, preset .fxp mis dans l'état du VST). Ceux qui demandent UADE, libxmp, LilyPond ou Surge XT sont sautés s'ils manquent.
 
-`check_stems.py` rejoue chaque sample d'origine comme l'Amiga et le compare à son remplaçant : décalage de hauteur
+`check_stems.py` (option : un autre dossier de pistes et un préfixe, ex. `"…\essai VST 1\stems" s05`) rejoue chaque sample d'origine comme l'Amiga et le compare à son remplaçant : décalage de hauteur
 (0 attendu ; il se trompe parfois sur les sons saturés) et calage dans le temps (0 ms attendu).
 
 ## Outils (tous gratuits)

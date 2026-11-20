@@ -11,11 +11,15 @@ catalogue qui essaie chaque VST dans un processus à part, rendu d'une piste, é
 effets `vst` avec leur état, et `python -m remaster.choisir` : la fenêtre du VST s'ouvre, l'extrait de la musique passe
 en boucle dans le VST, on ferme quand le son plaît, l'état est enregistré (`songs\vst\<musique>\`). Mode d'emploi :
 README, section « VST ». Vérifié : chargement, rendu, état rechargé (Surge XT ne chargeait son preset qu'au premier
-passage de son : corrigé), écoute en boucle en temps réel fenêtre ouverte. **Aucun son choisi pour l'instant** : c'est
-à l'utilisateur, à l'oreille.
+passage de son : corrigé), écoute en boucle en temps réel fenêtre ouverte.
+
+**Premier essai** (20/11/2026, l'utilisateur n'avait pas le temps : presets choisis par Claude, sans écoute) :
+Dr Mario, lead → Surge XT « Synth Guitar », chœur → « Retrochoir » (`scripts\essai_vst.py`, fiche
+`songs\Dr Mario - essai VST 1.json`, MP3 dans `out\Retravaillées\Dr Mario\`). **À écouter par l'utilisateur.**
 
 VST libres déjà là (zip, `scripts\setup_tools.py`) : Surge XT (+ Effects), Dexed, JC303, Firefly Synth 2 (+ FX),
-Dragonfly ; sfizz (lecteur SFZ) en ligne de commande.
+Dragonfly ; sfizz (lecteur SFZ) en ligne de commande. Surge XT en version **portable** : sans elle, aucun preset
+(seulement le son vide).
 
 ### VST à installer par l'utilisateur (gratuits)
 
@@ -46,7 +50,10 @@ le dossier peut aussi viser `tools\vst3\` du projet.
   0.9.26 ; d'autres hôtes le signalent aussi en VST3). Pistes : un autre hôte (DawDreamer, Carla), ou une autre batterie.
 - **Amplitude du pitch bend** : 2 demi-tons par défaut ; la mesurer en jouant une note bendée et en lisant la hauteur,
   au lieu de la demander.
-- **Nom du preset** dans la fiche (Pedalboard ne le donne pas : à lire dans l'état quand le VST l'y écrit).
+- **Nom du preset** dans la fiche (Pedalboard ne le donne pas : à lire dans l'état quand le VST l'y écrit ; fait
+  pour Surge XT dans `scripts\essai_vst.py`, à mettre dans `choisir`).
+- **Le contrôle de hauteur** (`check_stems.py`) se trompe d'octave sur les chœurs (formants) : la hauteur d'une note
+  jouée seule (autocorrélation) est plus sûre.
 - **sfizz** : remplacer le lecteur SFZ maison (`remaster/sfz.py`, sans filtres ni LFO ni relâchement) par
   `sfizz_render.exe`, ou par le VST sfizz une fois installé.
 - **Choisir pour une partie doublée** (`double`, prise de droite) et **par voie** (`by_channel`) : `choisir` règle le
